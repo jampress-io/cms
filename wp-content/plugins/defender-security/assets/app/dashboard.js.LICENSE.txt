@@ -1,0 +1,9 @@
+/*!
+ * vuex v3.5.1
+ * (c) 2020 Evan You
+ * @license MIT
+ */
+
+//! moment.js
+
+//! moment.js locale configuration
