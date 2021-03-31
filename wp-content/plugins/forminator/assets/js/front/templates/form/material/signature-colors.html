@@ -1,0 +1,130 @@
+<?php if ( forminator_array_value_exists( $properties, 'cform-color-settings' ) ) { ?>
+
+	/*
+	====================
+	Signature Colors
+	====================
+	*/
+
+	/* STATE: Default */
+
+	.forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--material .forminator-signature,
+	.et-db #et-boc .et_pb_module .forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--material .forminator-signature {
+		<?php if ( forminator_array_value_exists( $properties, 'signature-border-default' ) && !empty( $properties['signature-border-default'] ) ) { ?>
+			border-color: <?php echo $properties['signature-border-default'] ?>;
+		<?php } else { ?>
+			border-color: #777771;
+		<?php } ?>
+	}
+
+	.forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--material .forminator-field-signature:not(.forminator-is_hover):not(.forminator-is_filled) .forminator-label,
+	.et-db #et-boc .et_pb_module .forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--material .forminator-field-signature:not(.forminator-is_hover):not(.forminator-is_filled) .forminator-label,
+	.forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--material .forminator-field-signature:not(.forminator-is_hover):not(.forminator-is_filled) .forminator-label .forminator-required,
+	.et-db #et-boc .et_pb_module .forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--material .forminator-field-signature:not(.forminator-is_hover):not(.forminator-is_filled) .forminator-label .forminator-required,
+	.forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--material .forminator-signature .forminator-signature--placeholder,
+	.et-db #et-boc .et_pb_module .forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--material .forminator-signature .forminator-signature--placeholder {
+		<?php if ( forminator_array_value_exists( $properties, 'signature-placeholder' ) && !empty( $properties['signature-placeholder'] ) ) { ?>
+			color: <?php echo $properties['signature-placeholder'] ?>;
+		<?php } else { ?>
+			color: #888888;
+		<?php } ?>
+	}
+
+	/* STATE: Hover */
+
+	.forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--material .forminator-field-signature.forminator-is_hover .forminator-signature,
+	.et-db #et-boc .et_pb_module .forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--material .forminator-field-signature.forminator-is_hover .forminator-signature {
+		<?php if ( forminator_array_value_exists( $properties, 'signature-border-hover' ) && !empty( $properties['signature-border-hover'] ) ) { ?>
+			border-color: <?php echo $properties['signature-border-hover'] ?>;
+		<?php } else { ?>
+			border-color: #17A8E3;
+		<?php } ?>
+	}
+
+	.forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--material .forminator-field-signature.forminator-is_hover .forminator-label,
+	.et-db #et-boc .et_pb_module .forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--material .forminator-field-signature.forminator-is_hover .forminator-label {
+		<?php if ( forminator_array_value_exists( $properties, 'signature-border-hover' ) && !empty( $properties['signature-border-hover'] ) ) { ?>
+			color: <?php echo $properties['signature-border-hover'] ?>;
+		<?php } else { ?>
+			color: #17A8E3;
+		<?php } ?>
+	}
+
+	/* STATE: Error */
+
+	.forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--material .forminator-field-signature.forminator-has_error .forminator-signature,
+	.et-db #et-boc .et_pb_module .forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--material .forminator-field-signature.forminator-has_error .forminator-signature {
+		<?php if ( forminator_array_value_exists( $properties, 'signature-border-error' ) && !empty( $properties['signature-border-error'] ) ) { ?>
+			border-color: <?php echo $properties['signature-border-error'] ?>;
+			box-shadow: inset 0 0 0 1px <?php echo $properties['signature-border-error'] ?>;
+			-moz-box-shadow: inset 0 0 0 1px <?php echo $properties['signature-border-error'] ?>;
+			-webkit-box-shadow: inset 0 0 0 1px <?php echo $properties['signature-border-error'] ?>;
+		<?php } else { ?>
+			border-color: #E04562;
+			box-shadow: inset 0 0 0 1px #E04562;
+			-moz-box-shadow: inset 0 0 0 1px #E04562;
+			-webkit-box-shadow: inset 0 0 0 1px #E04562;
+		<?php } ?>
+	}
+
+	.forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--material .forminator-field-signature.forminator-has_error.forminator-is_hover .forminator-label,
+	.et-db #et-boc .et_pb_module .forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--material .forminator-field-signature.forminator-has_error.forminator-is_hover .forminator-label {
+		<?php if ( forminator_array_value_exists( $properties, 'signature-border-error' ) && !empty( $properties['signature-border-error'] ) ) { ?>
+			color: <?php echo $properties['signature-border-error'] ?>;
+		<?php } else { ?>
+			color: #E04562;
+		<?php } ?>
+	}
+
+<?php } else { ?>
+
+	/*
+	====================
+	Signature Colors
+	====================
+	*/
+
+	/* STATE: Default */
+
+	.forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--material .forminator-signature,
+	.et-db #et-boc .et_pb_module .forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--material .forminator-signature {
+		border-color: #777771;
+	}
+
+	.forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--material .forminator-field-signature:not(.forminator-is_hover):not(.forminator-is_filled) .forminator-label,
+	.et-db #et-boc .et_pb_module .forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--material .forminator-field-signature:not(.forminator-is_hover):not(.forminator-is_filled) .forminator-label,
+	.forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--material .forminator-field-signature:not(.forminator-is_hover):not(.forminator-is_filled) .forminator-label .forminator-required,
+	.et-db #et-boc .et_pb_module .forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--material .forminator-field-signature:not(.forminator-is_hover):not(.forminator-is_filled) .forminator-label .forminator-required,
+	.forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--material .forminator-signature .forminator-signature--placeholder,
+	.et-db #et-boc .et_pb_module .forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--material .forminator-signature .forminator-signature--placeholder {
+		color: #888888;
+	}
+
+	/* STATE: Hover */
+
+	.forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--material .forminator-field-signature.forminator-is_hover .forminator-signature,
+	.et-db #et-boc .et_pb_module .forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--material .forminator-field-signature.forminator-is_hover .forminator-signature {
+		border-color: #17A8E3;
+	}
+
+	.forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--material .forminator-field-signature.forminator-is_hover .forminator-label,
+	.et-db #et-boc .et_pb_module .forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--material .forminator-field-signature.forminator-is_hover .forminator-label {
+		color: #17A8E3;
+	}
+
+	/* STATE: Error */
+
+	.forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--material .forminator-field-signature.forminator-has_error .forminator-signature,
+	.et-db #et-boc .et_pb_module .forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--material .forminator-field-signature.forminator-has_error .forminator-signature {
+		border-color: #E04562;
+		box-shadow: inset 0 0 0 1px #E04562;
+		-moz-box-shadow: inset 0 0 0 1px #E04562;
+		-webkit-box-shadow: inset 0 0 0 1px #E04562;
+	}
+
+	.forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--material .forminator-field-signature.forminator-has_error.forminator-is_hover .forminator-label,
+	.et-db #et-boc .et_pb_module .forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--material .forminator-field-signature.forminator-has_error.forminator-is_hover .forminator-label {
+		color: #E04562;
+	}
+
+<?php } ?>
