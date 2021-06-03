@@ -8,6 +8,7 @@ wp-content/*
 !wp-content/mu-plugins/
 !wp-content/plugins/
 !wp-content/themes/
+!wp-content/acf-components/
 
 # ignore specific themes
 wp-content/themes/twenty*/
