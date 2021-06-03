@@ -5,15 +5,18 @@
  *
  * @link https://developer.wordpress.org/themes/basics/theme-functions/
  *
- * @package Headless_WP_Theme
- * @since Headless WP 1.0
+ * @package JamPress_Theme
+ * @since JamPress 1.0
  */
 
 
 /* ==========================================================================
 Theme support
 ========================================================================== */
-
+/**
+ * Add thumbnail sizes
+ *
+ */
 if (function_exists('add_theme_support')) {
     // Add Menu Support
     add_theme_support('menus');
@@ -24,22 +27,27 @@ if (function_exists('add_theme_support')) {
     add_image_size('medium', 250, '', true); // Medium Thumbnail
     add_image_size('small', 120, '', true); // Small Thumbnail
     add_image_size('header', 1600, 900, array('center', 'center')); // Header Image
-    // add_image_size('gallery-image-phone', 320, 180, array('center','center')); // Gallery Image Phone
-    // add_image_size('gallery-image-tablet', 1024, 576, array('center','center')); // Gallery Image Tablet
-    // add_image_size('gallery-image-desktop', 1280, 720, array('center','center')); // Gallery Image Desktop
 }
 
-function wpb_rest_menus()
+
+/**
+ * Register Menus in REST API
+ *
+ */
+function register_rest_menus()
 {
     register_nav_menu('main-menu', __('Main Menu'));
 }
-add_action('init', 'wpb_rest_menus');
+add_action('init', 'register_rest_menus');
 
 
-
-add_action('rest_api_init', 'slug_register_yoast_seo_meta');
+/**
+ * Register SEO meta fields
+ *
+ */
 function slug_register_yoast_seo_meta()
 {
+    // Posts
     register_rest_field(
         'post',
         '_yoast_wpseo_title',
@@ -58,6 +66,8 @@ function slug_register_yoast_seo_meta()
             'schema' => null,
         )
     );
+
+    // Pages
     register_rest_field(
         'page',
         '_yoast_wpseo_title',
@@ -77,6 +87,9 @@ function slug_register_yoast_seo_meta()
         )
     );
 }
+add_action('rest_api_init', 'slug_register_yoast_seo_meta');
+
+
 function get_seo_meta_field($object, $field_name, $request)
 {
     return get_post_meta($object['id'], $field_name, true);
@@ -87,7 +100,7 @@ function get_seo_meta_field($object, $field_name, $request)
  * Reset CORS for external access
  *
  */
-function my_customize_rest_cors()
+function customize_rest_cors()
 {
     remove_filter('rest_pre_serve_request', 'rest_send_cors_headers');
     add_filter('rest_pre_serve_request', function ($value) {
@@ -101,7 +114,7 @@ function my_customize_rest_cors()
     });
 }
 
-add_action('rest_api_init', 'my_customize_rest_cors', 15);
+add_action('rest_api_init', 'customize_rest_cors', 15);
 
 
 /**
