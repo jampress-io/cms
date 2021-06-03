@@ -95,6 +95,8 @@ class Notification extends Component {
 	}
 
 	/**
+	 * Dispatch Firewall and Scan notifications
+	 *
 	 * @param $slug
 	 * @param $args
 	 *
@@ -110,7 +112,7 @@ class Notification extends Component {
 		if ( 'malware-notification' === $module->slug && true === $args->is_automation ) {
 			//case report
 			$module->send( $args );
-		} elseif ( $module->maybe_send() ) {
+		} elseif ( 'firewall-notification' === $module->slug && $module->check_options( $args ) ) {
 			$module->send( $args );
 		}
 	}

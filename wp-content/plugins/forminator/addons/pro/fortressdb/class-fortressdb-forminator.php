@@ -15,7 +15,7 @@ final class FortressDB_Forminator_Addon extends Forminator_Addon_Abstract {
 	protected $_min_forminator_version = '1.1';
 	protected $_short_title = 'FortressDB';
 	protected $_title = 'FortressDB';
-	protected $_url = 'https://premium.wpmudev.org';
+	protected $_url = 'https://wpmudev.com';
 	protected $_full_path = __FILE__;
 	protected $_form_settings = 'FortressDB_Forminator_Addon_Form_Settings';
 	protected $_form_hooks = 'FortressDB_Forminator_Addon_Form_Hooks';
@@ -117,11 +117,11 @@ final class FortressDB_Forminator_Addon extends Forminator_Addon_Abstract {
 			<h3 id="dialogTitle2" class="sui-box-title">
 				<?php
 				/* translators: ... */
-				echo esc_html( sprintf( __( 'Connect %1$s', Forminator::DOMAIN ), 'FortressDB' ) );
+				echo esc_html( sprintf( __( 'Connect %1$s', 'forminator' ), 'FortressDB' ) );
 				?>
 			</h3>
 
-			<span class="sui-description" style="margin-top: 20px;"><?php esc_html_e( 'Install the FortressDB plugin and sign-in to your FortressDB account to automatically connect it to Forminator. If you do not have an account, you can create a new free account within the FortressDB plugin.', Forminator::DOMAIN ); ?></span>
+			<span class="sui-description" style="margin-top: 20px;"><?php esc_html_e( 'Install the FortressDB plugin and sign-in to your FortressDB account to automatically connect it to Forminator. If you do not have an account, you can create a new free account within the FortressDB plugin.', 'forminator' ); ?></span>
 
 		</div>
 
@@ -130,10 +130,12 @@ final class FortressDB_Forminator_Addon extends Forminator_Addon_Abstract {
 
 		$buttons = array();
 
-		$fortress_install_url = admin_url( 'plugin-install.php?s=fortressdb&tab=search&type=term' );
+		$fortress_install_url = is_multisite() ?
+                                network_admin_url( 'plugin-install.php?s=fortressdb&tab=search&type=term' ) :
+                                admin_url( 'plugin-install.php?s=fortressdb&tab=search&type=term' );
 
 		$buttons['close'] = array(
-			'markup' => self::get_link_markup( $fortress_install_url, esc_html__( 'Install FortressDB', Forminator::DOMAIN ), '_self', 'forminator-addon-close' ),
+			'markup' => self::get_link_markup( $fortress_install_url, esc_html__( 'Install FortressDB', 'forminator' ), '_self', 'forminator-addon-close' ),
 		);
 
 		$has_errors = false;

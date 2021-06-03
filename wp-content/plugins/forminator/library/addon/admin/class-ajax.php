@@ -69,17 +69,9 @@ class Forminator_Addon_Admin_Ajax {
 			add_action( 'wp_ajax_forminator_addon_deactivate', array( $this, 'deactivate' ) );
 			add_action( 'wp_ajax_forminator_addon_settings', array( $this, 'settings' ) );
 
-			add_action( 'wp_ajax_forminator_addon_get_form_addons', array( $this, 'get_form_addons' ) );
-			add_action( 'wp_ajax_forminator_addon_form_settings', array( $this, 'form_settings' ) );
-			add_action( 'wp_ajax_forminator_addon_form_deactivate', array( $this, 'form_deactivate' ) );
-
-			add_action( 'wp_ajax_forminator_addon_get_poll_addons', array( $this, 'get_poll_addons' ) );
-			add_action( 'wp_ajax_forminator_addon_poll_settings', array( $this, 'poll_settings' ) );
-			add_action( 'wp_ajax_forminator_addon_poll_deactivate', array( $this, 'poll_deactivate' ) );
-
-			add_action( 'wp_ajax_forminator_addon_get_quiz_addons', array( $this, 'get_quiz_addons' ) );
-			add_action( 'wp_ajax_forminator_addon_quiz_settings', array( $this, 'quiz_settings' ) );
-			add_action( 'wp_ajax_forminator_addon_quiz_deactivate', array( $this, 'quiz_deactivate' ) );
+			add_action( 'wp_ajax_forminator_addon_get_module_addons', array( $this, 'get_module_addons' ) );
+			add_action( 'wp_ajax_forminator_addon_module_settings', array( $this, 'module_settings' ) );
+			add_action( 'wp_ajax_forminator_addon_deactivate_for_module', array( $this, 'deactivate_for_module' ) );
 
 			add_action( 'wp_ajax_forminator_refresh_email_lists', array( $this, 'refresh_email_lists' ) );
 
@@ -94,7 +86,7 @@ class Forminator_Addon_Admin_Ajax {
 	 */
 	private function validate_ajax() {
 		if ( ! forminator_is_user_allowed() || ! check_ajax_referer( self::$_nonce_action, false, false ) ) {
-			$this->send_json_errors( __( 'Invalid request, you are not allowed to do that action.', Forminator::DOMAIN ) );
+			$this->send_json_errors( __( 'Invalid request, you are not allowed to do that action.', 'forminator' ) );
 		}
 	}
 
@@ -127,7 +119,7 @@ class Forminator_Addon_Admin_Ajax {
 		}
 
 		$this->send_json_success(
-			__( 'Addon Deactivated', Forminator::DOMAIN ),
+			__( 'Addon Deactivated', 'forminator' ),
 			array(
 				'notification' => array(
 					'type' => 'success',
@@ -156,7 +148,7 @@ class Forminator_Addon_Admin_Ajax {
 		$addon = $this->validate_addon_from_slug( $slug );
 
 		if ( ! $addon->is_settings_available() ) {
-			$this->send_json_errors( __( 'This Addon does not have settings available', Forminator::DOMAIN ) );
+			$this->send_json_errors( __( 'This Addon does not have settings available', 'forminator' ) );
 		}
 
 		forminator_maybe_attach_addon_hook( $addon );
@@ -175,66 +167,34 @@ class Forminator_Addon_Admin_Ajax {
 	}// @codeCoverageIgnore
 
 	/**
-	 * Get / Save form settings
+	 * Disconnect module from addon
 	 *
 	 * @since 1.1
 	 */
-	public function form_settings() {
+	public function deactivate_for_module() {
 		$this->validate_ajax();
-		$sanitized_post_data = $this->validate_and_sanitize_fields( array( 'slug', 'step', 'form_id', 'current_step' ) );
+		$sanitized_post_data = $this->validate_and_sanitize_fields( array( 'slug', 'module_id', 'module_type' ) );
 		$slug                = $sanitized_post_data['slug'];
-		$step                = $sanitized_post_data['step'];
-		$current_step        = $sanitized_post_data['current_step'];
-		$form_id             = $sanitized_post_data['form_id'];
-
-		$addon = $this->validate_addon_from_slug( $slug );
-
-		if ( ! $addon->is_form_settings_available( $form_id ) ) {
-			$this->send_json_errors( __( 'This Addon does not have form settings available', Forminator::DOMAIN ) );
-		}
-
-		forminator_maybe_attach_addon_hook( $addon );
-
-		unset( $sanitized_post_data['slug'] );
-		unset( $sanitized_post_data['current_step'] );
-		unset( $sanitized_post_data['step'] );
-		unset( $sanitized_post_data['form_id'] );
-
-		$wizard = $addon->get_form_settings_wizard( $sanitized_post_data, $form_id, $current_step, $step );
-
-		$this->send_json_success(
-			'',
-			$wizard
-		);
-
-	}// @codeCoverageIgnore
-
-	/**
-	 * Disconnect form from addon
-	 *
-	 * @since 1.1
-	 */
-	public function form_deactivate() {
-		$this->validate_ajax();
-		$sanitized_post_data = $this->validate_and_sanitize_fields( array( 'slug', 'form_id' ) );
-		$slug                = $sanitized_post_data['slug'];
-		$form_id             = $sanitized_post_data['form_id'];
+		$module_id           = $sanitized_post_data['module_id'];
+		$module_type         = $sanitized_post_data['module_type'];
 
 		$addon = $this->validate_addon_from_slug( $slug );
 
 		forminator_maybe_attach_addon_hook( $addon );
 
-		$form_settings = $addon->get_addon_form_settings( $form_id );
-		if ( $form_settings instanceof Forminator_Addon_Form_Settings_Abstract ) {
+		$get_addon_settings = 'get_addon_' . $module_type . '_settings';
+		$settings           = $addon->$get_addon_settings( $module_id );
+		if ( $settings instanceof Forminator_Addon_Settings_Abstract ) {
 			unset( $sanitized_post_data['slug'] );
-			unset( $sanitized_post_data['form_id'] );
+			unset( $sanitized_post_data['module_id'] );
+			unset( $sanitized_post_data['module_type'] );
 
 			$addon_title = $addon->get_title();
 
 			// handling multi_id
 			if ( isset( $sanitized_post_data['multi_id'] ) ) {
 				$multi_id_label = '';
-				$multi_ids      = $form_settings->get_multi_ids();
+				$multi_ids      = $settings->get_multi_ids();
 				foreach ( $multi_ids as $key => $multi_id ) {
 					if ( isset( $multi_id['id'] ) && $multi_id['label'] ) {
 						if ( $multi_id['id'] === $sanitized_post_data['multi_id'] ) {
@@ -249,27 +209,28 @@ class Forminator_Addon_Admin_Ajax {
 				}
 			}
 
-			$form_settings->disconnect_form( $sanitized_post_data );
+			$disconnect = 'disconnect_' . $module_type;
+			$settings->$disconnect( $sanitized_post_data );
 
 			$this->send_json_success(
 				/* translators: ... */
-				sprintf( __( 'Successfully disconnected %1$s from this form', Forminator::DOMAIN ), $addon->get_title() ),
+				sprintf( __( 'Successfully disconnected %1$s from this module', 'forminator' ), $addon->get_title() ),
 				array(
 					'notification' => array(
 						'type' => 'success',
-						'text' => '<strong>' . $addon_title . '</strong> ' . __( 'has been deactivated successfully.' ),
+						'text' => '<strong>' . $addon_title . '</strong> ' . __( 'Successfully disconnected from this module' ),
 					),
 				)
 			);
 		} else {
 			$this->send_json_errors(
 				/* translators: ... */
-				sprintf( __( 'Failed to disconnect %1$s from this form', Forminator::DOMAIN ), $addon->get_title() ),
+				sprintf( __( 'Failed to disconnect %1$s from this module', 'forminator' ), $addon->get_title() ),
 				array(),
 				array(
 					'notification' => array(
 						'type' => 'error',
-						'text' => '<strong>' . $addon->get_title() . '</strong> ' . __( 'has been failed to deactivate.' ),
+						'text' => '<strong>' . $addon->get_title() . '</strong> ' . __( 'Failed to disconnected from this module' ),
 					),
 				)
 			);
@@ -299,30 +260,6 @@ class Forminator_Addon_Admin_Ajax {
 			$html
 		);
 
-	}
-
-	/**
-	 * Get Addons List, grouped by connected status with form
-	 *
-	 * @since 1.1
-	 */
-	public function get_form_addons() {
-		$this->validate_ajax();
-		$sanitized_post_data = $this->validate_and_sanitize_fields( array( 'form_id' ) );
-		$form_id             = $sanitized_post_data['form_id'];
-		/** @noinspection PhpUnusedLocalVariableInspection */
-		$addons = forminator_get_registered_addons_grouped_by_form_connected( $form_id );
-
-		ob_start();
-
-		require_once forminator_plugin_dir() . 'admin/views/integrations/form-content.php';
-
-		$html = ob_get_clean();
-
-		$this->send_json_success(
-			'',
-			$html
-		);
 	}
 
 	/**
@@ -406,13 +343,13 @@ class Forminator_Addon_Admin_Ajax {
 		foreach ( $required_fields as $key => $required_field ) {
 			if ( ! isset( $post_data[ $required_field ] ) ) {
 				/* translators: ... */
-				$errors[] = sprintf( __( 'Field %s is required', Forminator::DOMAIN ), $required_field );
+				$errors[] = sprintf( __( 'Field %s is required', 'forminator' ), $required_field );
 				continue;
 			}
 		}
 
 		if ( ! empty( $errors ) ) {
-			$this->send_json_errors( __( 'Please check your form.', Forminator::DOMAIN ), $errors );
+			$this->send_json_errors( __( 'Please check your form.', 'forminator' ), $errors );
 		}
 
 		// TODO: sanitize
@@ -440,7 +377,7 @@ class Forminator_Addon_Admin_Ajax {
 
 		if ( ! $addon || ! $addon instanceof Forminator_Addon_Abstract ) {
 			$this->send_json_errors(
-				__( 'Addon not found', Forminator::DOMAIN ),
+				__( 'Addon not found', 'forminator' ),
 				array(),
 				array(
 					'notification' => array(
@@ -466,17 +403,9 @@ class Forminator_Addon_Admin_Ajax {
 			remove_action( 'wp_ajax_forminator_addon_settings', array( self::$_instance, 'settings' ) );
 			remove_action( 'wp_ajax_forminator_addon_deactivate', array( self::$_instance, 'deactivate' ) );
 
-			remove_action( 'wp_ajax_forminator_addon_get_form_addons', array( self::$_instance, 'get_form_addons' ) );
-			remove_action( 'wp_ajax_forminator_addon_form_settings', array( self::$_instance, 'form_settings' ) );
-			remove_action( 'wp_ajax_forminator_addon_form_deactivate', array( self::$_instance, 'form_deactivate' ) );
-
-			remove_action( 'wp_ajax_forminator_addon_get_poll_addons', array( self::$_instance, 'get_poll_addons' ) );
-			remove_action( 'wp_ajax_forminator_addon_poll_settings', array( self::$_instance, 'poll_settings' ) );
-			remove_action( 'wp_ajax_forminator_addon_poll_deactivate', array( self::$_instance, 'poll_deactivate' ) );
-
-			remove_action( 'wp_ajax_forminator_addon_get_quiz_addons', array( self::$_instance, 'get_quiz_addons' ) );
-			remove_action( 'wp_ajax_forminator_addon_quiz_settings', array( self::$_instance, 'quiz_settings' ) );
-			remove_action( 'wp_ajax_forminator_addon_quiz_deactivate', array( self::$_instance, 'quiz_deactivate' ) );
+			remove_action( 'wp_ajax_forminator_addon_get_module_addons', array( self::$_instance, 'get_module_addons' ) );
+			remove_action( 'wp_ajax_forminator_addon_module_settings', array( self::$_instance, 'module_settings' ) );
+			remove_action( 'wp_ajax_forminator_addon_deactivate_for_module', array( self::$_instance, 'deactivate_for_module' ) );
 
 			self::$is_ajax_hooked = false;
 			self::$_instance      = null;
@@ -510,20 +439,20 @@ class Forminator_Addon_Admin_Ajax {
 	}
 
 	/**
-	 * Get Addons List, grouped by connected status with poll
+	 * Get Addons List, grouped by connected status with module
 	 *
 	 * @since 1.1
 	 */
-	public function get_poll_addons() {
+	public function get_module_addons() {
 		$this->validate_ajax();
-		$sanitized_post_data = $this->validate_and_sanitize_fields( array( 'poll_id' ) );
-		$poll_id             = $sanitized_post_data['poll_id'];
-		/** @noinspection PhpUnusedLocalVariableInspection */
-		$addons = forminator_get_registered_addons_grouped_by_poll_connected( $poll_id );
+		$sanitized_post_data = $this->validate_and_sanitize_fields( array( 'module_id', 'module_type' ) );
+		$module_id           = $sanitized_post_data['module_id'];
+		$module_slug         = $sanitized_post_data['module_type'];
 
+		$addons = forminator_get_registered_addons_grouped_by_module_connected( $module_id, $module_slug );
 		ob_start();
 
-		require_once forminator_plugin_dir() . 'admin/views/integrations/poll-content.php';
+		require_once forminator_plugin_dir() . 'admin/views/integrations/main.php';
 
 		$html = ob_get_clean();
 
@@ -534,22 +463,24 @@ class Forminator_Addon_Admin_Ajax {
 	}
 
 	/**
-	 * Get / Save poll settings
+	 * Get / Save module settings
 	 *
-	 * @since 1.6.1
+	 * @since 1.1
 	 */
-	public function poll_settings() {
+	public function module_settings() {
 		$this->validate_ajax();
-		$sanitized_post_data = $this->validate_and_sanitize_fields( array( 'slug', 'step', 'poll_id', 'current_step' ) );
+		$sanitized_post_data = $this->validate_and_sanitize_fields( array( 'slug', 'step', 'module_id', 'module_type', 'current_step' ) );
 		$slug                = $sanitized_post_data['slug'];
 		$step                = $sanitized_post_data['step'];
 		$current_step        = $sanitized_post_data['current_step'];
-		$poll_id             = $sanitized_post_data['poll_id'];
+		$module_id           = $sanitized_post_data['module_id'];
+		$module_type         = $sanitized_post_data['module_type'];
 
 		$addon = $this->validate_addon_from_slug( $slug );
 
-		if ( ! $addon->is_poll_settings_available( $poll_id ) ) {
-			$this->send_json_errors( __( 'This Addon does not have poll settings available', Forminator::DOMAIN ) );
+		$is_settings_available = 'is_' . $module_type . '_settings_available';
+		if ( ! $addon->$is_settings_available( $module_id ) ) {
+			$this->send_json_errors( __( 'This Addon does not have module settings available', 'forminator' ) );
 		}
 
 		forminator_maybe_attach_addon_hook( $addon );
@@ -557,136 +488,12 @@ class Forminator_Addon_Admin_Ajax {
 		unset( $sanitized_post_data['slug'] );
 		unset( $sanitized_post_data['current_step'] );
 		unset( $sanitized_post_data['step'] );
-		unset( $sanitized_post_data['poll_id'] );
+		unset( $sanitized_post_data['module_id'] );
+		unset( $sanitized_post_data['module_type'] );
 
-		$wizard = $addon->get_poll_settings_wizard( $sanitized_post_data, $poll_id, $current_step, $step );
+		$get_settings_wizard = 'get_' . $module_type . '_settings_wizard';
 
-		$this->send_json_success(
-			'',
-			$wizard
-		);
-
-	}// @codeCoverageIgnore
-
-	/**
-	 * Disconnect poll from addon
-	 *
-	 * @since 1.6.1
-	 */
-	public function poll_deactivate() {
-		$this->validate_ajax();
-		$sanitized_post_data = $this->validate_and_sanitize_fields( array( 'slug', 'poll_id' ) );
-		$slug                = $sanitized_post_data['slug'];
-		$poll_id             = $sanitized_post_data['poll_id'];
-
-		$addon = $this->validate_addon_from_slug( $slug );
-
-		forminator_maybe_attach_addon_hook( $addon );
-
-		$poll_settings = $addon->get_addon_poll_settings( $poll_id );
-		if ( $poll_settings instanceof Forminator_Addon_Poll_Settings_Abstract ) {
-			unset( $sanitized_post_data['slug'] );
-			unset( $sanitized_post_data['poll_id'] );
-
-			$addon_title = $addon->get_title();
-
-			// handling multi_id
-			if ( isset( $sanitized_post_data['multi_id'] ) ) {
-				$multi_id_label = '';
-				$multi_ids      = $poll_settings->get_multi_ids();
-				foreach ( $multi_ids as $key => $multi_id ) {
-					if ( isset( $multi_id['id'] ) && $multi_id['label'] ) {
-						if ( $multi_id['id'] === $sanitized_post_data['multi_id'] ) {
-							$multi_id_label = $multi_id['label'];
-							break;
-						}
-					}
-				}
-
-				if ( ! empty( $multi_id_label ) ) {
-					$addon_title .= ' [' . $multi_id_label . '] ';
-				}
-			}
-
-			$poll_settings->disconnect_poll( $sanitized_post_data );
-
-			$this->send_json_success(
-				/* translators: ... */
-				sprintf( __( 'Successfully disconnected %1$s from this poll', Forminator::DOMAIN ), $addon->get_title() ),
-				array(
-					'notification' => array(
-						'type' => 'success',
-						'text' => '<strong>' . $addon_title . '</strong> ' . __( 'Successfully disconnected from this poll' ),
-					),
-				)
-			);
-		} else {
-			$this->send_json_errors(
-				/* translators: ... */
-				sprintf( __( 'Failed to disconnect %1$s from this poll', Forminator::DOMAIN ), $addon->get_title() ),
-				array(),
-				array(
-					'notification' => array(
-						'type' => 'error',
-						'text' => '<strong>' . $addon->get_title() . '</strong> ' . __( 'Failed to disconnected from this poll' ),
-					),
-				)
-			);
-		}
-
-	}
-
-	/**
-	 * Get Addons List, grouped by connected status with quiz
-	 *
-	 * @since 1.6.2
-	 */
-	public function get_quiz_addons() {
-		$this->validate_ajax();
-		$sanitized_post_data = $this->validate_and_sanitize_fields( array( 'quiz_id' ) );
-		$quiz_id             = $sanitized_post_data['quiz_id'];
-		/** @noinspection PhpUnusedLocalVariableInspection */
-		$addons = forminator_get_registered_addons_grouped_by_quiz_connected( $quiz_id );
-
-		ob_start();
-
-		require_once forminator_plugin_dir() . 'admin/views/integrations/quiz-content.php';
-
-		$html = ob_get_clean();
-
-		$this->send_json_success(
-			'',
-			$html
-		);
-	}
-
-	/**
-	 * Get / Save quiz settings
-	 *
-	 * @since 1.6.2
-	 */
-	public function quiz_settings() {
-		$this->validate_ajax();
-		$sanitized_post_data = $this->validate_and_sanitize_fields( array( 'slug', 'step', 'quiz_id', 'current_step' ) );
-		$slug                = $sanitized_post_data['slug'];
-		$step                = $sanitized_post_data['step'];
-		$current_step        = $sanitized_post_data['current_step'];
-		$quiz_id             = $sanitized_post_data['quiz_id'];
-
-		$addon = $this->validate_addon_from_slug( $slug );
-
-		if ( ! $addon->is_quiz_settings_available( $quiz_id ) ) {
-			$this->send_json_errors( __( 'This Addon does not have quiz settings available', Forminator::DOMAIN ) );
-		}
-
-		forminator_maybe_attach_addon_hook( $addon );
-
-		unset( $sanitized_post_data['slug'] );
-		unset( $sanitized_post_data['current_step'] );
-		unset( $sanitized_post_data['step'] );
-		unset( $sanitized_post_data['quiz_id'] );
-
-		$wizard = $addon->get_quiz_settings_wizard( $sanitized_post_data, $quiz_id, $current_step, $step );
+		$wizard = $addon->$get_settings_wizard( $sanitized_post_data, $module_id, $current_step, $step );
 
 		$this->send_json_success(
 			'',
@@ -694,73 +501,5 @@ class Forminator_Addon_Admin_Ajax {
 		);
 
 	}// @codeCoverageIgnore
-
-	/**
-	 * Disconnect quiz from addon
-	 *
-	 * @since 1.6.2
-	 */
-	public function quiz_deactivate() {
-		$this->validate_ajax();
-		$sanitized_post_data = $this->validate_and_sanitize_fields( array( 'slug', 'quiz_id' ) );
-		$slug                = $sanitized_post_data['slug'];
-		$quiz_id             = $sanitized_post_data['quiz_id'];
-
-		$addon = $this->validate_addon_from_slug( $slug );
-
-		forminator_maybe_attach_addon_hook( $addon );
-
-		$quiz_settings = $addon->get_addon_quiz_settings( $quiz_id );
-		if ( $quiz_settings instanceof Forminator_Addon_Quiz_Settings_Abstract ) {
-			unset( $sanitized_post_data['slug'] );
-			unset( $sanitized_post_data['quiz_id'] );
-
-			$addon_title = $addon->get_title();
-
-			// handling multi_id
-			if ( isset( $sanitized_post_data['multi_id'] ) ) {
-				$multi_id_label = '';
-				$multi_ids      = $quiz_settings->get_multi_ids();
-				foreach ( $multi_ids as $key => $multi_id ) {
-					if ( isset( $multi_id['id'] ) && $multi_id['label'] ) {
-						if ( $multi_id['id'] === $sanitized_post_data['multi_id'] ) {
-							$multi_id_label = $multi_id['label'];
-							break;
-						}
-					}
-				}
-
-				if ( ! empty( $multi_id_label ) ) {
-					$addon_title .= ' [' . $multi_id_label . '] ';
-				}
-			}
-
-			$quiz_settings->disconnect_quiz( $sanitized_post_data );
-
-			$this->send_json_success(
-				/* translators: ... */
-				sprintf( __( 'Successfully disconnected %1$s from this quiz', Forminator::DOMAIN ), $addon->get_title() ),
-				array(
-					'notification' => array(
-						'type' => 'success',
-						'text' => '<strong>' . $addon_title . '</strong> ' . __( 'Successfully disconnected from this quiz' ),
-					),
-				)
-			);
-		} else {
-			$this->send_json_errors(
-				/* translators: ... */
-				sprintf( __( 'Failed to disconnect %1$s from this quiz', Forminator::DOMAIN ), $addon->get_title() ),
-				array(),
-				array(
-					'notification' => array(
-						'type' => 'error',
-						'text' => '<strong>' . $addon->get_title() . '</strong> ' . __( 'Failed to disconnected from this quiz' ),
-					),
-				)
-			);
-		}
-
-	}
 
 }

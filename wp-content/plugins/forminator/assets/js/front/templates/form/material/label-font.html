@@ -1,6 +1,6 @@
 <?php if ( forminator_array_value_exists( $properties, 'form-font-family' ) ) { ?>
 
-	.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--material .forminator-label[class*="forminator-floating-"] {
+	#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-label[class*="forminator-floating-"] {
 		<?php if ( forminator_array_value_exists( $properties, 'cform-input-font-size' ) ) { ?>
 			font-size: <?php echo $properties['cform-input-font-size'] ?>px;
 		<?php } else { ?>
@@ -24,7 +24,7 @@
 		<?php } ?>
 	}
 
-	.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--material .forminator-label:not([class*="forminator-floating-"]) {
+	#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-label:not([class*="forminator-floating-"]) {
 		<?php if ( forminator_array_value_exists( $properties, 'cform-label-font-size' ) ) { ?>
 			font-size: <?php echo $properties['cform-label-font-size'] ?>px;
 		<?php } else { ?>
@@ -48,8 +48,8 @@
 		<?php } ?>
 	}
 
-	.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--material .forminator-is_filled .forminator-label[class*="forminator-floating-"],
-	.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--material .forminator-is_active .forminator-label[class*="forminator-floating-"] {
+	#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-is_filled .forminator-label[class*="forminator-floating-"],
+	#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-is_active .forminator-label[class*="forminator-floating-"] {
 		<?php if ( forminator_array_value_exists( $properties, 'cform-label-font-size' ) ) { ?>
 			font-size: <?php echo $properties['cform-label-font-size'] ?>px;
 		<?php } else { ?>
@@ -75,20 +75,20 @@
 
 <?php } else { ?>
 
-	.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--material .forminator-label[class*="forminator-floating-"] {
+	#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-label[class*="forminator-floating-"] {
 		font-size: 16px;
 		font-family: inherit;
 		font-weight: 400;
 	}
 
-	.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--material .forminator-label:not([class*="forminator-floating-"]) {
+	#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-label:not([class*="forminator-floating-"]) {
 		font-size: 12px;
 		font-family: inherit;
 		font-weight: 700;
 	}
 
-	.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--material .forminator-is_filled .forminator-label[class*="forminator-floating-"],
-	.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--material .forminator-is_active .forminator-label[class*="forminator-floating-"] {
+	#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-is_filled .forminator-label[class*="forminator-floating-"],
+	#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-is_active .forminator-label[class*="forminator-floating-"] {
 		font-size: 12px;
 		font-family: inherit;
 		font-weight: 700;

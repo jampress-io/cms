@@ -1,5 +1,5 @@
 /* Submit Button */
-.forminator-ui.forminator-quiz-<?php echo $properties['form_id'] ?> .forminator-button {
+.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-button {
 	<?php if ( forminator_array_value_exists( $properties, 'knowledge-toggle-palette' ) ) { ?>
 		<?php if ( forminator_array_value_exists( $properties, 'knowledge-submit-background-static' ) ) { ?>
 			background-color: <?php echo $properties['knowledge-submit-background-static'] ?>;
@@ -41,7 +41,7 @@
 	<?php } ?>
 }
 
-.forminator-ui.forminator-quiz-<?php echo $properties['form_id'] ?> .forminator-button:hover {
+.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-button:hover {
 	<?php if ( forminator_array_value_exists( $properties, 'knowledge-toggle-palette' ) ) { ?>
 		<?php if ( forminator_array_value_exists( $properties, 'knowledge-submit-background-hover' ) ) { ?>
 			background-color: <?php echo $properties['knowledge-submit-background-hover'] ?>;
@@ -59,8 +59,8 @@
 	<?php } ?>
 }
 
-.forminator-ui.forminator-quiz-<?php echo $properties['form_id'] ?> .forminator-button:focus,
-.forminator-ui.forminator-quiz-<?php echo $properties['form_id'] ?> .forminator-button:active {
+.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-button:focus,
+.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-button:active {
 	<?php if ( forminator_array_value_exists( $properties, 'knowledge-toggle-palette' ) ) { ?>
 		<?php if ( forminator_array_value_exists( $properties, 'knowledge-submit-background-active' ) ) { ?>
 			background-color: <?php echo $properties['knowledge-submit-background-active'] ?>;

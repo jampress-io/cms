@@ -11,6 +11,15 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @since 1.0
  */
 abstract class Forminator_Mail {
+	protected $message_vars;
+
+	/**
+	 * Default content type
+	 *
+	 * @since 1.5
+	 * @var string
+	 */
+	protected $content_type = 'text/html; charset=UTF-8';
 
 	/**
 	 * Mail recipient
@@ -92,6 +101,112 @@ abstract class Forminator_Mail {
 		$this->sender_email = get_global_sender_email_address();
 		$this->sender_name  = get_global_sender_name();
 		$this->set_headers();
+	}
+
+	/**
+	 * Initialize the mail
+	 *
+	 * @param array $post_vars - post variables.
+	 */
+	public function init( $post_vars ) {
+		$user_email  = false;
+		$user_name   = '';
+		$user_login  = '';
+		$embed_id    = $post_vars['page_id'];
+		$embed_title = get_the_title( $embed_id );
+		$embed_url   = forminator_get_current_url();
+		$site_url    = site_url();
+
+		//Check if user is logged in
+		if ( is_user_logged_in() ) {
+			$current_user = wp_get_current_user();
+			$user_email   = $current_user->user_email;
+			if ( ! empty( $current_user->user_firstname ) ) {
+				$user_name = $current_user->user_firstname . ' ' . $current_user->user_lastname;
+			} elseif ( ! empty( $current_user->display_name ) ) {
+				$user_name = $current_user->display_name;
+			} else {
+				$user_name = $current_user->display_name;
+			}
+			$user_login = $current_user->user_login;
+		}
+
+		//Set up mail variables
+		$message_vars = forminator_set_message_vars( $embed_id, $embed_title, $embed_url, $user_name, $user_email, $user_login, $site_url );
+
+		/**
+		 * Message variables filter
+		 *
+		 * @since 1.0.2
+		 *
+		 * @param array $message_vars - the message variables
+		 * @param int   $embed_id     - the current module id
+		 * @param array $post_vars    - the post params
+		 *
+		 * @return array $message_vars
+		 */
+		$this->message_vars = apply_filters( 'forminator_custom_' . static::$module_slug . '_message_vars', $message_vars, $embed_id, $post_vars );
+	}
+
+	/**
+	 * Check if all conditions are met to send admin email
+	 *
+	 * @since 1.0
+	 *
+	 * @param array $setting - the module settings
+	 *
+	 * @return bool
+	 */
+	public function is_send_admin_mail( $setting ) {
+		if ( isset( $setting['use-admin-email'] ) && ! empty( $setting['use-admin-email'] ) ) {
+			if ( filter_var( $setting['use-admin-email'], FILTER_VALIDATE_BOOLEAN ) ) {
+				if ( isset( $setting['admin-email-title'] ) && isset( $setting['admin-email-editor'] ) ) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Get Recipients of admin emails
+	 *
+	 * @since 1.0.3
+	 * @since 1.6.2 add $data,$custom_form model, and entry
+	 *
+	 * @param array                       $notification
+	 * @param array                       $data
+	 * @param Forminator_Base_Form_Model  $module
+	 * @param Forminator_Form_Entry_Model $entry
+	 * @param                             $lead_model
+	 *
+	 * @return array
+	 */
+	public function get_admin_email_recipients( $notification, $data = array(), $module = null, $entry = null, $pseudo_submitted_data = array(), $lead_model = array() ) {
+
+		$email = array();
+		if ( isset( $notification['email-recipients'] ) && 'routing' === $notification['email-recipients'] ) {
+			if ( ! empty( $notification['routing'] ) ) {
+				foreach ( $notification['routing'] as $routing ) {
+					if ( $this->is_routing( $routing, $data, $module, $pseudo_submitted_data ) ) {
+						$recipients = array_map( 'trim', explode( ',', $routing['email'] ) );
+					}
+				}
+			}
+		} elseif ( isset( $notification['recipients'] ) && ! empty( $notification['recipients'] ) ) {
+			$recipients = array_map( 'trim', explode( ',', $notification['recipients'] ) );
+		}
+		if ( ! empty( $recipients ) ) {
+			foreach ( $recipients as $key => $recipient ) {
+				$recipient = $this->get_recipient( $recipient, $module, $data, $entry, $lead_model );
+				if ( is_email( $recipient ) ) {
+					$email[] = $recipient;
+				}
+			}
+		}
+
+		return apply_filters( 'forminator_' . static::$module_slug . '_get_admin_email_recipients', $email, $notification, $data, $module, $entry );
 	}
 
 	/**
@@ -194,21 +309,6 @@ abstract class Forminator_Mail {
 	}
 
 	/**
-	 * Set sender details
-	 *
-	 * @since 1.0
-	 *
-	 * @param array $sender_details - the sender details
-	 *                              ( 'email' => 'email', 'name' => 'name' )
-	 */
-	public function set_sender( $sender_details = array() ) {
-		if ( ! empty( $sender_details ) ) {
-			$this->sender_email = $sender_details['email'];
-			$this->sender_name  = $sender_details['name'];
-		}
-	}
-
-	/**
 	 * Clean mail variables
 	 *
 	 * @since 1.0
@@ -287,128 +387,6 @@ abstract class Forminator_Mail {
 	}
 
 	/**
-	 * Check if notification is routing
-	 *
-	 * @since 1.0
-	 *
-	 * @param $routing
-	 * @param $form_data
-	 * @param $pseudo_submitted_data
-	 *
-	 * @return bool
-	 */
-	public function is_routing( $routing, $form_data, $pseudo_submitted_data = array() ) {
-
-		// empty conditions
-		if ( empty( $routing ) ) {
-			return false;
-		}
-
-		$element_id = $routing['element_id'];
-		if ( stripos( $element_id, 'signature-' ) !== false ) {
-			// We have signature field
-			$is_condition_fulfilled = false;
-			$signature_id = 'field-' . $element_id;
-
-			if ( isset( $form_data[ $signature_id ] ) ) {
-				$signature_data = 'ctlSignature' . $form_data[ $signature_id ] . '_data';
-
-				if ( isset( $form_data[ $signature_data ] ) ) {
-					$is_condition_fulfilled = self::is_condition_fulfilled( $form_data[ $signature_data ], $routing );
-				}
-			}
-			return $is_condition_fulfilled;
-		} elseif ( stripos( $element_id, 'calculation-' ) !== false || stripos( $element_id, 'stripe-' ) !== false ) {
-			$is_condition_fulfilled = false;
-			if ( isset( $pseudo_submitted_data[ $element_id ] ) ) {
-				$is_condition_fulfilled = self::is_condition_fulfilled( $pseudo_submitted_data[ $element_id ], $routing );
-			}
-			return $is_condition_fulfilled;
-		} elseif ( stripos( $element_id, 'checkbox-' ) !== false || stripos( $element_id, 'radio-' ) !== false ) {
-			return self::is_condition_fulfilled( $form_data[ $element_id ], $routing );
-		} elseif ( ! isset( $form_data[ $element_id ] ) ) {
-			return false;
-		} else {
-			return self::is_condition_fulfilled( $form_data[ $element_id ], $routing );
-		}
-	}
-
-	/**
-	 * Check if Field is hidden based on conditions property and POST-ed data
-	 *
-	 * @since 1.0
-	 * @since 1.7 add $pseudo_submitted_data to get value of calculation and stripe etc
-	 *
-	 * @param $notification
-	 * @param $form_data
-	 * @param $pseudo_submitted_data
-	 *
-	 * @return bool
-	 */
-	public function is_condition( $notification, $form_data, $pseudo_submitted_data = array(), $form_object = false ) {
-		// empty conditions
-		if ( empty( $notification['conditions'] ) ) {
-			return false;
-		}
-
-		$condition_action = isset( $notification['condition_action'] ) ? $notification['condition_action'] : 'send';
-		$condition_rule   = isset( $notification['condition_rule'] ) ? $notification['condition_rule'] : 'all';
-
-		$condition_fulfilled = 0;
-
-		$all_conditions = $notification['conditions'];
-
-		foreach ( $all_conditions as $condition ) {
-			$element_id = $condition['element_id'];
-
-			if ( stripos( $element_id, 'signature-' ) !== false ) {
-				// We have signature field
-				$is_condition_fulfilled = false;
-				$signature_id = 'field-' . $element_id;
-
-				if ( isset( $form_data[ $signature_id ] ) ) {
- 					$signature_data = 'ctlSignature' . $form_data[ $signature_id ] . '_data';
-
-					if ( isset( $form_data[ $signature_data ] ) ) {
-						$is_condition_fulfilled = self::is_condition_fulfilled( $form_data[ $signature_data ], $condition );
-					}
-				}
-			} elseif ( stripos( $element_id, 'calculation-' ) !== false || stripos( $element_id, 'stripe-' ) !== false ) {
-				$is_condition_fulfilled = false;
-				if ( isset( $pseudo_submitted_data[ $element_id ] ) ) {
-					$is_condition_fulfilled = self::is_condition_fulfilled( $pseudo_submitted_data[ $element_id ], $condition );
-				}
-			} elseif ( stripos( $element_id, 'checkbox-' ) !== false || stripos( $element_id, 'radio-' ) !== false ) {
-				$is_condition_fulfilled = self::is_condition_fulfilled( $form_data[ $element_id ], $condition );
-			} elseif ( ! isset( $form_data[ $element_id ] ) ) {
-				$is_condition_fulfilled = false;
-			} else {
-				$is_condition_fulfilled = self::is_condition_fulfilled( $form_data[ $element_id ], $condition );
-			}
-
-			if ( $is_condition_fulfilled ) {
-				$condition_fulfilled ++;
-			}
-		}
-
-		//initialized as hidden
-		if ( 'send' === $condition_action ) {
-			if ( ( $condition_fulfilled > 0 && 'any' === $condition_rule ) || ( count( $all_conditions ) === $condition_fulfilled && 'all' === $condition_rule ) ) {
-				return false;
-			}
-
-			return true;
-		} else {
-			//initialized as shown
-			if ( ( $condition_fulfilled > 0 && 'any' === $condition_rule ) || ( count( $all_conditions ) === $condition_fulfilled && 'all' === $condition_rule ) ) {
-				return true;
-			}
-
-			return false;
-		}
-	}
-
-	/**
 	 * Check if Form Field value fullfilled the condition
 	 *
 	 * @since 1.0
@@ -471,135 +449,6 @@ abstract class Forminator_Mail {
 				return $form_field_value !== $condition['element_id'];
 			default:
 				return false;
-		}
-	}
-
-	/**
-	 * Check if notification is routing
-	 *
-	 * @since 1.0
-	 *
-	 * @param $routing
-	 * @param $form_data
-	 * @param $quiz_model
-	 *
-	 * @return bool
-	 */
-	public function is_quiz_routing( $routing, $form_data, $quiz_model ) {
-		// empty conditions
-		if ( empty( $routing ) ) {
-			return false;
-		}
-
-		$element_id = $routing['element_id'];
-		if ( stripos( $element_id, 'signature-' ) !== false ) {
-			// We have signature field
-			$signature_id = $element_id;
-			$signature_data = '';
-			if ( isset( $form_data[ $signature_id ] ) && isset( $form_data[ $signature_id ]['file']['file_url'] ) ) {
-				$signature_data = $form_data[ $signature_id ]['file']['file_url'];
-			}
-			return self::is_condition_fulfilled( $signature_data, $routing );
-		} elseif ( stripos( $element_id, 'url-' ) !== false ) {
-			$parts = ! empty( $routing['value'] ) ? wp_parse_url( $routing['value'] ) : false;
-			if ( false !== $parts ) {
-				if ( ! isset( $parts['scheme'] ) ) {
-					$routing['value'] = 'http://' . $routing['value'];
-				}
-			}
-			return self::is_condition_fulfilled( $form_data[ $element_id ], $routing );
-		} elseif ( stripos( $element_id, 'checkbox-' ) !== false || stripos( $element_id, 'radio-' ) !== false ) {
-			return self::is_condition_fulfilled( $form_data[ $element_id ], $routing );
-		} elseif ( stripos( $element_id, 'question-' ) !== false ) {
-			$is_correct  = self::is_correct_answer( $element_id, $form_data['answers'][ $element_id ], $quiz_model );
-			return self::is_condition_fulfilled( $is_correct, $routing );
-		} elseif ( 'final_result' === $element_id ) {
-			return self::is_condition_fulfilled( $form_data[ $element_id ], $routing );
-		} elseif ( ! isset( $form_data[ $element_id ] ) ) {
-			return false;
-		} else {
-			return self::is_condition_fulfilled( $form_data[ $element_id ], $routing );
-		}
-	}
-
-	/**
-	 * Check if Field is hidden based on conditions property and POST-ed data
-	 *
-	 * @since 1.0
-	 * @since 1.7 add $pseudo_submitted_data to get value of calculation and stripe etc
-	 *
-	 * @param $notification
-	 * @param $form_data
-	 * @param $quiz_model
-	 *
-	 * @return bool
-	 */
-	public function is_quiz_condition( $notification, $form_data, $quiz_model, $result = '' ) {
-		// empty conditions
-		if ( empty( $notification['conditions'] ) ) {
-			return false;
-		}
-
-		$condition_action = isset( $notification['condition_action'] ) ? $notification['condition_action'] : 'send';
-		$condition_rule   = isset( $notification['condition_rule'] ) ? $notification['condition_rule'] : 'all';
-
-		$condition_fulfilled = 0;
-
-		$all_conditions = $notification['conditions'];
-
-		foreach ( $all_conditions as $condition ) {
-			$element_id = $condition['element_id'];
-
-			if ( stripos( $element_id, 'signature-' ) !== false ) {
-				// We have signature field
-				$signature_id = $element_id;
-				$signature_data = '';
-				if ( isset( $form_data[ $signature_id ] ) && isset( $form_data[ $signature_id ]['file']['file_url'] ) ) {
-					$signature_data = $form_data[ $signature_id ]['file']['file_url'];
-				}
-				$is_condition_fulfilled = self::is_condition_fulfilled( $signature_data, $condition );
-			} elseif ( stripos( $element_id, 'url-' ) !== false ) {
-				// We have signature field
-				$parts = ! empty( $routing['value'] ) ? wp_parse_url( $condition['value'] ) : false;
-				if ( false !== $parts ) {
-					if ( ! isset( $parts['scheme'] ) ) {
-						$condition['value'] = 'http://' . $condition['value'];
-					}
-				}
-				$is_condition_fulfilled =  self::is_condition_fulfilled( $form_data[ $element_id ], $condition );
-			} elseif ( stripos( $element_id, 'checkbox-' ) !== false || stripos( $element_id, 'radio-' ) !== false ) {
-				$is_condition_fulfilled = self::is_condition_fulfilled( $form_data[ $element_id ], $condition );
-			} elseif ( stripos( $element_id, 'question-' ) !== false ) {
-				$is_correct  = self::is_correct_answer( $element_id, $form_data['answers'][ $element_id ], $quiz_model );
-				$is_condition_fulfilled = self::is_condition_fulfilled( $is_correct, $condition );
-			} elseif ( stripos( $element_id, 'result-' ) !== false ) {
-				$is_condition_fulfilled = self::is_condition_fulfilled( $result, $condition );
-			} elseif ( 'final_result' === $element_id ) {
-				$is_condition_fulfilled = self::is_condition_fulfilled( $form_data[ $element_id ], $condition );
-			} elseif ( ! isset( $form_data[ $element_id ] ) ) {
-				$is_condition_fulfilled = false;
-			} else {
-				$is_condition_fulfilled = self::is_condition_fulfilled( $form_data[ $element_id ], $condition );
-			}
-
-			if ( $is_condition_fulfilled ) {
-				$condition_fulfilled ++;
-			}
-		}
-		//initialized as hidden
-		if ( 'send' === $condition_action ) {
-			if ( ( $condition_fulfilled > 0 && 'any' === $condition_rule ) || ( count( $all_conditions ) === $condition_fulfilled && 'all' === $condition_rule ) ) {
-				return false;
-			}
-
-			return true;
-		} else {
-			//initialized as shown
-			if ( ( $condition_fulfilled > 0 && 'any' === $condition_rule ) || ( count( $all_conditions ) === $condition_fulfilled && 'all' === $condition_rule ) ) {
-				return true;
-			}
-
-			return false;
 		}
 	}
 

@@ -13,7 +13,7 @@ foreach ( $template_vars as $key => $val ) {
 <div id="forminator-integrations" class="wpmudev-settings--box">
 	<div class="sui-box">
 		<div class="sui-box-header">
-			<h2 class="sui-box-title"><?php esc_html_e( 'Authorizing Slack', Forminator::DOMAIN ); ?></h2>
+			<h2 class="sui-box-title"><?php esc_html_e( 'Authorizing Slack', 'forminator' ); ?></h2>
 		</div>
 		<div class="sui-box-body">
 			<?php if ( ! empty( $vars['error_message'] ) ) : ?>
@@ -24,14 +24,14 @@ foreach ( $template_vars as $key => $val ) {
 						<?php
 						esc_html_e(
 							'Successfully authorized Slack, you can go back to integration settings.',
-							Forminator::DOMAIN
+							'forminator'
 						);
 						?>
 					</p>
 				</span>
 			<?php else : ?>
 				<span class="sui-notice sui-notice-loading">
-					<p><?php esc_html_e( 'Please Wait...', Forminator::DOMAIN ); ?></p>
+					<p><?php esc_html_e( 'Please Wait...', 'forminator' ); ?></p>
 				</span>
 			<?php endif; ?>
 		</div>

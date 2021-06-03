@@ -1,6 +1,6 @@
 <?php if ( forminator_array_value_exists( $properties, 'cform-color-settings' ) ) { ?>
 
-	.forminator-custom-form-<?php echo $properties['form_id'] ?> {
+	#forminator-module-<?php echo $properties['form_id'] ?> {
 		<?php if ( forminator_array_value_exists( $properties, 'cform-form-border' ) && !empty( $properties['cform-form-border'] ) ) { ?>
 			border-color: <?php echo $properties['cform-form-border'] ?>;
 		<?php } else { ?>
@@ -15,7 +15,7 @@
 
 <?php } else { ?>
 
-	.forminator-custom-form-<?php echo $properties['form_id'] ?> {
+	#forminator-module-<?php echo $properties['form_id'] ?> {
 		border-color: rgba(0,0,0,0);
 		background-color: rgba(0,0,0,0);
 	}

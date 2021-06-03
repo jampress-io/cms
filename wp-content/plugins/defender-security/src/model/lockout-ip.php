@@ -65,20 +65,33 @@ class Lockout_Ip extends DB {
 	/**
 	 * Get the record by IP, if it not appear, then create one
 	 *
-	 * @param $ip
+	 * @param string $ip
+	 * @param null|string $status
+	 * @param boolean $all
 	 *
 	 * @return $this
 	 */
-	public static function get( $ip ) {
+	public static function get( $ip, $status = null, $all = false ) {
 		$model = Array_Cache::get( $ip, 'lockout' );
 		if ( is_object( $model ) ) {
 			return $model;
 		}
-		$orm   = self::get_orm();
-		$model = $orm->get_repository( Lockout_Ip::class )
-		             ->where( 'ip', $ip )->first();
+		$orm     = self::get_orm();
+		$builder = $orm->get_repository( Lockout_Ip::class )
+                        ->where( 'ip', $ip );
+		if ( null !== $status) {
+			$status = 'unban' === $status ? self::STATUS_BLOCKED : self::STATUS_NORMAL;
+			$builder->where( 'status', $status );
+		}
+		
+		if ( true === $all ) {
+			$model = $builder->get();
+			return $model;
+		}
 
-		if ( ! is_object( $model ) ) {
+		$model = $builder->first();
+
+        if ( ! is_object( $model ) ) {
 			$model                  = new Lockout_Ip();
 			$model->ip              = $ip;
 			$model->attempt         = 0;
@@ -96,6 +109,31 @@ class Lockout_Ip extends DB {
 		return $model;
 	}
 
+	/**
+	 * Get bulk IPs
+	 * 
+	 * @param $status
+	 * @param $ips
+	 * @param $limit
+	 *
+	 * @return $this
+	 */
+	public static function get_bulk( $status, $ips = null, $limit = null ) {
+		$orm   = self::get_orm();
+		$builder = $orm->get_repository( Lockout_Ip::class );
+		if ( $ips === null ) {
+			$builder->where( 'status', $status );
+		}
+		if ( $ips !== null ) {
+			$builder->where( 'ip', 'in', $ips );
+		}
+		if ( $limit !== null ) {
+			$builder->limit( $limit );
+		}
+		$models = $builder->get();
+
+		return $models;
+	}
 	/**
 	 * Get the access status of this IP
 	 *
@@ -141,6 +179,7 @@ class Lockout_Ip extends DB {
 		$orm    = self::get_orm();
 		$models = $orm->get_repository( self::class )
 		              ->where( 'status', self::STATUS_BLOCKED )
+		              ->group_by( 'ip' )
 		              ->order_by( 'lock_time', 'desc' )
 		              ->get();
 

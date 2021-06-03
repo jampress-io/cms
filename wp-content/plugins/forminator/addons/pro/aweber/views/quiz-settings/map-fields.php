@@ -17,9 +17,9 @@ foreach ( $template_vars as $key => $val ) {
 
 <div class="integration-header">
 
-	<h3 class="sui-box-title" id="dialogTitle2"><?php echo esc_html( __( 'Assign Fields', Forminator::DOMAIN ) ); ?></h3>
+	<h3 class="sui-box-title" id="dialogTitle2"><?php echo esc_html( __( 'Assign Fields', 'forminator' ) ); ?></h3>
 
-	<p><?php esc_html_e( 'Match up your form fields with your AWeber fields to make sure we\'re sending data to the right place.', Forminator::DOMAIN ); ?></p>
+	<p><?php esc_html_e( 'Match up your form fields with your AWeber fields to make sure we\'re sending data to the right place.', 'forminator' ); ?></p>
 
 	<?php if ( ! empty( $vars['error_message'] ) ) : ?>
 		<span class="sui-notice sui-notice-error"><p><?php echo esc_html( $vars['error_message'] ); ?></p></span>
@@ -34,8 +34,8 @@ foreach ( $template_vars as $key => $val ) {
 		<thead>
 
 			<tr>
-				<th><?php esc_html_e( 'AWeber Field', Forminator::DOMAIN ); ?></th>
-				<th><?php esc_html_e( 'Forminator Field', Forminator::DOMAIN ); ?></th>
+				<th><?php esc_html_e( 'AWeber Field', 'forminator' ); ?></th>
+				<th><?php esc_html_e( 'Forminator Field', 'forminator' ); ?></th>
 			</tr>
 
 		</thead>
@@ -67,7 +67,7 @@ foreach ( $template_vars as $key => $val ) {
 					?>
                     <div class="sui-form-field <?php echo esc_attr( ! empty( $current_error ) ? 'sui-form-field-error' : '' ); ?>">
                         <select class="sui-select" name="fields_map[<?php echo esc_attr( $key ); ?>]">
-                            <option value=""><?php esc_html_e( 'Please Select A Field', Forminator::DOMAIN ); ?></option>
+                            <option value=""><?php esc_html_e( 'Please Select A Field', 'forminator' ); ?></option>
 							<?php foreach ( $forminator_fields as $forminator_field ) : ?>
                                 <option value="<?php echo esc_attr( $forminator_field['element_id'] ); ?>"
 									<?php selected( $current_selected, $forminator_field['element_id'] ); ?>>

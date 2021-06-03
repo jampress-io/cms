@@ -14,7 +14,7 @@ foreach ( $template_vars as $key => $val ) {
 	<p class="" aria-label="Loading content">
 		<i class="sui-icon-loader sui-loading" aria-hidden="true"></i>
 	</p>
-	<p><?php esc_html_e( 'We are waiting for authorization from Google...', Forminator::DOMAIN ); ?></p>
+	<p><?php esc_html_e( 'We are waiting for authorization from Google...', 'forminator' ); ?></p>
 </div>
-<a href="<?php echo esc_attr( $vars['auth_url'] ); ?>" target="_blank" class="sui-button"><?php esc_html_e( 'RETRY', Forminator::DOMAIN ); ?></a>
+<a href="<?php echo esc_attr( $vars['auth_url'] ); ?>" target="_blank" class="sui-button"><?php esc_html_e( 'RETRY', 'forminator' ); ?></a>
 

@@ -122,13 +122,14 @@
 				var unique_id = self.progress_bar( item, method ),
 					totalFile = self.form.find('.upload-container-' + self.element + ' li').length,
 					fileType = 'undefined' !== typeof $this.data('filetype') ? $this.data('filetype') : '',
-					file_reg = new RegExp("(.*?)\.("+ fileType +")$");
+					file_reg = new RegExp("(.*?)\.("+ fileType +")$"),
+					itemName = item.name.toLowerCase();
 				if ( 'undefined' !== typeof $this.data('size') && $this.data('size') <= item.size ) {
 					error_messsage = $this.data('size-message');
 					self.upload_fail_response( unique_id, error_messsage );
 					return;
-				} else if( ! file_reg.test( item.name ) ) {
-					var ext = item.name.split('.').pop();
+				} else if( ! file_reg.test( itemName ) ) {
+					var ext = itemName.split('.').pop();
 					error_messsage = '.' + ext + ' ' + $this.data('filetype-message');
 					self.upload_fail_response( unique_id, error_messsage );
 					return;

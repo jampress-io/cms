@@ -15,7 +15,7 @@ class Forminator_API {
 
 	public static function initialize() {
 		// If models are not initialized, init the plugin
-		if ( ! class_exists( 'Forminator_Custom_Form_Model' ) ) {
+		if ( ! class_exists( 'Forminator_Form_Model' ) ) {
 			/** @noinspection PhpUnusedLocalVariableInspection */
 			$forminator = forminator();
 		}
@@ -34,7 +34,7 @@ class Forminator_API {
 	 * @param int        $per_page
 	 * @param string     $status (draft,publish,any)
 	 *
-	 * @return Forminator_Custom_Form_Model[]|WP_Error
+	 * @return Forminator_Form_Model[]|WP_Error
 	 */
 	public static function get_forms( $form_ids = null, $page = 1, $per_page = 10, $status = '' ) {
 		// Initialize API
@@ -43,7 +43,7 @@ class Forminator_API {
 		$temp = array();
 
 		if ( is_null( $form_ids ) ) {
-			$temp = Forminator_Custom_Form_Model::model()->get_all_paged( $page, $per_page, $status );
+			$temp = Forminator_Form_Model::model()->get_all_paged( $page, $per_page, $status );
 			if ( isset( $temp['models'] ) && is_array( $temp['models'] ) ) {
 				return $temp['models'];
 			}
@@ -51,11 +51,11 @@ class Forminator_API {
 			return array();
 		} else {
 			if ( ! is_array( $form_ids ) ) {
-				return new WP_Error( 'invalid_arg', __( 'Invalid Arguments', Forminator::DOMAIN ) );
+				return new WP_Error( 'invalid_arg', __( 'Invalid Arguments', 'forminator' ) );
 			}
 
 			foreach ( $form_ids as $form_id ) {
-				$model = self::get_form( $form_id );
+				$model = self::get_module( $form_id );
 				if ( ! empty( $status ) && ! $model instanceof WP_Error && $status === $model->status ) {
 					$temp[] = $model;
 				}
@@ -74,19 +74,33 @@ class Forminator_API {
 	 *
 	 * @param  int $form_id ID of the form
 	 *
-	 * @return Forminator_Custom_Form_Model|WP_Error Custom Form Model on success or WP_Error otherwise
+	 * @return Forminator_Form_Model|WP_Error Custom Form Model on success or WP_Error otherwise
 	 */
 	public static function get_form( $form_id ) {
+		return self::get_module( $form_id );
+	}
+
+	/**
+	 * Returns module object by given ID.
+	 *
+	 * @since  1.2
+	 * @access public
+	 *
+	 * @param  int $module_id ID of the module
+	 *
+	 * @return Forminator_Base_Form_Model|WP_Error Module Model on success or WP_Error otherwise
+	 */
+	public static function get_module( $module_id ) {
 		// Initialize API
 		self::initialize();
 
-		if ( empty( $form_id ) ) {
-			return new WP_Error( 'missing_id', __( 'Form ID is required!', Forminator::DOMAIN ) );
+		if ( empty( $module_id ) ) {
+			return new WP_Error( 'missing_id', __( 'Module ID is required!', 'forminator' ) );
 		}
 
-		$model = Forminator_Custom_Form_Model::model()->load( $form_id );
-		if ( ! $model instanceof Forminator_Custom_Form_Model ) {
-			return new WP_Error( 'custom_form_not_found', __( 'Form Not Found!', Forminator::DOMAIN ) );
+		$model = Forminator_Base_Form_Model::get_model( $module_id );
+		if ( ! $model instanceof Forminator_Base_Form_Model ) {
+			return new WP_Error( 'module_not_found', __( 'Module not found!', 'forminator' ) );
 		}
 
 		return $model;
@@ -103,24 +117,38 @@ class Forminator_API {
 	 * @return bool|WP_Error True when successfully deleted | WP Error
 	 */
 	public static function delete_form( $form_id ) {
+		self::delete_module( $form_id );
+	}
+
+	/**
+	 * Delete module with given ID
+	 *
+	 * @since  1.14.11
+	 * @access public
+	 *
+	 * @param int $module_id ID of the form
+	 *
+	 * @return bool|WP_Error True when successfully deleted | WP Error
+	 */
+	public static function delete_module( $module_id ) {
 		// Initialize API
 		self::initialize();
 
-		$model = Forminator_Custom_Form_Model::model()->load( $form_id );
+		$model = Forminator_Base_Form_Model::get_model( $module_id );
 		if ( is_object( $model ) ) {
 			// Delete form object
-			wp_delete_post( $form_id );
+			wp_delete_post( $module_id );
 
 			// Delete form entries
-			Forminator_Form_Entry_Model::delete_by_form( $form_id );
+			Forminator_Form_Entry_Model::delete_by_form( $module_id );
 
 			// Delete form views
 			$form_view = Forminator_Form_Views_Model::get_instance();
-			$form_view->delete_by_form( $form_id );
+			$form_view->delete_by_form( $module_id );
 
 			return true;
 		} else {
-			return new WP_Error( 'not_found', sprintf( __( 'Can not find a form with id: %s', Forminator::DOMAIN ), $form_id ), $form_id );
+			return new WP_Error( 'not_found', sprintf( __( 'Can not find a module with id: %s', 'forminator' ), $module_id ), $module_id );
 		}
 	}
 
@@ -135,23 +163,37 @@ class Forminator_API {
 	 * @return bool|WP_Error True when successfully deleted | WP Error
 	 */
 	public static function delete_forms( $form_ids ) {
+		self::delete_modules( $form_ids );
+	}
+
+	/**
+	 * Delete modules with given IDs
+	 *
+	 * @since        1.14.11
+	 * @access       public
+	 *
+	 * @param  array|... $module_ids array of Module IDs
+	 *
+	 * @return bool|WP_Error True when successfully deleted | WP Error
+	 */
+	public static function delete_modules( $module_ids ) {
 		// Initialize API
 		self::initialize();
 
-		if ( ! is_array( $form_ids ) ) {
-			$form_ids = func_get_args();
+		if ( ! is_array( $module_ids ) ) {
+			$module_ids = func_get_args();
 		}
 
-		$form_ids = array_map( 'trim', $form_ids );
+		$module_ids = array_map( 'trim', $module_ids );
 
-		if ( is_array( $form_ids ) && ! empty( $form_ids ) ) {
-			foreach ( $form_ids as $id ) {
-				self::delete_form( $id );
+		if ( is_array( $module_ids ) && ! empty( $module_ids ) ) {
+			foreach ( $module_ids as $id ) {
+				self::delete_module( $id );
 			}
 
 			return true;
 		} else {
-			return new WP_Error( 'invalid', __( 'Invalid or empty array with IDs', Forminator::DOMAIN ) );
+			return new WP_Error( 'invalid', __( 'Invalid or empty array with IDs', 'forminator' ) );
 		}
 	}
 
@@ -169,16 +211,16 @@ class Forminator_API {
 	 *
 	 * @return int|WP_Error ID of new form, or WP_Error on failure
 	 */
-	public static function add_form( $name, $wrappers = array(), $settings = array(), $status = Forminator_Custom_Form_Model::STATUS_PUBLISH ) {
+	public static function add_form( $name, $wrappers = array(), $settings = array(), $status = Forminator_Form_Model::STATUS_PUBLISH ) {
 		// Initialize API
 		self::initialize();
 
 		if ( empty( $name ) ) {
-			return new WP_Error( 'missing_name', __( 'Form name is required!', Forminator::DOMAIN ) );
+			return new WP_Error( 'missing_name', __( 'Form name is required!', 'forminator' ) );
 		}
 
 		// Create new form model
-		$model = new Forminator_Custom_Form_Model();
+		$model = new Forminator_Form_Model();
 
 		// Set the post data
 		$settings['formName'] = $name;
@@ -219,7 +261,7 @@ class Forminator_API {
 		$id = $model->save();
 
 		if ( false === $id ) {
-			return new WP_Error( 'form_save_error', __( 'There was a problem saving the form', Forminator::DOMAIN ) );
+			return new WP_Error( 'form_save_error', __( 'There was a problem saving the form', 'forminator' ) );
 		}
 
 		return $id;
@@ -244,14 +286,14 @@ class Forminator_API {
 		self::initialize();
 
 		if ( empty( $id ) ) {
-			return new WP_Error( 'missing_id', __( 'Form ID is required!', Forminator::DOMAIN ) );
+			return new WP_Error( 'missing_id', __( 'Form ID is required!', 'forminator' ) );
 		}
 
 		// Create new form model
-		$model = Forminator_Custom_Form_Model::model()->load( $id );
+		$model = Forminator_Form_Model::model()->load( $id );
 
 		if ( ! is_object( $model ) ) {
-			return new WP_Error( 'missing_object', __( "Form model doesn't exist", Forminator::DOMAIN ) );
+			return new WP_Error( 'missing_object', __( "Form model doesn't exist", 'forminator' ) );
 		}
 
 
@@ -297,7 +339,7 @@ class Forminator_API {
 		$id = $model->save();
 
 		if ( false === $id ) {
-			return new WP_Error( 'form_save_error', __( 'There was a problem updating the form', Forminator::DOMAIN ) );
+			return new WP_Error( 'form_save_error', __( 'There was a problem updating the form', 'forminator' ) );
 		}
 
 		return $id;
@@ -318,14 +360,14 @@ class Forminator_API {
 		self::initialize();
 
 		if ( empty( $id ) ) {
-			return new WP_Error( 'missing_id', __( 'Form ID is required!', Forminator::DOMAIN ) );
+			return new WP_Error( 'missing_id', __( 'Form ID is required!', 'forminator' ) );
 		}
 
 		// Load form model
-		$model = Forminator_Custom_Form_Model::model()->load( $id );
+		$model = Forminator_Form_Model::model()->load( $id );
 
 		if ( ! is_object( $model ) ) {
-			return new WP_Error( 'missing_object', __( "Form model doesn't exist", Forminator::DOMAIN ) );
+			return new WP_Error( 'missing_object', __( "Form model doesn't exist", 'forminator' ) );
 		}
 
 		$fields = $model->get_fields_grouped();
@@ -334,7 +376,7 @@ class Forminator_API {
 			return $fields;
 		}
 
-		return new WP_Error( 'missing_fields', __( "Form has no fields", Forminator::DOMAIN ) );
+		return new WP_Error( 'missing_fields', __( "Form has no fields", 'forminator' ) );
 	}
 
 	/**
@@ -353,18 +395,18 @@ class Forminator_API {
 		self::initialize();
 
 		if ( empty( $form_id ) ) {
-			return new WP_Error( 'missing_form_id', __( 'Form ID is required!', Forminator::DOMAIN ) );
+			return new WP_Error( 'missing_form_id', __( 'Form ID is required!', 'forminator' ) );
 		}
 
 		if ( empty( $id ) ) {
-			return new WP_Error( 'missing_id', __( 'Wrapper ID is required!', Forminator::DOMAIN ) );
+			return new WP_Error( 'missing_id', __( 'Wrapper ID is required!', 'forminator' ) );
 		}
 
 		// Load form model
-		$model = Forminator_Custom_Form_Model::model()->load( $form_id );
+		$model = Forminator_Form_Model::model()->load( $form_id );
 
 		if ( ! is_object( $model ) ) {
-			return new WP_Error( 'missing_object', __( "Form model doesn't exist", Forminator::DOMAIN ) );
+			return new WP_Error( 'missing_object', __( "Form model doesn't exist", 'forminator' ) );
 		}
 
 		$wrapper = $model->get_wrapper( $id );
@@ -373,7 +415,7 @@ class Forminator_API {
 			return $wrapper;
 		}
 
-		return new WP_Error( 'missing_field', __( "Wrapper doesn't exist", Forminator::DOMAIN ) );
+		return new WP_Error( 'missing_field', __( "Wrapper doesn't exist", 'forminator' ) );
 	}
 
 	/**
@@ -419,7 +461,7 @@ class Forminator_API {
 		// remove it, since its not needed for adding fields later
 		unset( $wrapper['position'] );
 
-		$form_model = self::get_form( $form_id );
+		$form_model = self::get_module( $form_id );
 		if ( is_wp_error( $form_model ) ) {
 			return $form_model;
 		}
@@ -450,7 +492,7 @@ class Forminator_API {
 		$form_id = $form_model->save();
 
 		if ( false === $form_id ) {
-			return new WP_Error( 'form_save_error', __( 'There was a problem moving form wrapper', Forminator::DOMAIN ) );
+			return new WP_Error( 'form_save_error', __( 'There was a problem moving form wrapper', 'forminator' ) );
 		}
 
 		return self::get_form_wrapper( $form_id, $id );
@@ -473,18 +515,18 @@ class Forminator_API {
 		self::initialize();
 
 		if ( empty( $form_id ) ) {
-			return new WP_Error( 'missing_form_id', __( 'Form ID is required!', Forminator::DOMAIN ) );
+			return new WP_Error( 'missing_form_id', __( 'Form ID is required!', 'forminator' ) );
 		}
 
 		if ( empty( $id ) ) {
-			return new WP_Error( 'missing_id', __( 'Wrapper ID is required!', Forminator::DOMAIN ) );
+			return new WP_Error( 'missing_id', __( 'Wrapper ID is required!', 'forminator' ) );
 		}
 
 		// Load form model
-		$model = Forminator_Custom_Form_Model::model()->load( $form_id );
+		$model = Forminator_Form_Model::model()->load( $form_id );
 
 		if ( ! is_object( $model ) ) {
-			return new WP_Error( 'missing_object', __( "Form model doesn't exist", Forminator::DOMAIN ) );
+			return new WP_Error( 'missing_object', __( "Form model doesn't exist", 'forminator' ) );
 		}
 
 		$wrapper = $model->get_wrapper( $id );
@@ -501,7 +543,7 @@ class Forminator_API {
 			return true;
 		}
 
-		return new WP_Error( 'missing_field', __( "Wrapper doesn't exist", Forminator::DOMAIN ) );
+		return new WP_Error( 'missing_field', __( "Wrapper doesn't exist", 'forminator' ) );
 	}
 
 	/**
@@ -519,14 +561,14 @@ class Forminator_API {
 		self::initialize();
 
 		if ( empty( $id ) ) {
-			return new WP_Error( 'missing_id', __( 'Form ID is required!', Forminator::DOMAIN ) );
+			return new WP_Error( 'missing_id', __( 'Form ID is required!', 'forminator' ) );
 		}
 
 		// Load form model
-		$model = Forminator_Custom_Form_Model::model()->load( $id );
+		$model = Forminator_Form_Model::model()->load( $id );
 
 		if ( ! is_object( $model ) ) {
-			return new WP_Error( 'missing_object', __( "Form model doesn't exist", Forminator::DOMAIN ) );
+			return new WP_Error( 'missing_object', __( "Form model doesn't exist", 'forminator' ) );
 		}
 
 		$fields = $model->get_fields();
@@ -535,7 +577,7 @@ class Forminator_API {
 			return $fields;
 		}
 
-		return new WP_Error( 'missing_fields', __( "Form has no fields", Forminator::DOMAIN ) );
+		return new WP_Error( 'missing_fields', __( "Form has no fields", 'forminator' ) );
 	}
 
 	/**
@@ -554,14 +596,14 @@ class Forminator_API {
 		self::initialize();
 
 		if ( empty( $id ) ) {
-			return new WP_Error( 'missing_id', __( 'Form ID is required!', Forminator::DOMAIN ) );
+			return new WP_Error( 'missing_id', __( 'Form ID is required!', 'forminator' ) );
 		}
 
 		// Load form model
-		$model = Forminator_Custom_Form_Model::model()->load( $id );
+		$model = Forminator_Form_Model::model()->load( $id );
 
 		if ( ! is_object( $model ) ) {
-			return new WP_Error( 'missing_object', __( "Form model doesn't exist", Forminator::DOMAIN ) );
+			return new WP_Error( 'missing_object', __( "Form model doesn't exist", 'forminator' ) );
 		}
 
 		$fields = $model->get_fields_by_type( $type );
@@ -570,7 +612,7 @@ class Forminator_API {
 			return $fields;
 		}
 
-		return new WP_Error( 'missing_fields', __( "No fields with that type", Forminator::DOMAIN ) );
+		return new WP_Error( 'missing_fields', __( "No fields with that type", 'forminator' ) );
 	}
 
 	/**
@@ -590,18 +632,18 @@ class Forminator_API {
 		self::initialize();
 
 		if ( empty( $form_id ) ) {
-			return new WP_Error( 'missing_form_id', __( 'Form ID is required!', Forminator::DOMAIN ) );
+			return new WP_Error( 'missing_form_id', __( 'Form ID is required!', 'forminator' ) );
 		}
 
 		if ( empty( $id ) ) {
-			return new WP_Error( 'missing_id', __( 'Field ID is required!', Forminator::DOMAIN ) );
+			return new WP_Error( 'missing_id', __( 'Field ID is required!', 'forminator' ) );
 		}
 
 		// Load form model
-		$model = Forminator_Custom_Form_Model::model()->load( $form_id );
+		$model = Forminator_Form_Model::model()->load( $form_id );
 
 		if ( ! is_object( $model ) ) {
-			return new WP_Error( 'missing_object', __( "Form model doesn't exist", Forminator::DOMAIN ) );
+			return new WP_Error( 'missing_object', __( "Form model doesn't exist", 'forminator' ) );
 		}
 
 		$field = $model->get_field( $id, $to_array );
@@ -610,7 +652,7 @@ class Forminator_API {
 			return $field;
 		}
 
-		return new WP_Error( 'missing_field', __( "Field doesn't exist", Forminator::DOMAIN ) );
+		return new WP_Error( 'missing_field', __( "Field doesn't exist", 'forminator' ) );
 	}
 
 	/**
@@ -630,22 +672,22 @@ class Forminator_API {
 		self::initialize();
 
 		if ( empty( $form_id ) ) {
-			return new WP_Error( 'missing_form_id', __( 'Form ID is required!', Forminator::DOMAIN ) );
+			return new WP_Error( 'missing_form_id', __( 'Form ID is required!', 'forminator' ) );
 		}
 
 		if ( empty( $id ) ) {
-			return new WP_Error( 'missing_id', __( 'Field ID is required!', Forminator::DOMAIN ) );
+			return new WP_Error( 'missing_id', __( 'Field ID is required!', 'forminator' ) );
 		}
 
 		if ( empty( $data ) ) {
-			return new WP_Error( 'missing_data', __( 'Field data is required!', Forminator::DOMAIN ) );
+			return new WP_Error( 'missing_data', __( 'Field data is required!', 'forminator' ) );
 		}
 
 		// Load form model
-		$model = Forminator_Custom_Form_Model::model()->load( $form_id );
+		$model = Forminator_Form_Model::model()->load( $form_id );
 
 		if ( ! is_object( $model ) ) {
-			return new WP_Error( 'missing_object', __( "Form model doesn't exist", Forminator::DOMAIN ) );
+			return new WP_Error( 'missing_object', __( "Form model doesn't exist", 'forminator' ) );
 		}
 
 		$field = $model->get_field( $id, false );
@@ -710,22 +752,22 @@ class Forminator_API {
 		self::initialize();
 
 		if ( empty( $form_id ) ) {
-			return new WP_Error( 'missing_form_id', __( 'Form ID is required!', Forminator::DOMAIN ) );
+			return new WP_Error( 'missing_form_id', __( 'Form ID is required!', 'forminator' ) );
 		}
 
 		if ( empty( $type ) ) {
-			return new WP_Error( 'missing_type', __( 'Field Type is required!', Forminator::DOMAIN ) );
+			return new WP_Error( 'missing_type', __( 'Field Type is required!', 'forminator' ) );
 		}
 
 		if ( empty( $data ) ) {
-			return new WP_Error( 'missing_data', __( 'Field data is required!', Forminator::DOMAIN ) );
+			return new WP_Error( 'missing_data', __( 'Field data is required!', 'forminator' ) );
 		}
 
 		// Load form model
-		$model = Forminator_Custom_Form_Model::model()->load( $form_id );
+		$model = Forminator_Form_Model::model()->load( $form_id );
 
 		if ( ! is_object( $model ) ) {
-			return new WP_Error( 'missing_object', __( "Form model doesn't exist", Forminator::DOMAIN ) );
+			return new WP_Error( 'missing_object', __( "Form model doesn't exist", 'forminator' ) );
 		}
 
 		// Generate field ID
@@ -804,7 +846,7 @@ class Forminator_API {
 	 */
 	public static function move_form_field( $form_id, $id, $new_position, $new_wrapper_id = null ) {
 
-		$form = self::get_form( $form_id );
+		$form = self::get_module( $form_id );
 		if ( is_wp_error( $form ) ) {
 			return $form;
 		}
@@ -867,7 +909,7 @@ class Forminator_API {
 		}
 
 		if ( $is_cross_wrapper && count( $new_wrapper['fields'] ) >= self::MAX_CUSTOM_FORM_FIELDS_PER_WRAPPER ) {
-			return new WP_Error( 'target_wrapper_is_full', __( 'Target Wrapper is already full.', Forminator::DOMAIN ), $new_wrapper );
+			return new WP_Error( 'target_wrapper_is_full', __( 'Target Wrapper is already full.', 'forminator' ), $new_wrapper );
 		}
 
 		// validation flag
@@ -884,7 +926,7 @@ class Forminator_API {
 		// should not be happened ever! unless storage directly modified
 		// but just in case... to avoid further fields corruption
 		if ( ! $found_in_wrapper ) {
-			return new WP_Error( 'invalid_field', __( 'Invalid field', Forminator::DOMAIN ), $old_wrapper );
+			return new WP_Error( 'invalid_field', __( 'Invalid field', 'forminator' ), $old_wrapper );
 		}
 
 		// unchanged position
@@ -979,7 +1021,7 @@ class Forminator_API {
 
 			return true;
 		} else {
-			return new WP_Error( 'invalid', __( 'Invalid or empty array with IDs', Forminator::DOMAIN ) );
+			return new WP_Error( 'invalid', __( 'Invalid or empty array with IDs', 'forminator' ) );
 		}
 	}
 
@@ -996,12 +1038,12 @@ class Forminator_API {
 	 */
 	public static function delete_form_field( $form_id, $id ) {
 		// Load form model
-		$model = Forminator_Custom_Form_Model::model()->load( $form_id );
+		$model = Forminator_Form_Model::model()->load( $form_id );
 
 		$wrapper = $model->delete_field( $id );
 
 		if ( false === $wrapper ) {
-			return new WP_Error( 'missing_field', __( "Field doesn't exist", Forminator::DOMAIN ) );
+			return new WP_Error( 'missing_field', __( "Field doesn't exist", 'forminator' ) );
 		}
 
 		$model->update_fields_by_wrapper( $wrapper );
@@ -1010,7 +1052,7 @@ class Forminator_API {
 		$id = $model->save();
 
 		if ( false === $id ) {
-			return new WP_Error( 'form_save_error', __( 'There was a problem saving the form', Forminator::DOMAIN ) );
+			return new WP_Error( 'form_save_error', __( 'There was a problem saving the form', 'forminator' ) );
 		}
 
 		return $id;
@@ -1033,18 +1075,18 @@ class Forminator_API {
 		self::initialize();
 
 		if ( empty( $form_id ) ) {
-			return new WP_Error( 'missing_form_id', __( 'Form ID is required!', Forminator::DOMAIN ) );
+			return new WP_Error( 'missing_form_id', __( 'Form ID is required!', 'forminator' ) );
 		}
 
 		if ( empty( $setting ) ) {
-			return new WP_Error( 'missing_name', __( 'Setting name is required!', Forminator::DOMAIN ) );
+			return new WP_Error( 'missing_name', __( 'Setting name is required!', 'forminator' ) );
 		}
 
 		// Load form model
-		$model = Forminator_Custom_Form_Model::model()->load( $form_id );
+		$model = Forminator_Form_Model::model()->load( $form_id );
 
 		if ( ! is_object( $model ) ) {
-			return new WP_Error( 'missing_object', __( "Form model doesn't exist", Forminator::DOMAIN ) );
+			return new WP_Error( 'missing_object', __( "Form model doesn't exist", 'forminator' ) );
 		}
 
 		// Set the setting
@@ -1072,18 +1114,18 @@ class Forminator_API {
 		self::initialize();
 
 		if ( empty( $form_id ) ) {
-			return new WP_Error( 'missing_form_id', __( 'Form ID is required!', Forminator::DOMAIN ) );
+			return new WP_Error( 'missing_form_id', __( 'Form ID is required!', 'forminator' ) );
 		}
 
 		if ( empty( $settings ) ) {
-			return new WP_Error( 'missing_settings', __( 'No settings', Forminator::DOMAIN ) );
+			return new WP_Error( 'missing_settings', __( 'No settings', 'forminator' ) );
 		}
 
 		// Load form model
-		$model = Forminator_Custom_Form_Model::model()->load( $form_id );
+		$model = Forminator_Form_Model::model()->load( $form_id );
 
 		if ( ! is_object( $model ) ) {
-			return new WP_Error( 'missing_object', __( "Form model doesn't exist", Forminator::DOMAIN ) );
+			return new WP_Error( 'missing_object', __( "Form model doesn't exist", 'forminator' ) );
 		}
 
 		// Load all settings
@@ -1112,7 +1154,7 @@ class Forminator_API {
 	 * @param int         $per_page
 	 * @param string      $status (draft,publish,any)
 	 *
-	 * @return Forminator_Poll_Form_Model[]|WP_Error
+	 * @return Forminator_Poll_Model[]|WP_Error
 	 */
 	public static function get_polls( $poll_ids = null, $page = 1, $per_page = 10, $status = '' ) {
 		// Initialize API
@@ -1121,7 +1163,7 @@ class Forminator_API {
 		$temp = array();
 
 		if ( is_null( $poll_ids ) ) {
-			$temp = Forminator_Poll_Form_Model::model()->get_all_paged( $page, $per_page, $status );
+			$temp = Forminator_Poll_Model::model()->get_all_paged( $page, $per_page, $status );
 			if ( isset( $temp['models'] ) && is_array( $temp['models'] ) ) {
 				return $temp['models'];
 			}
@@ -1129,11 +1171,11 @@ class Forminator_API {
 			return array();
 		} else {
 			if ( ! is_array( $poll_ids ) ) {
-				return new WP_Error( 'invalid_arg', __( 'Invalid Arguments', Forminator::DOMAIN ) );
+				return new WP_Error( 'invalid_arg', __( 'Invalid Arguments', 'forminator' ) );
 			}
 
 			foreach ( $poll_ids as $poll_id ) {
-				$model = self::get_poll( $poll_id );
+				$model = self::get_module( $poll_id );
 				if ( ! empty( $status ) && ! $model instanceof WP_Error && $status === $model->status ) {
 					$temp[] = $model;
 				}
@@ -1151,22 +1193,10 @@ class Forminator_API {
 	 *
 	 * @param int $poll_id ID of the poll
 	 *
-	 * @return Forminator_Poll_Form_Model|WP_Error Forminator_Poll_Form_Model on success, or WP_Error otherwise
+	 * @return Forminator_Poll_Model|WP_Error Forminator_Poll_Model on success, or WP_Error otherwise
 	 */
 	public static function get_poll( $poll_id ) {
-		// Initialize API
-		self::initialize();
-
-		if ( empty( $poll_id ) ) {
-			return new WP_Error( 'missing_id', __( 'Poll ID is required!', Forminator::DOMAIN ) );
-		}
-
-		$model = Forminator_Poll_Form_Model::model()->load( $poll_id );
-		if ( ! $model instanceof Forminator_Poll_Form_Model ) {
-			return new WP_Error( 'poll_not_found', __( 'Poll not found!', Forminator::DOMAIN ) );
-		}
-
-		return $model;
+		return self::get_module( $poll_id );
 	}
 
 	/**
@@ -1180,25 +1210,7 @@ class Forminator_API {
 	 * @return bool|WP_Error True when successfully deleted | WP Error
 	 */
 	public static function delete_poll( $poll_id ) {
-		// Initialize API
-		self::initialize();
-
-		$model = Forminator_Poll_Form_Model::model()->load( $poll_id );
-		if ( is_object( $model ) ) {
-			// Delete form object
-			wp_delete_post( $poll_id );
-
-			// Delete form entries
-			Forminator_Form_Entry_Model::delete_by_form( $poll_id );
-
-			// Delete form views
-			$form_view = Forminator_Form_Views_Model::get_instance();
-			$form_view->delete_by_form( $poll_id );
-
-			return true;
-		} else {
-			return new WP_Error( 'not_found', sprintf( __( 'Can not find a poll with id: %s', Forminator::DOMAIN ), $poll_id ), $poll_id );
-		}
+		self::delete_module( $poll_id );
 	}
 
 	/**
@@ -1212,18 +1224,7 @@ class Forminator_API {
 	 * @return bool|WP_Error True when successfully deleted | WP Error
 	 */
 	public static function delete_polls( $poll_ids ) {
-		// Initialize API
-		self::initialize();
-
-		if ( is_array( $poll_ids ) && ! empty( $poll_ids ) ) {
-			foreach ( $poll_ids as $id ) {
-				self::delete_poll( $id );
-			}
-
-			return true;
-		} else {
-			return new WP_Error( 'invalid', __( 'Invalid or empty array with IDs', Forminator::DOMAIN ) );
-		}
+		self::delete_modules( $poll_ids );
 	}
 
 	/**
@@ -1239,16 +1240,16 @@ class Forminator_API {
 	 *
 	 * @return int|WP_Error ID of new Poll on success, or WP_Error otherwise
 	 */
-	public static function add_poll( $name, $fields = array(), $settings = array(), $status = Forminator_Poll_Form_Model::STATUS_PUBLISH ) {
+	public static function add_poll( $name, $fields = array(), $settings = array(), $status = Forminator_Poll_Model::STATUS_PUBLISH ) {
 		// Initialize API
 		self::initialize();
 
 		if ( empty( $name ) ) {
-			return new WP_Error( 'missing_name', __( 'Poll name is required!', Forminator::DOMAIN ) );
+			return new WP_Error( 'missing_name', __( 'Poll name is required!', 'forminator' ) );
 		}
 
 		// Create new form model
-		$model = new Forminator_Poll_Form_Model();
+		$model = new Forminator_Poll_Model();
 
 		// Set the post data
 		$settings['formName'] = $name;
@@ -1281,7 +1282,7 @@ class Forminator_API {
 		$id = $model->save();
 
 		if ( false === $id ) {
-			return new WP_Error( 'form_save_error', __( 'There was a problem saving the poll', Forminator::DOMAIN ) );
+			return new WP_Error( 'form_save_error', __( 'There was a problem saving the poll', 'forminator' ) );
 		}
 
 		return $id;
@@ -1305,13 +1306,13 @@ class Forminator_API {
 		self::initialize();
 
 		if ( empty( $id ) ) {
-			return new WP_Error( 'missing_id', __( 'Poll ID is required!', Forminator::DOMAIN ) );
+			return new WP_Error( 'missing_id', __( 'Poll ID is required!', 'forminator' ) );
 		}
 
 		// Create new form model
-		$model = Forminator_Poll_Form_Model::model()->load( $id );
+		$model = Forminator_Poll_Model::model()->load( $id );
 		if ( ! is_object( $model ) ) {
-			return new WP_Error( 'missing_object', __( "Poll model doesn't exist", Forminator::DOMAIN ) );
+			return new WP_Error( 'missing_object', __( "Poll model doesn't exist", 'forminator' ) );
 		}
 
 		// Set the post data
@@ -1349,7 +1350,7 @@ class Forminator_API {
 		$id = $model->save();
 
 		if ( false === $id ) {
-			return new WP_Error( 'form_save_error', __( 'There was a problem saving the poll', Forminator::DOMAIN ) );
+			return new WP_Error( 'form_save_error', __( 'There was a problem saving the poll', 'forminator' ) );
 		}
 
 		return $id;
@@ -1369,7 +1370,7 @@ class Forminator_API {
 	 * @param int        $per_page
 	 * @param string     $status
 	 *
-	 * @return Forminator_Quiz_Form_Model[]|WP_Error
+	 * @return Forminator_Quiz_Model[]|WP_Error
 	 */
 	public static function get_quizzes( $quiz_ids = null, $page = 1, $per_page = 10, $status = '' ) {
 		// Initialize API
@@ -1378,7 +1379,7 @@ class Forminator_API {
 		$temp = array();
 
 		if ( is_null( $quiz_ids ) ) {
-			$temp = Forminator_Quiz_Form_Model::model()->get_all_paged( $page, $per_page, $status );
+			$temp = Forminator_Quiz_Model::model()->get_all_paged( $page, $per_page, $status );
 			if ( isset( $temp['models'] ) && is_array( $temp['models'] ) ) {
 				return $temp['models'];
 			}
@@ -1386,11 +1387,11 @@ class Forminator_API {
 			return array();
 		} else {
 			if ( ! is_array( $quiz_ids ) ) {
-				return new WP_Error( 'invalid_arg', __( 'Invalid Arguments', Forminator::DOMAIN ) );
+				return new WP_Error( 'invalid_arg', __( 'Invalid Arguments', 'forminator' ) );
 			}
 
 			foreach ( $quiz_ids as $quiz_id ) {
-				$model = self::get_quiz( $quiz_id );
+				$model = self::get_module( $quiz_id );
 				if ( ! empty( $status ) && ! $model instanceof WP_Error && $status === $model->status ) {
 					$temp[] = $model;
 				}
@@ -1408,23 +1409,10 @@ class Forminator_API {
 	 *
 	 * @param int $quiz_id ID of the Quiz
 	 *
-	 * @return Forminator_Quiz_Form_Model|WP_Error, Quiz Object on success, or WP_Error otherwise
+	 * @return Forminator_Quiz_Model|WP_Error, Quiz Object on success, or WP_Error otherwise
 	 */
 	public static function get_quiz( $quiz_id ) {
-		// Initialize API
-		self::initialize();
-
-		if ( empty( $quiz_id ) ) {
-			return new WP_Error( 'missing_id', __( 'Quiz ID is required!', Forminator::DOMAIN ) );
-		}
-
-		$model = Forminator_Quiz_Form_Model::model()->load( $quiz_id );
-
-		if ( ! $model instanceof Forminator_Quiz_Form_Model ) {
-			return new WP_Error( 'quiz_not_found', __( 'Quiz Not Found!', Forminator::DOMAIN ) );
-		}
-
-		return $model;
+		return self::get_module( $quiz_id );
 	}
 
 	/**
@@ -1438,25 +1426,7 @@ class Forminator_API {
 	 * @return bool|WP_Error True when successfully deleted | WP Error
 	 */
 	public static function delete_quiz( $quiz_id ) {
-		// Initialize API
-		self::initialize();
-
-		$model = Forminator_Quiz_Form_Model::model()->load( $quiz_id );
-		if ( is_object( $model ) ) {
-			// Delete form object
-			wp_delete_post( $quiz_id );
-
-			// Delete form entries
-			Forminator_Form_Entry_Model::delete_by_form( $quiz_id );
-
-			// Delete form views
-			$form_view = Forminator_Form_Views_Model::get_instance();
-			$form_view->delete_by_form( $quiz_id );
-
-			return true;
-		} else {
-			return new WP_Error( 'not_found', sprintf( __( 'Can not find a poll with id: %s', Forminator::DOMAIN ), $quiz_id ), $quiz_id );
-		}
+		self::delete_module( $quiz_id );
 	}
 
 	/**
@@ -1470,18 +1440,7 @@ class Forminator_API {
 	 * @return bool|WP_Error True when successfully deleted | WP Error
 	 */
 	public static function delete_quizzes( $quiz_ids ) {
-		// Initialize API
-		self::initialize();
-
-		if ( is_array( $quiz_ids ) && ! empty( $quiz_ids ) ) {
-			foreach ( $quiz_ids as $id ) {
-				self::delete_quiz( $id );
-			}
-
-			return true;
-		} else {
-			return new WP_Error( 'invalid', __( 'Invalid or empty array with IDs', Forminator::DOMAIN ) );
-		}
+		self::delete_modules( $quiz_ids );
 	}
 
 	/**
@@ -1505,16 +1464,16 @@ class Forminator_API {
 		self::initialize();
 
 		if ( empty( $name ) ) {
-			return new WP_Error( 'missing_name', __( 'Quiz name is required!', Forminator::DOMAIN ) );
+			return new WP_Error( 'missing_name', __( 'Quiz name is required!', 'forminator' ) );
 		}
 
 		if ( empty( $type ) ) {
-			return new WP_Error( 'missing_type', __( 'Quiz type is required!', Forminator::DOMAIN ) );
+			return new WP_Error( 'missing_type', __( 'Quiz type is required!', 'forminator' ) );
 		}
 
 
 		// Create new form model
-		$model = new Forminator_Quiz_Form_Model();
+		$model = new Forminator_Quiz_Model();
 
 		// Set the post data
 		$settings['formName'] = $name;
@@ -1546,7 +1505,7 @@ class Forminator_API {
 		$id = $model->save();
 
 		if ( false === $id ) {
-			return new WP_Error( 'quiz_save_error', __( 'There was a problem saving the quiz', Forminator::DOMAIN ) );
+			return new WP_Error( 'quiz_save_error', __( 'There was a problem saving the quiz', 'forminator' ) );
 		}
 
 		return $id;
@@ -1572,14 +1531,14 @@ class Forminator_API {
 		self::initialize();
 
 		if ( empty( $id ) ) {
-			return new WP_Error( 'missing_id', __( 'Quiz ID is required!', Forminator::DOMAIN ) );
+			return new WP_Error( 'missing_id', __( 'Quiz ID is required!', 'forminator' ) );
 		}
 
 		// Create new form model
-		/** @var Forminator_Quiz_Form_Model $model */
-		$model = Forminator_Quiz_Form_Model::model()->load( $id );
+		/** @var Forminator_Quiz_Model $model */
+		$model = Forminator_Quiz_Model::model()->load( $id );
 		if ( ! is_object( $model ) ) {
-			return new WP_Error( 'missing_object', __( "Quiz model doesn't exist", Forminator::DOMAIN ) );
+			return new WP_Error( 'missing_object', __( "Quiz model doesn't exist", 'forminator' ) );
 		}
 
 		// Set the post data
@@ -1607,12 +1566,12 @@ class Forminator_API {
 		if ( $status ) {
 			$model->status = $status;
 		}
-		
+
 		// Save the form
 		$id = $model->save();
 
 		if ( false === $id ) {
-			return new WP_Error( 'quiz_save_error', __( 'There was a problem saving the quiz', Forminator::DOMAIN ) );
+			return new WP_Error( 'quiz_save_error', __( 'There was a problem saving the quiz', 'forminator' ) );
 		}
 
 		return $id;
@@ -1637,7 +1596,7 @@ class Forminator_API {
 
 		// Check if Form ID is set
 		if ( empty( $form_id ) ) {
-			return new WP_Error( 'missing_form_id', __( 'Form ID is required!', Forminator::DOMAIN ) );
+			return new WP_Error( 'missing_form_id', __( 'Form ID is required!', 'forminator' ) );
 		}
 
 		return Forminator_Form_Entry_Model::get_entries( $form_id );
@@ -1659,12 +1618,12 @@ class Forminator_API {
 
 		// Check if Form ID is set
 		if ( empty( $form_id ) ) {
-			return new WP_Error( 'missing_form_id', __( 'Form ID is required!', Forminator::DOMAIN ) );
+			return new WP_Error( 'missing_form_id', __( 'Form ID is required!', 'forminator' ) );
 		}
 
 		// Check if Entry ID is set
 		if ( empty( $entry_id ) ) {
-			return new WP_Error( 'missing_entry_id', __( 'Entry ID is required!', Forminator::DOMAIN ) );
+			return new WP_Error( 'missing_entry_id', __( 'Entry ID is required!', 'forminator' ) );
 		}
 
 		return new Forminator_Form_Entry_Model( $entry_id );
@@ -1688,16 +1647,16 @@ class Forminator_API {
 
 		// Check if Form ID is set
 		if ( empty( $form_id ) ) {
-			return new WP_Error( 'missing_form_id', __( 'Form ID is required!', Forminator::DOMAIN ) );
+			return new WP_Error( 'missing_form_id', __( 'Form ID is required!', 'forminator' ) );
 		}
 
 		// Check if Entry ID is set
 		if ( empty( $entry_id ) ) {
-			return new WP_Error( 'missing_entry_id', __( 'Entry ID is required!', Forminator::DOMAIN ) );
+			return new WP_Error( 'missing_entry_id', __( 'Entry ID is required!', 'forminator' ) );
 		}
 
 		// Delete entry
-		Forminator_Form_Entry_Model::delete_by_entry( $form_id, $entry_id );
+		Forminator_Form_Entry_Model::delete_by_entry( $entry_id );
 
 		return true;
 	}
@@ -1720,12 +1679,12 @@ class Forminator_API {
 
 		// Check if Form ID is set
 		if ( empty( $form_id ) ) {
-			return new WP_Error( 'missing_form_id', __( 'Form ID is required!', Forminator::DOMAIN ) );
+			return new WP_Error( 'missing_form_id', __( 'Form ID is required!', 'forminator' ) );
 		}
 
 		// Check if Entry ID is set
 		if ( empty( $entries_ids ) ) {
-			return new WP_Error( 'missing_entry_id', __( 'Entry IDs are required!', Forminator::DOMAIN ) );
+			return new WP_Error( 'missing_entry_id', __( 'Entry IDs are required!', 'forminator' ) );
 		}
 
 		// Check if entries ids are array and convert to string
@@ -1756,7 +1715,7 @@ class Forminator_API {
 
 		// Check if Form ID is set
 		if ( empty( $form_id ) ) {
-			return new WP_Error( 'missing_form_id', __( 'Form ID is required!', Forminator::DOMAIN ) );
+			return new WP_Error( 'missing_form_id', __( 'Form ID is required!', 'forminator' ) );
 		}
 
 		return Forminator_Form_Entry_Model::count_entries( $form_id );
@@ -1994,7 +1953,7 @@ class Forminator_API {
 	 */
 	public static function add_form_entry( $form_id, $entry_meta ) {
 		// validating form module
-		$model = self::get_form( $form_id );
+		$model = self::get_module( $form_id );
 		if ( is_wp_error( $model ) ) {
 			return $model;
 		}
@@ -2017,7 +1976,7 @@ class Forminator_API {
 	 */
 	public static function add_form_entries( $form_id, $entry_metas ) {
 		// validating form module
-		$model = self::get_form( $form_id );
+		$model = self::get_module( $form_id );
 		if ( is_wp_error( $model ) ) {
 			return $model;
 		}
@@ -2039,7 +1998,7 @@ class Forminator_API {
 	 */
 	public static function update_form_entry( $form_id, $entry_id, $entry_meta ) {
 		// validating form module
-		$model = self::get_form( $form_id );
+		$model = self::get_module( $form_id );
 		if ( is_wp_error( $model ) ) {
 			return $model;
 		}
@@ -2060,7 +2019,7 @@ class Forminator_API {
 	 */
 	public static function add_poll_entry( $poll_id, $entry_meta ) {
 		// validating poll module
-		$model = self::get_poll( $poll_id );
+		$model = self::get_module( $poll_id );
 		if ( is_wp_error( $model ) ) {
 			return $model;
 		}
@@ -2083,7 +2042,7 @@ class Forminator_API {
 	 */
 	public static function add_poll_entries( $poll_id, $entry_metas ) {
 		// validating poll module
-		$model = self::get_poll( $poll_id );
+		$model = self::get_module( $poll_id );
 		if ( is_wp_error( $model ) ) {
 			return $model;
 		}
@@ -2105,7 +2064,7 @@ class Forminator_API {
 	 */
 	public static function update_poll_entry( $poll_id, $entry_id, $entry_meta ) {
 		// validating poll module
-		$model = self::get_poll( $poll_id );
+		$model = self::get_module( $poll_id );
 		if ( is_wp_error( $model ) ) {
 			return $model;
 		}
@@ -2126,7 +2085,7 @@ class Forminator_API {
 	 */
 	public static function add_quiz_entry( $quiz_id, $entry_meta ) {
 		// validating quiz module
-		$model = self::get_quiz( $quiz_id );
+		$model = self::get_module( $quiz_id );
 		if ( is_wp_error( $model ) ) {
 			return $model;
 		}
@@ -2149,7 +2108,7 @@ class Forminator_API {
 	 */
 	public static function add_quiz_entries( $quiz_id, $entry_metas ) {
 		// validating quiz module
-		$model = self::get_quiz( $quiz_id );
+		$model = self::get_module( $quiz_id );
 		if ( is_wp_error( $model ) ) {
 			return $model;
 		}
@@ -2171,7 +2130,7 @@ class Forminator_API {
 	 */
 	public static function update_quiz_entry( $quiz_id, $entry_id, $entry_meta ) {
 		// validating quiz module
-		$model = self::get_quiz( $quiz_id );
+		$model = self::get_module( $quiz_id );
 		if ( is_wp_error( $model ) ) {
 			return $model;
 		}
@@ -2204,7 +2163,7 @@ class Forminator_API {
 		);
 
 		if ( ! in_array( $entry_type, $entry_types, true ) ) {
-			return new WP_Error( 'invalid_entry_type', __( 'Invalid entry type.', Forminator::DOMAIN ) );
+			return new WP_Error( 'invalid_entry_type', __( 'Invalid entry type.', 'forminator' ) );
 		}
 
 		$entry             = new Forminator_Form_Entry_Model();
@@ -2213,13 +2172,13 @@ class Forminator_API {
 		$entry_saved       = $entry->save();
 
 		if ( ! $entry_saved || empty( $entry->entry_id ) ) {
-			return new WP_Error( 'save_entry_error', __( 'Failed to save entry.', Forminator::DOMAIN ) );
+			return new WP_Error( 'save_entry_error', __( 'Failed to save entry.', 'forminator' ) );
 		}
 
 		$meta_saved = $entry->set_fields( $entry_meta );
 
 		if ( ! $meta_saved ) {
-			return new WP_Error( 'save_entry_meta_error', __( 'Failed to save entry meta.', Forminator::DOMAIN ) );
+			return new WP_Error( 'save_entry_meta_error', __( 'Failed to save entry meta.', 'forminator' ) );
 		}
 
 		return $entry->entry_id;
@@ -2282,11 +2241,11 @@ class Forminator_API {
 		}
 
 		if ( empty( $entry->entry_id ) ) {
-			return new WP_Error( 'entry_not_found', __( 'Entry not found.', Forminator::DOMAIN ) );
+			return new WP_Error( 'entry_not_found', __( 'Entry not found.', 'forminator' ) );
 		}
 
 		if ( (int) $module_id !== (int) $entry->form_id ) {
-			return new WP_Error( 'entry_not_valid', __( 'Entry is not valid for module.', Forminator::DOMAIN ) );
+			return new WP_Error( 'entry_not_valid', __( 'Entry is not valid for module.', 'forminator' ) );
 		}
 
 		$current_meta_data = $entry->meta_data;
@@ -2323,7 +2282,7 @@ class Forminator_API {
 		if ( ! empty( $new_entry_meta ) ) {
 			$new_meta_saved = $entry->set_fields( $new_entry_meta );
 			if ( ! $new_meta_saved ) {
-				return new WP_Error( 'save_new_entry_meta_error', __( 'Failed to save new entry meta.', Forminator::DOMAIN ), $new_entry_meta );
+				return new WP_Error( 'save_new_entry_meta_error', __( 'Failed to save new entry meta.', 'forminator' ), $new_entry_meta );
 			}
 		}
 

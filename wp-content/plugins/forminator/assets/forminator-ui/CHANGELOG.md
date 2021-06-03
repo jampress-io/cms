@@ -1,3 +1,36 @@
+v1.9.4
+- 🐛 fix(phone field): Fix flag selector positioning for phone field when using material style.
+- 🐛 fix(unordered list): Unordered list does not have bullets in admin preview.
+
+v1.9.3
+- 🐛 fix(textarea): Text editor shows up on error even if visual editor is selected.
+
+v1.9.2
+- fix(select2): Select field has space between dropdown and field.
+
+v1.9.1
+- 🐛 fix(select2): Wrong selection arrow size.
+- 🐛 fix(multiselect): Page jumps when selecting an option.
+
+
+v1.9.0
+- [Fix] Forms UI: Change dropdown parent when inside SUI dialog.
+- [Enhance] Forms UI: Upgrade to Select2 4.1.0-rc.0.
+
+
+v1.8.15
+- [Fix] Forms UI: File import not found or unreadable.
+
+
+v1.8.14
+- [Fix] Forms UI: Split Select2 in different stylesheets.
+- [Fix] Forms UI: Remove old select styles.
+
+
+v1.8.13
+- [Fix] Forms UI: reCAPTCHA 3 not showing up with Divi themes.
+
+
 v1.8.12
 - [Fix] Forms UI: Minify Select2.
 

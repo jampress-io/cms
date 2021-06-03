@@ -16,7 +16,7 @@ foreach ( $template_vars as $key => $val ) {
 	<h3 class="sui-box-title" id="dialogTitle2">
 		<?php
 			/* translators: ... */
-			echo esc_html( sprintf( __( 'Connect %1$s', Forminator::DOMAIN ), 'AWeber' ) );
+			echo esc_html( sprintf( __( 'Connect %1$s', 'forminator' ), 'AWeber' ) );
 		?>
 	</h3>
 
@@ -25,12 +25,12 @@ foreach ( $template_vars as $key => $val ) {
 			<p>
 				<?php
 					/* translators: ... */
-					echo esc_html( sprintf( __( 'Your %1$s account is already authorized.', Forminator::DOMAIN ), 'AWeber' ) );
+					echo esc_html( sprintf( __( 'Your %1$s account is already authorized.', 'forminator' ), 'AWeber' ) );
 				?>
 			</p>
 		</div>
 	<?php else : ?>
-		<span class="sui-description" style="margin-top: 20px;"><?php esc_html_e( 'Authorize Forminator to connect with your AWeber account in order to send data from your forms.', Forminator::DOMAIN ); ?></span>
+		<span class="sui-description" style="margin-top: 20px;"><?php esc_html_e( 'Authorize Forminator to connect with your AWeber account in order to send data from your forms.', 'forminator' ); ?></span>
 	<?php endif; ?>
 
 </div>
@@ -42,7 +42,7 @@ foreach ( $template_vars as $key => $val ) {
 		<a href="<?php echo esc_attr( $vars['auth_url'] ); ?>"
 			target="_blank"
 			class="sui-button sui-button-blue forminator-addon-connect">
-			<?php esc_html_e( 'Authorize', Forminator::DOMAIN ); ?>
+			<?php esc_html_e( 'Authorize', 'forminator' ); ?>
 		</a>
 
 	</div>
@@ -50,5 +50,5 @@ foreach ( $template_vars as $key => $val ) {
 <?php endif; ?>
 
 <?php if ( $vars['is_connected'] ) : ?>
-	<button class="sui-button sui-button-ghost forminator-addon-disconnect"><?php esc_html_e( 'Disconnect', Forminator::DOMAIN ); ?></button>
+	<button class="sui-button sui-button-ghost forminator-addon-disconnect"><?php esc_html_e( 'Disconnect', 'forminator' ); ?></button>
 <?php endif; ?>

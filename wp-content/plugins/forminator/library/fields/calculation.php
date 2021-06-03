@@ -65,7 +65,7 @@ class Forminator_Calculation extends Forminator_Field {
 	public function __construct() {
 		parent::__construct();
 
-		$this->name = __( 'Calculations', Forminator::DOMAIN );
+		$this->name = __( 'Calculations', 'forminator' );
 	}
 
 	/**
@@ -76,7 +76,7 @@ class Forminator_Calculation extends Forminator_Field {
 	 */
 	public function defaults() {
 		return array(
-			'field_label' => __( 'Calculations', Forminator::DOMAIN ),
+			'field_label' => __( 'Calculations', 'forminator' ),
 		);
 	}
 
@@ -253,7 +253,7 @@ class Forminator_Calculation extends Forminator_Field {
 	 * @return string
 	 */
 	public static function default_error_message() {
-		$message = __( 'Failed to calculate field.', Forminator::DOMAIN );
+		$message = __( 'Failed to calculate field.', 'forminator' );
 
 		/**
 		 * Filter default error message
@@ -279,13 +279,13 @@ class Forminator_Calculation extends Forminator_Field {
 	 * @param array                        $submitted_data
 	 * @param array                        $field_settings
 	 *
-	 * @param Forminator_Custom_Form_Model $custom_form
+	 * @param Forminator_Form_Model $custom_form
 	 *
 	 * @return string
 	 */
-	public function get_converted_formula( $submitted_data, $field_settings, $custom_form ) {
+	public function get_converted_formula( $submitted_data, $field_settings, $custom_form, $hidden_fields = array() ) {
 		$formula           = $this->get_calculable_value( $submitted_data, $field_settings );
-		$converted_formula = forminator_calculator_maybe_replace_fields_on_formula( $formula, $submitted_data, $custom_form );
+		$converted_formula = forminator_calculator_maybe_replace_fields_on_formula( $formula, $submitted_data, $custom_form, $hidden_fields );
 
 		/**
 		 * Filter converted formula from calculation field
@@ -295,7 +295,7 @@ class Forminator_Calculation extends Forminator_Field {
 		 * @param string                       $converted_formula
 		 * @param array                        $field_settings
 		 * @param array                        $submitted_data
-		 * @param Forminator_Custom_Form_Model $custom_form
+		 * @param Forminator_Form_Model $custom_form
 		 */
 		$converted_formula = apply_filters( 'forminator_field_calculation_converted_formula', $converted_formula, $field_settings, $submitted_data, $custom_form );
 
@@ -315,6 +315,7 @@ class Forminator_Calculation extends Forminator_Field {
 	 * @throws Forminator_Calculator_Exception
 	 */
 	public function get_calculated_value( $converted_formula, $submitted_data, $field_settings ) {
+		$has_paypal = false;
 		$precision = $this->get_calculable_precision( $submitted_data, $field_settings );
 
 		$calculator = new Forminator_Calculator( $converted_formula );
@@ -323,7 +324,23 @@ class Forminator_Calculation extends Forminator_Field {
 		$result = $calculator->calculate();
 
 		$result = floatval( $result );
-		$result = round( $result, $precision );
+
+		// Check if has paypal
+		foreach ( $submitted_data as $key => $val ) {
+			if ( false !== strpos( $key, 'paypal-' ) ) {
+				$has_paypal = true;
+			}
+		}
+
+		if ( $has_paypal ) {
+			$result = round( $result, $precision, PHP_ROUND_HALF_DOWN );
+		} else {
+			$result = round( $result, $precision );
+		}
+
+		if ( is_finite( $result ) && $precision > 0 ) {
+			$result = number_format( $result, $precision, '.', ',' );
+		}
 
 		/**
 		 * Filter Calculated value of calculation field

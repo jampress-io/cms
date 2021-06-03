@@ -73,6 +73,7 @@ class Prevent_PHP extends Component {
 			'successReason'    => __( 'You\'ve disabled PHP execution, good stuff.', 'wpdef' ),
 			'misc'             => [
 				'active_server'  => Server::get_current_server(),
+				'apache_rules'   => Server::create( 'apache' )->from( $this->slug )->get_rules_for_instruction(),
 				'nginx_rules'    => Server::create( 'nginx' )->from( $this->slug )->get_rules(),
 				'wp_content_dir' => WP_CONTENT_DIR
 			],

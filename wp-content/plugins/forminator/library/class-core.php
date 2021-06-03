@@ -239,6 +239,10 @@ class Forminator_Core {
 			/* @noinspection PhpIncludeInspection */
 			include_once forminator_plugin_dir() . 'admin/abstracts/class-admin-page.php';
 			/* @noinspection PhpIncludeInspection */
+			include_once forminator_plugin_dir() . 'admin/abstracts/class-admin-view-page.php';
+			/* @noinspection PhpIncludeInspection */
+			include_once forminator_plugin_dir() . 'admin/abstracts/class-admin-module-edit-page.php';
+			/* @noinspection PhpIncludeInspection */
 			include_once forminator_plugin_dir() . 'admin/abstracts/class-admin-module.php';
 			/* @noinspection PhpIncludeInspection */
 			include_once forminator_plugin_dir() . 'admin/abstracts/class-admin-import-mediator.php';
@@ -286,7 +290,7 @@ class Forminator_Core {
 			if ( $is_forminator_meta ) {
 				add_meta_box(
 					'forminator-post-meta-box',
-					__( 'Post Custom Data', Forminator::DOMAIN ),
+					__( 'Post Custom Data', 'forminator' ),
 					array( $this, 'render_post_meta_box' ),
 					$post->post_type,
 					'normal',

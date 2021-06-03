@@ -4,8 +4,8 @@ namespace WP_Defender\Controller;
 
 use Calotes\Component\Request;
 use Calotes\Component\Response;
+use WP_Defender\Component\Config\Config_Hub_Helper;
 use WP_Defender\Component\Security_Tweaks\Servers\Server;
-use WP_Defender\Controller;
 use Calotes\Helper\Array_Cache;
 use WP_Defender\Component\Security_Tweaks\WP_Version;
 use WP_Defender\Component\Security_Tweaks\Hide_Error;
@@ -131,6 +131,7 @@ class Security_Tweaks extends Controller2 {
 		}
 
 		if ( true === $ret ) {
+			Config_Hub_Helper::set_clear_active_flag();
 			$this->model->mark( self::STATUS_RESOLVE, $slug );
 			$this->ajax_response( __( 'Security recommendation successfully resolved.', 'wpdef' ) );
 		}
@@ -189,6 +190,7 @@ class Security_Tweaks extends Controller2 {
 			$this->ajax_response( $ret->get_error_message(), false );
 		}
 		if ( true === $ret ) {
+			Config_Hub_Helper::set_clear_active_flag();
 			$this->model->mark( self::STATUS_ISSUES, $slug );
 			$this->ajax_response( __( 'Security recommendation successfully reverted.', 'wpdef' ) );
 		}
@@ -444,6 +446,8 @@ class Security_Tweaks extends Controller2 {
 				),
 				$processed
 			);
+
+			Config_Hub_Helper::set_clear_active_flag();
 		}
 		$this->ajax_response( $message );
 	}

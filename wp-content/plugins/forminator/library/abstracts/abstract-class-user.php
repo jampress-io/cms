@@ -250,24 +250,6 @@ abstract class Forminator_User {
 	}
 
 	/**
-	 * Remove a password field.
-	 *
-	 * @param array $field_data_array
-	 *
-	 * @return array
-	 */
-	public function remove_password( $field_data_array ) {
-		foreach ( $field_data_array as $key => $field_arr ) {
-			if ( false !== stripos( $field_arr['name'], 'password-' ) ) {
-				unset( $field_data_array[ $key ] );
-				break;
-			}
-		}
-
-		return $field_data_array;
-	}
-
-	/**
 	 * Change the settings by saving the specified HTML tags
 	 *
 	 * @param array $sanitized_settings

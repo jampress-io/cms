@@ -80,8 +80,12 @@ class Notfound_Lockout extends Component {
 
 	private function is_bing_ua( $user_agent = '' ) {
 		if ( empty( $user_agent ) ) {
-			$user_agent = isset( $_SERVER['HTTP_USER_AGENT'] ) ? $_SERVER['HTTP_USER_AGENT'] : null;
+			if ( empty( $_SERVER['HTTP_USER_AGENT'] ) ) {
+				return false;
+			}
+			$user_agent = $_SERVER['HTTP_USER_AGENT'];
 		}
+
 		if ( function_exists( 'mb_strtolower' ) ) {
 			$user_agent = mb_strtolower( $user_agent, 'UTF-8' );
 		} else {

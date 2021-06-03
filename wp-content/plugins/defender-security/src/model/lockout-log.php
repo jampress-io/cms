@@ -221,9 +221,11 @@ class Lockout_Log extends DB {
 
 	/**
 	 * Get the last time a lockout happen
+	 * @param false $for_hub
+	 *
 	 * @return false|string
 	 */
-	public static function get_last_lockout_date() {
+	public static function get_last_lockout_date( $for_hub = false ) {
 		$data = self::query_logs(
 			array(
 				'from' => strtotime( '-30 days' ),
@@ -239,7 +241,9 @@ class Lockout_Log extends DB {
 			return 'n/a';
 		}
 
-		return $last->format_date_time( $last->date );
+		return $for_hub
+			? $last->persistent_hub_datetime_format( $last->date )
+			: $last->format_date_time( $last->date );
 	}
 
 	/**
@@ -258,22 +262,17 @@ class Lockout_Log extends DB {
 	 * Remove data by time period
 	 *
 	 * @param int $timestamp
-	 * @param int|null $limit
+	 * @param int $limit
 	 *
 	 * @return void
 	 */
-	public static function remove_logs( $timestamp, $limit = null ) {
-		$orm     = self::get_orm();
-		$builder = $orm->get_repository( self::class );
-		$builder->where( 'date', '<=', $timestamp );
-
-		if ( empty( $limit ) ) {
-			$builder->delete_all();
-		} else {
-			$builder->order_by( 'id' )
-				->limit( $limit )
-				->delete_by_limit();
-		}
+	public static function remove_logs( $timestamp, $limit ) {
+		$orm = self::get_orm();
+		$orm->get_repository( self::class )
+			->where( 'date', '<=', $timestamp )
+			->order_by( 'id' )
+			->limit( $limit )
+			->delete_by_limit();
 	}
 
 	/**

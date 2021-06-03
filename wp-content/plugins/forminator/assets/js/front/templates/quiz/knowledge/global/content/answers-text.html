@@ -1,8 +1,8 @@
 /* ELEMENT: Quiz Answers (Text) */
-.forminator-ui.forminator-quiz-<?php echo $properties['form_id'] ?> .forminator-answer .forminator-answer--name {
+.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-answer .forminator-answer--name {
 	<?php if ( forminator_array_value_exists( $properties, 'knowledge-toggle-palette' ) ) { ?>
-		<?php if ( forminator_array_value_exists( $properties, 'knowledge-answer-color' ) ) { ?>
-			color: <?php echo $properties['knowledge-answer-color'] ?>;
+		<?php if ( forminator_array_value_exists( $properties, 'knowledge-answer-color-static' ) ) { ?>
+			color: <?php echo $properties['knowledge-answer-color-static'] ?>;
 		<?php } else { ?>
 			color: #888888;
 		<?php } ?>
@@ -17,10 +17,10 @@
 		<?php } ?>
 		<?php if ( forminator_array_value_exists( $properties, 'knowledge-answer-font-family' ) ) { ?>
 			<?php if ( $properties['knowledge-answer-font-family'] != 'custom' ) { ?>
-				font-family: <?php echo $properties['knowledge-answer-font-family'] ?>;
+				font-family: "<?php echo $properties['knowledge-answer-font-family'] ?>";
 			<?php } else { ?>
 				<?php if ( ! empty( $properties['knowledge-answer-custom-family'] ) ) { ?>
-					font-family: <?php echo $properties['knowledge-answer-custom-family'] ?>;
+					font-family: "<?php echo $properties['knowledge-answer-custom-family'] ?>";
 				<?php } ?>
 			<?php } ?>
 		<?php } ?>
@@ -35,7 +35,7 @@
 	<?php } ?>
 }
 
-.forminator-ui.forminator-quiz-<?php echo $properties['form_id'] ?> .forminator-answer input:checked + .forminator-answer--design .forminator-answer--name {
+.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-answer input:checked + .forminator-answer--design .forminator-answer--name {
 	<?php if ( forminator_array_value_exists( $properties, 'knowledge-toggle-palette' ) ) { ?>
 		<?php if ( forminator_array_value_exists( $properties, 'knowledge-answer-color-active' ) ) { ?>
 			color: <?php echo $properties['knowledge-answer-color-active'] ?>;
@@ -47,7 +47,7 @@
 	<?php } ?>
 }
 
-.forminator-quiz-<?php echo $properties['form_id'] ?>.forminator-design--default .forminator-answer.forminator-is_correct input:checked + .forminator-answer--design .forminator-answer--name {
+.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-answer.forminator-is_correct input:checked + .forminator-answer--design .forminator-answer--name {
 	<?php if ( forminator_array_value_exists( $properties, 'knowledge-toggle-palette' ) ) { ?>
 		<?php if ( forminator_array_value_exists( $properties, 'knowledge-aright-color' ) ) { ?>
 			color: <?php echo $properties['knowledge-aright-color'] ?>;
@@ -59,7 +59,7 @@
 	<?php } ?>
 }
 
-.forminator-quiz-<?php echo $properties['form_id'] ?>.forminator-design--default .forminator-answer.forminator-is_incorrect input:checked + .forminator-answer--design .forminator-answer--name {
+.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-answer.forminator-is_incorrect input:checked + .forminator-answer--design .forminator-answer--name {
 	<?php if ( forminator_array_value_exists( $properties, 'knowledge-toggle-palette' ) ) { ?>
 		<?php if ( forminator_array_value_exists( $properties, 'knowledge-awrong-color' ) ) { ?>
 			color: <?php echo $properties['knowledge-awrong-color'] ?>;

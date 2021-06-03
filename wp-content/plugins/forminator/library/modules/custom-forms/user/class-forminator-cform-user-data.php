@@ -33,7 +33,7 @@ class Forminator_CForm_User_Data {
 	 * @return string JSON
 	 */
 	public function approve_user() {
-		forminator_validate_ajax( 'forminatorCustomFormEntries' );
+		forminator_validate_ajax( 'forminatorFormEntries' );
 
 		if ( isset( $_POST['activation_key'] ) ) {
 			$activation_key = sanitize_text_field( $_POST['activation_key'] );// phpcs:ignore Standard.Category.SniffName.ErrorCode
@@ -52,7 +52,7 @@ class Forminator_CForm_User_Data {
 				wp_send_json_error( $e->getMessage() );
 			}
 		} else {
-			wp_send_json_error( __( 'Invalid activation key.', Forminator::DOMAIN ) );
+			wp_send_json_error( __( 'Invalid activation key.', 'forminator' ) );
 		}
 	}
 
@@ -62,7 +62,7 @@ class Forminator_CForm_User_Data {
 	 * @return string JSON
 	 */
 	public function delete_unconfirmed_user() {
-		forminator_validate_ajax( 'forminatorCustomFormEntries' );
+		forminator_validate_ajax( 'forminatorFormEntries' );
 
 		if ( isset( $_POST['activation_key'] ) ) {
 			$activation_key = sanitize_text_field( $_POST['activation_key'] );// phpcs:ignore Standard.Category.SniffName.ErrorCode
@@ -78,15 +78,15 @@ class Forminator_CForm_User_Data {
 
 				$entry_id = ( isset( $_POST['entry_id'] ) && ! empty( $_POST['entry_id'] ) ) ? sanitize_text_field( $_POST['entry_id'] ) : false;
 				if ( ! $entry_id ) {
-					wp_send_json_error( __( 'Invalid entry ID.', Forminator::DOMAIN ) );
+					wp_send_json_error( __( 'Invalid entry ID.', 'forminator' ) );
 				}
 				$form_id = ( isset( $_POST['form_id'] ) && ! empty( $_POST['form_id'] ) ) ? sanitize_text_field( $_POST['form_id'] ) : false;
 				if ( ! $form_id ) {
-					wp_send_json_error( __( 'Invalid form ID.', Forminator::DOMAIN ) );
+					wp_send_json_error( __( 'Invalid form ID.', 'forminator' ) );
 				}
 
 				if ( false === Forminator_Form_Entry_Model::delete_by_entrys( $form_id, $entry_id ) ) {
-					wp_send_json_error( __( 'Error! Entry was not deleted.', Forminator::DOMAIN ) );
+					wp_send_json_error( __( 'Error! Entry was not deleted.', 'forminator' ) );
 				}
 
 				wp_send_json_success();
@@ -95,7 +95,7 @@ class Forminator_CForm_User_Data {
 				wp_send_json_error( $e->getMessage() );
 			}
 		} else {
-			wp_send_json_error( __( 'Invalid activation key.', Forminator::DOMAIN ) );
+			wp_send_json_error( __( 'Invalid activation key.', 'forminator' ) );
 		}
 	}
 

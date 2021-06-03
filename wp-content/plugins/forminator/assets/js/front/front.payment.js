@@ -102,7 +102,7 @@
 
 			// Listen for fields change to update ZIP mapping
 			this.$el.find(
-				'input.forminator-input, .forminator-select, .forminator-checkbox, .forminator-radio, .forminator-select2'
+				'input.forminator-input, .forminator-checkbox, .forminator-radio, select.forminator-select2'
 			).each(function () {
 				$(this).on('change', function (e) {
 					self.mapZip(e);
@@ -545,6 +545,9 @@
 							},
 							':hover': {
 								iconColor: this.getStripeData( 'iconColorHover' ),
+							},
+							':focus': {
+								iconColor: this.getStripeData( 'iconColorFocus' ),
 							}
 						},
 						invalid: {

@@ -22,9 +22,9 @@ foreach ( $template_vars as $key => $val ) {
 ?>
 <div class="integration-header">
 
-	<h3 id="dialogTitle2" class="sui-box-title"><?php echo esc_html( __( 'Create Ticket', Forminator::DOMAIN ) ); ?></h3>
+	<h3 id="dialogTitle2" class="sui-box-title"><?php echo esc_html( __( 'Create Ticket', 'forminator' ) ); ?></h3>
 
-	<p class="sui-description" style="max-width: 400px; margin: 20px auto 0; line-height: 22px;"><?php esc_html_e( 'In addition to adding a new contact to your HubSpot account, you can also create a HubSpot ticket for each quiz lead submission.', Forminator::DOMAIN ); ?></p>
+	<p class="sui-description" style="max-width: 400px; margin: 20px auto 0; line-height: 22px;"><?php esc_html_e( 'In addition to adding a new contact to your HubSpot account, you can also create a HubSpot ticket for each quiz lead submission.', 'forminator' ); ?></p>
 
 	<?php if ( ! empty( $vars['error_message'] ) ) : ?>
 		<span class="sui-notice sui-notice-error"><p><?php echo esc_html( $vars['error_message'] ); ?></p></span>
@@ -48,7 +48,7 @@ foreach ( $template_vars as $key => $val ) {
 			<span class="sui-toggle-slider"></span>
 		</label>
 
-		<label for="create-ticket" id="create-ticket-label" class="sui-toggle-label"><?php esc_html_e( 'Create a HubSpot ticket for each submission', Forminator::DOMAIN ); ?></label>
+		<label for="create-ticket" id="create-ticket-label" class="sui-toggle-label"><?php esc_html_e( 'Create a HubSpot ticket for each submission', 'forminator' ); ?></label>
 
 	</div>
 
@@ -61,16 +61,16 @@ foreach ( $template_vars as $key => $val ) {
 	>
 		<?php if ( empty( $vars['re-authorize'] ) && ! empty( $vars['token'] ) ) { ?>
             <div class="sui-notice sui-notice-info">
-                <p style="margin-bottom: 5px;"><strong><?php esc_html_e( 'Authorize Forminator to access HubSpot tickets', Forminator::DOMAIN ); ?></strong></p>
-				<p style="margin-top: 5px; margin-bottom: 10px;"><?php esc_html_e( 'Forminator requires additional permissions to create HubSpot tickets. Note that you will be taken to HubSpot website to grant Forminator access to HubSpot tickets and redirected back here.', Forminator::DOMAIN ); ?></p>
-                <p style="margin-top: 10px;"><a href="<?php echo esc_attr( $vars['auth_url'] ); ?>" target="_blank" class="sui-button sui-button-primary forminator-addon-connect"><?php esc_html_e( 'Authorize', Forminator::DOMAIN ); ?></a></p>
+                <p style="margin-bottom: 5px;"><strong><?php esc_html_e( 'Authorize Forminator to access HubSpot tickets', 'forminator' ); ?></strong></p>
+				<p style="margin-top: 5px; margin-bottom: 10px;"><?php esc_html_e( 'Forminator requires additional permissions to create HubSpot tickets. Note that you will be taken to HubSpot website to grant Forminator access to HubSpot tickets and redirected back here.', 'forminator' ); ?></p>
+                <p style="margin-top: 10px;"><a href="<?php echo esc_attr( $vars['auth_url'] ); ?>" target="_blank" class="sui-button sui-button-primary forminator-addon-connect"><?php esc_html_e( 'Authorize', 'forminator' ); ?></a></p>
             </div>
 		<?php } else { ?>
 
 		<!-- FIELD: Pipeline -->
 		<div class="sui-form-field">
 
-			<label for="hubspot-support-request" id="hubspot-support-request-label" class="sui-label"><?php esc_html_e( 'Pipeline', Forminator::DOMAIN ); ?></label>
+			<label for="hubspot-support-request" id="hubspot-support-request-label" class="sui-label"><?php esc_html_e( 'Pipeline', 'forminator' ); ?></label>
 
 			<select
 				name="pipeline_id"
@@ -107,7 +107,7 @@ foreach ( $template_vars as $key => $val ) {
 		<!-- FIELD: Ticket Status -->
 		<div class="sui-form-field">
 
-			<label for="hubspot-ticket-status" id="hubspot-ticket-status-label" class="sui-label"><?php esc_html_e( 'Ticket Status', Forminator::DOMAIN ); ?></label>
+			<label for="hubspot-ticket-status" id="hubspot-ticket-status-label" class="sui-label"><?php esc_html_e( 'Ticket Status', 'forminator' ); ?></label>
 
 			<select
 				name="status_id"
@@ -151,8 +151,8 @@ foreach ( $template_vars as $key => $val ) {
 		<div class="sui-form-field<?php echo ( ! empty( $vars['ticket_name_error'] ) ) ? ' sui-form-field-error' : ''; ?>">
 
 			<label for="ticket-name-input" id="ticket-name-input-label" class="sui-label">
-				<?php esc_html_e( 'Ticket Name', Forminator::DOMAIN ); ?>
-				<span class="sui-label-note"><?php esc_html_e( 'Use the "+" icon to add form fields', Forminator::DOMAIN ); ?></span>
+				<?php esc_html_e( 'Ticket Name', 'forminator' ); ?>
+				<span class="sui-label-note"><?php esc_html_e( 'Use the "+" icon to add form fields', 'forminator' ); ?></span>
 			</label>
 
 			<div class="sui-insert-variables">
@@ -169,7 +169,7 @@ foreach ( $template_vars as $key => $val ) {
 				/>
 
                     <select id="select-ticket-name" class="select-field">
-                        <option value="{quiz_name}" data-content="{quiz_name}"><?php esc_html_e( 'Quiz Name', Forminator::DOMAIN ); ?></option>
+                        <option value="{quiz_name}" data-content="{quiz_name}"><?php esc_html_e( 'Quiz Name', 'forminator' ); ?></option>
 						<?php
 						if ( ! empty( $vars['form_fields'] ) ) :
 
@@ -202,8 +202,8 @@ foreach ( $template_vars as $key => $val ) {
 		<div class="sui-form-field">
 
 			<label for="ticket-description" id="ticket-description-label" class="sui-label">
-				<?php esc_html_e( 'Ticket Description (optional)', Forminator::DOMAIN ); ?>
-				<span class="sui-label-note"><?php esc_html_e( 'Use the "+" icon to add form fields', Forminator::DOMAIN ); ?></span>
+				<?php esc_html_e( 'Ticket Description (optional)', 'forminator' ); ?>
+				<span class="sui-label-note"><?php esc_html_e( 'Use the "+" icon to add form fields', 'forminator' ); ?></span>
 			</label>
 
 			<div class="sui-insert-variables">
@@ -219,7 +219,7 @@ foreach ( $template_vars as $key => $val ) {
 				</textarea>
 
                     <select id="select-ticket-description" class="select-field">
-                        <option value="{quiz_name}" data-content="{quiz_name}"><?php esc_html_e( 'Quiz Name', Forminator::DOMAIN ); ?></option>
+                        <option value="{quiz_name}" data-content="{quiz_name}"><?php esc_html_e( 'Quiz Name', 'forminator' ); ?></option>
 						<?php
 						if ( ! empty( $vars['form_fields'] ) ) :
 
@@ -243,7 +243,7 @@ foreach ( $template_vars as $key => $val ) {
 		<!-- FIELD: Supported File -->
 		<div class="sui-form-field">
 
-			<label for="hubspot-support-file" id="hubspot-support-file-label" class="sui-label"><?php esc_html_e( 'Supported File (optional)', Forminator::DOMAIN ); ?></label>
+			<label for="hubspot-support-file" id="hubspot-support-file-label" class="sui-label"><?php esc_html_e( 'Supported File (optional)', 'forminator' ); ?></label>
 
 			<select
 				name="supported_file"
@@ -252,7 +252,7 @@ foreach ( $template_vars as $key => $val ) {
 				aria-labelledby="hubspot-support-file-label"
 			>
 
-				<option value=""><?php esc_html_e( 'Select a file upload field', Forminator::DOMAIN ); ?></option>
+				<option value=""><?php esc_html_e( 'Select a file upload field', 'forminator' ); ?></option>
 
 				<?php
 				$file_selected = $vars['supported_file'];

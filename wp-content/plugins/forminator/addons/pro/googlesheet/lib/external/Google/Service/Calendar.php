@@ -1611,12 +1611,12 @@ class Forminator_Google_Service_Calendar_Events_Resource extends Forminator_Goog
    * default is to return all entries.
    * @opt_param string timeMax Upper bound (exclusive) for an event's start time
    * to filter by. Optional. The default is not to filter by start time. Must be
-   * an RFC3339 timestamp with mandatory time zone offset, e.g.,
+   * an RFC3339 timestamp with mandatory time zone offset, e.g.
    * 2011-06-03T10:00:00-07:00, 2011-06-03T10:00:00Z. Milliseconds may be provided
    * but will be ignored.
    * @opt_param string timeMin Lower bound (inclusive) for an event's end time to
    * filter by. Optional. The default is not to filter by end time. Must be an
-   * RFC3339 timestamp with mandatory time zone offset, e.g.,
+   * RFC3339 timestamp with mandatory time zone offset, e.g.
    * 2011-06-03T10:00:00-07:00, 2011-06-03T10:00:00Z. Milliseconds may be provided
    * but will be ignored.
    * @opt_param string timeZone Time zone used in the response. Optional. The
@@ -1807,12 +1807,12 @@ class Forminator_Google_Service_Calendar_Events_Resource extends Forminator_Goog
    * default is to return all entries.
    * @opt_param string timeMax Upper bound (exclusive) for an event's start time
    * to filter by. Optional. The default is not to filter by start time. Must be
-   * an RFC3339 timestamp with mandatory time zone offset, e.g.,
+   * an RFC3339 timestamp with mandatory time zone offset, e.g.
    * 2011-06-03T10:00:00-07:00, 2011-06-03T10:00:00Z. Milliseconds may be provided
    * but will be ignored.
    * @opt_param string timeMin Lower bound (inclusive) for an event's end time to
    * filter by. Optional. The default is not to filter by end time. Must be an
-   * RFC3339 timestamp with mandatory time zone offset, e.g.,
+   * RFC3339 timestamp with mandatory time zone offset, e.g.
    * 2011-06-03T10:00:00-07:00, 2011-06-03T10:00:00Z. Milliseconds may be provided
    * but will be ignored.
    * @opt_param string timeZone Time zone used in the response. Optional. The

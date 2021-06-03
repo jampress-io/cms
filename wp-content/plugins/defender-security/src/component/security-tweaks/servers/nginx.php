@@ -73,6 +73,7 @@ class Nginx {
 				$wp_content  = str_replace( $_SERVER['DOCUMENT_ROOT'], '', WP_CONTENT_DIR );
 			}
 
+			$rules .= "## WP Defender - Prevent PHP Execution ##" . PHP_EOL;
 			$rules .= PHP_EOL;
 			$rules .= "# Stop php access except to needed files in wp-includes" . PHP_EOL;
 			$rules .= "location ~* ^$wp_includes/.*(?<!(js/tinymce/wp-tinymce))\.php$ {" . PHP_EOL;
@@ -89,6 +90,8 @@ class Nginx {
 			$rules .= "location ~* ^$wp_content/.*\.php$ {" . PHP_EOL;
 			$rules .= "  deny all;" . PHP_EOL;
 			$rules .= "}" . PHP_EOL;
+			$rules .= PHP_EOL;
+			$rules .= "## WP Defender - End ##";
 		}
 
 		if ( 'protect-information' === $this->type ) {
@@ -97,6 +100,8 @@ class Nginx {
 			} else {
 				$wp_content  = str_replace( $_SERVER['DOCUMENT_ROOT'], '', WP_CONTENT_DIR );
 			}
+			$rules .= '## WP Defender - Prevent information disclosure ##';
+			$rules .= PHP_EOL;
 			$rules .= '# Turn off directory indexing autoindex off;' . PHP_EOL;
 			$rules .= PHP_EOL;
 			$rules .= '# Deny access to htaccess and other hidden files' . PHP_EOL;
@@ -113,6 +118,8 @@ class Nginx {
 			$rules .= "location ~* ^$wp_content/.*\.(md|exe|sh|bak|inc|pot|po|mo|log|sql)$ {" . PHP_EOL;
 			$rules .= '  deny all;' . PHP_EOL;
 			$rules .= '}' . PHP_EOL;
+			$rules .= '## WP Defender - End ##';
+			$rules .= PHP_EOL;
 		}
 
 		return $rules;

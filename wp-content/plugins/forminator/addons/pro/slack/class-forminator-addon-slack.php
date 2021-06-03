@@ -21,7 +21,7 @@ final class Forminator_Addon_Slack extends Forminator_Addon_Abstract {
 	protected $_min_forminator_version = '1.1';
 	protected $_short_title            = 'Slack';
 	protected $_title                  = 'Slack';
-	protected $_url                    = 'https://premium.wpmudev.org';
+	protected $_url                    = 'https://wpmudev.com';
 	protected $_full_path              = __FILE__;
 
 	protected $_form_settings = 'Forminator_Addon_Slack_Form_Settings';
@@ -55,13 +55,13 @@ final class Forminator_Addon_Slack extends Forminator_Addon_Abstract {
 	 */
 	public function __construct() {
 		// late init to allow translation
-		$this->_description                = __( 'Get awesome by your form.', Forminator::DOMAIN );
-		$this->_activation_error_message   = __( 'Sorry but we failed to activate Slack Integration, don\'t hesitate to contact us', Forminator::DOMAIN );
-		$this->_deactivation_error_message = __( 'Sorry but we failed to deactivate Slack Integration, please try again', Forminator::DOMAIN );
+		$this->_description                = __( 'Get awesome by your form.', 'forminator' );
+		$this->_activation_error_message   = __( 'Sorry but we failed to activate Slack Integration, don\'t hesitate to contact us', 'forminator' );
+		$this->_deactivation_error_message = __( 'Sorry but we failed to deactivate Slack Integration, please try again', 'forminator' );
 
 		$this->_update_settings_error_message = __(
 			'Sorry, we failed to update settings, please check your form and try again',
-			Forminator::DOMAIN
+			'forminator'
 		);
 
 		$this->_icon     = forminator_addon_slack_assets_url() . 'icons/slack.png';
@@ -97,7 +97,7 @@ final class Forminator_Addon_Slack extends Forminator_Addon_Abstract {
 		try {
 			// check if its active
 			if ( ! $this->is_active() ) {
-				throw new Forminator_Addon_Slack_Exception( __( 'Slack is not active', Forminator::DOMAIN ) );
+				throw new Forminator_Addon_Slack_Exception( __( 'Slack is not active', 'forminator' ) );
 			}
 
 			// if user completed api setup
@@ -137,17 +137,17 @@ final class Forminator_Addon_Slack extends Forminator_Addon_Abstract {
 		try {
 			$form_settings_instance = null;
 			if ( ! $this->is_connected() ) {
-				throw new Forminator_Addon_Slack_Exception( __( ' Slack is not connected', Forminator::DOMAIN ) );
+				throw new Forminator_Addon_Slack_Exception( __( ' Slack is not connected', 'forminator' ) );
 			}
 
 			$form_settings_instance = $this->get_addon_form_settings( $form_id );
 			if ( ! $form_settings_instance instanceof Forminator_Addon_Slack_Form_Settings ) {
-				throw new Forminator_Addon_Slack_Exception( __( 'Invalid Form Settings of Slack', Forminator::DOMAIN ) );
+				throw new Forminator_Addon_Slack_Exception( __( 'Invalid Form Settings of Slack', 'forminator' ) );
 			}
 
 			// Mark as active when there is at least one active connection
 			if ( false === $form_settings_instance->find_one_active_connection() ) {
-				throw new Forminator_Addon_Slack_Exception( __( 'No active Slack connection found in this form', Forminator::DOMAIN ) );
+				throw new Forminator_Addon_Slack_Exception( __( 'No active Slack connection found in this form', 'forminator' ) );
 			}
 
 			$is_form_connected = true;
@@ -278,14 +278,14 @@ final class Forminator_Addon_Slack extends Forminator_Addon_Abstract {
 		$buttons = array();
 		if ( $this->is_connected() ) {
 			$buttons['disconnect']     = array(
-				'markup' => self::get_button_markup( esc_html__( 'Disconnect', Forminator::DOMAIN ), 'sui-button-ghost forminator-addon-disconnect' ),
+				'markup' => self::get_button_markup( esc_html__( 'Disconnect', 'forminator' ), 'sui-button-ghost forminator-addon-disconnect' ),
 			);
 			$buttons['next']['markup'] = '<div class="sui-actions-right">' .
-										self::get_button_markup( esc_html__( 'RE-AUTHORIZE', Forminator::DOMAIN ), 'forminator-addon-next' ) .
+										self::get_button_markup( esc_html__( 'RE-AUTHORIZE', 'forminator' ), 'forminator-addon-next' ) .
 										'</div>';
 		} else {
 			$buttons['next']['markup'] = '<div class="sui-actions-right">' .
-										self::get_button_markup( esc_html__( 'Next', Forminator::DOMAIN ), 'forminator-addon-next' ) .
+										self::get_button_markup( esc_html__( 'Next', 'forminator' ), 'forminator-addon-next' ) .
 										'</div>';
 		}
 
@@ -330,12 +330,12 @@ final class Forminator_Addon_Slack extends Forminator_Addon_Abstract {
 			$client_secret = isset( $submitted_data['client_secret'] ) ? $submitted_data['client_secret'] : '';
 
 			if ( empty( $client_id ) ) {
-				$template_params['client_id_error'] = __( 'Please input valid Client ID', Forminator::DOMAIN );
+				$template_params['client_id_error'] = __( 'Please input valid Client ID', 'forminator' );
 				$has_errors                         = true;
 			}
 
 			if ( empty( $client_secret ) ) {
-				$template_params['client_secret_error'] = __( 'Please input valid Client Secret', Forminator::DOMAIN );
+				$template_params['client_secret_error'] = __( 'Please input valid Client Secret', 'forminator' );
 				$has_errors                             = true;
 			}
 
@@ -398,7 +398,7 @@ final class Forminator_Addon_Slack extends Forminator_Addon_Abstract {
 		$buttons = array();
 		if ( $this->is_connected() ) {
 			$buttons['disconnect'] = array(
-				'markup' => self::get_button_markup( esc_html__( 'DISCONNECT', Forminator::DOMAIN ), 'sui-button-ghost forminator-addon-disconnect' ),
+				'markup' => self::get_button_markup( esc_html__( 'DISCONNECT', 'forminator' ), 'sui-button-ghost forminator-addon-disconnect' ),
 			);
 		}
 
@@ -443,7 +443,7 @@ final class Forminator_Addon_Slack extends Forminator_Addon_Abstract {
 
 		if ( $this->_token ) {
 			$buttons['close'] = array(
-				'markup' => self::get_button_markup( esc_html__( 'Close', Forminator::DOMAIN ), 'sui-button-ghost forminator-addon-close' ),
+				'markup' => self::get_button_markup( esc_html__( 'Close', 'forminator' ), 'sui-button-ghost forminator-addon-close' ),
 			);
 			$is_poll          = false;
 
@@ -654,7 +654,7 @@ final class Forminator_Addon_Slack extends Forminator_Addon_Abstract {
 				}
 
 				if ( empty( $token ) ) {
-					throw new Forminator_Addon_Slack_Exception( __( 'Failed to get token', Forminator::DOMAIN ) );
+					throw new Forminator_Addon_Slack_Exception( __( 'Failed to get token', 'forminator' ) );
 				}
 
 				if ( ! $this->is_active() ) {
@@ -673,7 +673,7 @@ final class Forminator_Addon_Slack extends Forminator_Addon_Abstract {
 				$template_params['error_message'] = $e->getMessage();
 			}
 		} else {
-			$template_params['error_message'] = __( 'Failed to get authorization code.', Forminator::DOMAIN );
+			$template_params['error_message'] = __( 'Failed to get authorization code.', 'forminator' );
 			// todo : translate $query_args[error]
 			$settings['auth_error_message'] = $template_params['error_message'];
 			$this->save_settings_values( $settings );

@@ -31,6 +31,11 @@ class Mapper extends Component {
 	/**
 	 * @var string
 	 */
+	private $group = '';
+
+	/**
+	 * @var string
+	 */
 	private $order = '';
 
 	/**
@@ -135,6 +140,22 @@ class Mapper extends Component {
 	public function find_by_id( $id ) {
 		global $wpdb;
 		$this->where[] = $wpdb->prepare( 'id = %d', $id );
+
+		return $this;
+	}
+
+	/**
+	 * @param string $group_by
+	 *
+	 * @return $this
+	 */
+	public function group_by( $group_by ) {
+		global $wpdb;
+		$this->group = str_replace(
+			"'",
+			"",
+			$wpdb->prepare( 'GROUP BY %s', $group_by )
+		);
 
 		return $this;
 	}
@@ -304,6 +325,7 @@ class Mapper extends Component {
 
 		$where = implode( ' AND ', $this->where );
 		$sql   = "DELETE FROM $table WHERE $where";
+		$this->clear();
 
 		return $wpdb->query( $sql );
 	}
@@ -319,6 +341,7 @@ class Mapper extends Component {
 		$limit = $this->limit;
 		$order = $this->order;
 		$sql   = "DELETE FROM $table WHERE $where $order $limit";
+		$this->clear();
 
 		return $wpdb->query( $sql );
 	}
@@ -363,6 +386,7 @@ class Mapper extends Component {
 	 */
 	private function clear() {
 		$this->where = array();
+		$this->group = '';
 		$this->order = '';
 		$this->limit = '';
 	}
@@ -379,9 +403,10 @@ class Mapper extends Component {
 		$table = $this->table();
 		$where = implode( ' AND ', $this->where );
 
-		$order_by = $this->order;
-		$limit    = $this->limit;
-		$sql      = "SELECT $select FROM $table WHERE $where $order_by $limit";
+		$group_by    = $this->group;
+		$order_by    = $this->order;
+		$limit       = $this->limit;
+		$sql         = "SELECT $select FROM $table WHERE $where $group_by $order_by $limit";
 		$this->clear();
 
 		return $sql;

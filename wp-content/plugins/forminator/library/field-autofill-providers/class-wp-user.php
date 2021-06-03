@@ -32,27 +32,27 @@ class Forminator_WP_User_Autofill_Provider extends Forminator_Autofill_Provider_
 	public function __construct() {
 		$attributes_map = array(
 			'display_name' => array(
-				'name'         => __( 'Display Name', Forminator::DOMAIN ),
+				'name'         => __( 'Display Name', 'forminator' ),
 				'value_getter' => array( $this, 'get_value_display_name' ),
 			),
 			'first_name'   => array(
-				'name'         => __( 'First Name', Forminator::DOMAIN ),
+				'name'         => __( 'First Name', 'forminator' ),
 				'value_getter' => array( $this, 'get_value_firstname' ),
 			),
 			'last_name'    => array(
-				'name'         => __( 'Last Name', Forminator::DOMAIN ),
+				'name'         => __( 'Last Name', 'forminator' ),
 				'value_getter' => array( $this, 'get_value_lastname' ),
 			),
 			'description'  => array(
-				'name'         => __( 'Description', Forminator::DOMAIN ),
+				'name'         => __( 'Description', 'forminator' ),
 				'value_getter' => array( $this, 'get_value_description' ),
 			),
 			'email'        => array(
-				'name'         => __( 'Email', Forminator::DOMAIN ),
+				'name'         => __( 'Email', 'forminator' ),
 				'value_getter' => array( $this, 'get_value_email' ),
 			),
 			'login'        => array(
-				'name'         => __( 'Username', Forminator::DOMAIN ),
+				'name'         => __( 'Username', 'forminator' ),
 				'value_getter' => array( $this, 'get_value_login' ),
 			),
 		);

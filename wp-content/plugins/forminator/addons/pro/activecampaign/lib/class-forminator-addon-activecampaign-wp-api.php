@@ -60,11 +60,11 @@ class Forminator_Addon_Activecampaign_Wp_Api {
 	public function __construct( $_endpoint, $_api_key ) {
 		//prerequisites
 		if ( ! $_endpoint ) {
-			throw new Forminator_Addon_Activecampaign_Wp_Api_Exception( __( 'Missing required API URL', Forminator::DOMAIN ) );
+			throw new Forminator_Addon_Activecampaign_Wp_Api_Exception( __( 'Missing required API URL', 'forminator' ) );
 		}
 
 		if ( ! $_api_key ) {
-			throw new Forminator_Addon_Activecampaign_Wp_Api_Exception( __( 'Missing required API Key', Forminator::DOMAIN ) );
+			throw new Forminator_Addon_Activecampaign_Wp_Api_Exception( __( 'Missing required API Key', 'forminator' ) );
 		}
 
 		$this->_endpoint = $_endpoint;
@@ -178,7 +178,7 @@ class Forminator_Addon_Activecampaign_Wp_Api {
 		if ( is_wp_error( $res ) || ! $res ) {
 			forminator_addon_maybe_log( __METHOD__, $res );
 			throw new Forminator_Addon_Activecampaign_Wp_Api_Exception(
-				__( 'Failed to process request, make sure your API URL and API KEY are correct and your server has internet connection.', Forminator::DOMAIN )
+				__( 'Failed to process request, make sure your API URL and API KEY are correct and your server has internet connection.', 'forminator' )
 			);
 		}
 
@@ -192,10 +192,10 @@ class Forminator_Addon_Activecampaign_Wp_Api {
 
 				if ( 404 === $status_code ) {
 					/* translators: ... */
-					throw new Forminator_Addon_Activecampaign_Wp_Api_Not_Found_Exception( sprintf( __( 'Failed to processing request : %s', Forminator::DOMAIN ), $msg ) );
+					throw new Forminator_Addon_Activecampaign_Wp_Api_Not_Found_Exception( sprintf( __( 'Failed to process request : %s', 'forminator' ), $msg ) );
 				}
 				/* translators: ... */
-				throw new Forminator_Addon_Activecampaign_Wp_Api_Exception( sprintf( __( 'Failed to processing request : %s', Forminator::DOMAIN ), $msg ) );
+				throw new Forminator_Addon_Activecampaign_Wp_Api_Exception( sprintf( __( 'Failed to process request : %s', 'forminator' ), $msg ) );
 			}
 		}
 
@@ -213,7 +213,7 @@ class Forminator_Addon_Activecampaign_Wp_Api {
 						$message = ' ' . $res->result_message;
 					}
 					/* translators: ... */
-					throw new Forminator_Addon_Activecampaign_Wp_Api_Exception( sprintf( __( 'Failed to get ActiveCampaign data.%1$s', Forminator::DOMAIN ), $message ) );
+					throw new Forminator_Addon_Activecampaign_Wp_Api_Exception( sprintf( __( 'Failed to get ActiveCampaign data.%1$s', 'forminator' ), $message ) );
 				}
 			}
 		}
@@ -394,7 +394,7 @@ class Forminator_Addon_Activecampaign_Wp_Api {
 		$args = array_merge( $default_args, $args );
 
 		if ( empty( $args['email'] ) ) {
-			throw new Forminator_Addon_Activecampaign_Wp_Api_Exception( __( 'Required email parameter not set', Forminator::DOMAIN ) );
+			throw new Forminator_Addon_Activecampaign_Wp_Api_Exception( __( 'Required email parameter not set', 'forminator' ) );
 		}
 
 		return $this->request(
@@ -427,7 +427,7 @@ class Forminator_Addon_Activecampaign_Wp_Api {
 		$args = array_merge( $default_args, $args );
 
 		if ( empty( $args['id'] ) ) {
-			throw new Forminator_Addon_Activecampaign_Wp_Api_Exception( __( 'Required id parameter not set for contact_delete.', Forminator::DOMAIN ) );
+			throw new Forminator_Addon_Activecampaign_Wp_Api_Exception( __( 'Required id parameter not set for contact_delete.', 'forminator' ) );
 		}
 
 		return $this->request(

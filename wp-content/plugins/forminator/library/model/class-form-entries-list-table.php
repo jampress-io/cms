@@ -64,7 +64,7 @@ class Forminator_Entries_List_Table extends WP_List_Table {
 	 * @since 1.0
 	 */
 	public function no_items() {
-		esc_html_e( 'No entries found.', Forminator::DOMAIN );
+		esc_html_e( 'No entries found.', 'forminator' );
 	}
 
 	/**
@@ -76,7 +76,7 @@ class Forminator_Entries_List_Table extends WP_List_Table {
 	public function get_columns() {
 		$columns = array(
 			'cb'   => '<input type="checkbox" />',
-			'date' => esc_html__( 'Date added', Forminator::DOMAIN ),
+			'date' => esc_html__( 'Date added', 'forminator' ),
 		);
 
 		if ( ! empty( $this->visible_fields ) && ! in_array( 'date', $this->visible_fields, true ) ) {
@@ -288,7 +288,7 @@ class Forminator_Entries_List_Table extends WP_List_Table {
 					if ( is_array( $value ) ) {
 						if ( 'file' === $key && isset( $value['file_url'] ) ) {
 							$file_name = basename( $value['file_url'] );
-							$file_name = "<a href='" . $value['file_url'] . "' target='_blank' rel='noreferrer' title='" . __( 'View File', Forminator::DOMAIN ) . "'>$file_name</a> ,";
+							$file_name = "<a href='" . $value['file_url'] . "' target='_blank' rel='noreferrer' title='" . __( 'View File', 'forminator' ) . "'>$file_name</a> ,";
 							$output   .= $file_name;
 						}
 					} else {
@@ -296,7 +296,7 @@ class Forminator_Entries_List_Table extends WP_List_Table {
 							if ( 'postdata' === $key ) {
 								$url     = get_edit_post_link( $value );
 								$name    = get_the_title( $value );
-								$output .= "<a href='" . $url . "' target='_blank' rel='noreferrer' title='" . __( 'Edit Post', Forminator::DOMAIN ) . "'>$name</a> ,";
+								$output .= "<a href='" . $url . "' target='_blank' rel='noreferrer' title='" . __( 'Edit Post', 'forminator' ) . "'>$name</a> ,";
 							} else {
 								if ( is_string( $key ) ) {
 									if ( 'product-id' === $key || 'product-quantity' === $key ) {
@@ -315,7 +315,7 @@ class Forminator_Entries_List_Table extends WP_List_Table {
 					}
 				}
 				if ( $is_product ) {
-					$output = sprintf( /* translators: ... */ __( 'Total %d', Forminator::DOMAIN ), $product_cost );
+					$output = sprintf( /* translators: ... */ __( 'Total %d', 'forminator' ), $product_cost );
 				} else {
 					if ( ! empty( $output ) ) {
 						$output = substr( trim( $output ), 0, -1 );

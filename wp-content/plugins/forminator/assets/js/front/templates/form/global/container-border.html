@@ -1,6 +1,6 @@
 <?php if ( forminator_array_value_exists( $properties, 'form-border' ) ) { ?>
 
-	.forminator-custom-form-<?php echo $properties['form_id'] ?> {
+	#forminator-module-<?php echo $properties['form_id'] ?> {
 		<?php if ( forminator_array_value_exists( $properties, 'form-border-width' ) ) { ?>
 			border-width: <?php echo $properties['form-border-width'] ?>px;
 		<?php } else { ?>
@@ -24,7 +24,7 @@
 
 <?php } else { ?>
 
-	.forminator-custom-form-<?php echo $properties['form_id'] ?> {
+	#forminator-module-<?php echo $properties['form_id'] ?> {
 		border-width: 0;
 		border-style: none;
 		border-radius: 0;

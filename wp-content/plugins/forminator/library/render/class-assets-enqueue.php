@@ -46,6 +46,35 @@ abstract class Forminator_Assets_Enqueue {
 	}
 
 	/**
+	 *
+	 * @param int $id
+	 * @param type $type
+	 * @param type $force
+	 * @return string
+	 */
+	public static function get_css_upload( $id, $type = 'url', $force = false ) {
+		$filename   = 'style-' . $id . '.css';
+		$upload_dir = wp_upload_dir();
+		$css_dir    = $upload_dir['basedir'] . '/forminator/css';
+		$css_url    = $upload_dir['baseurl'] . '/forminator/css';
+		if ( ! is_dir( $css_dir ) ) {
+			wp_mkdir_p( $css_dir );
+		}
+		$fullname = $css_dir . '/' . $filename;
+		if ( $force && ! file_exists( $fullname ) ) {
+			Forminator_Render_Form::regenerate_css_file( $id );
+		}
+
+		if ( ! empty( $type ) && 'dir' === $type ) {
+			$return = $fullname;
+		} else {
+			$return = $css_url . '/' . $filename;
+		}
+
+		return $return;
+	}
+
+	/**
 	 * Return Form Settins
 	 *
 	 * @since 1.11
@@ -56,120 +85,80 @@ abstract class Forminator_Assets_Enqueue {
 	}
 
 	/**
-	 * Return form wrappers & fields
-	 *
-	 * @since 1.11
-	 * @return array|mixed
-	 */
-	public function get_wrappers() {
-		if ( is_object( $this->model ) ) {
-			return $this->model->get_fields_grouped();
-		} else {
-			return $this->message_not_found();
-		}
-	}
-
-	/**
-	 * Return form wrappers & fields
-	 *
-	 * @since 1.11
-	 * @return array|mixed
-	 */
-	public function get_fields() {
-		$fields   = array();
-		$wrappers = $this->get_wrappers();
-
-		// Fallback
-		if ( empty( $wrappers ) ) {
-			return $fields;
-		}
-
-		foreach ( $wrappers as $key => $wrapper ) {
-			if ( ! isset( $wrapper['fields'] ) ) {
-				return array();
-			}
-
-			foreach ( $wrapper['fields'] as $k => $field ) {
-				$fields[] = $field;
-			}
-		}
-
-		return $fields;
-	}
-
-	/**
 	 * Enqueue module styles
 	 *
 	 * @since 1.11
 	 */
-	public function enqueue_styles() {}
+	public function load_base_styles() {
+		$this->load_module_css();
 
-	/**
-	 * Enqueue module scripts
-	 *
-	 * @since 1.11
-	 */
-	public function enqueue_scripts() {}
+		// Forminator UI - Icons font.
+		wp_enqueue_style(
+			'forminator-icons',
+			forminator_plugin_url() . 'assets/forminator-ui/css/forminator-icons.min.css',
+			array(),
+			FORMINATOR_VERSION
+		);
 
-	/**
-	 * Check if form given field type
-	 *
-	 * @since 1.11
-	 * @return bool
-	 */
-	public function has_field_type( $type ) {
-		$fields = $this->get_fields();
-
-		if ( ! empty( $fields ) ) {
-			foreach ( $fields as $field ) {
-				if ( $type === $field["type"] ) {
-					return true;
-				}
-			}
-		}
-
-		return false;
+		// Forminator UI - Utilities.
+		wp_enqueue_style(
+			'forminator-utilities',
+			forminator_plugin_url() . 'assets/forminator-ui/css/src/forminator-utilities.min.css',
+			array(),
+			FORMINATOR_VERSION
+		);
 	}
 
 	/**
-	 * Check if field with type exist on a form, and check if its setting match
+	 * Load relevant module CSS
+	 */
+	protected function load_module_css() {
+		if ( ! empty( $this->model->id ) && ! is_admin() ) {
+			$id        = $this->model->id;
+			$timestamp = ! empty( $this->model->raw->post_modified_gmt )
+					? strtotime( $this->model->raw->post_modified_gmt )
+					: wp_unique_id();
+
+			// Module styles.
+			wp_enqueue_style(
+				'forminator-module-css-' . $id,
+				self::get_css_upload( $id, 'url', true ),
+				array(),
+				$timestamp
+			);
+		}
+	}
+
+	/**
+	 * Load base scripts
 	 *
 	 * @since 1.11
-	 *
-	 * @param             $field_type
-	 * @param string|null $setting_name
-	 * @param string|null $setting_value
-	 *
-	 * @return bool
 	 */
-	public function has_field_type_with_setting_value( $field_type, $setting_name = null, $setting_value = null ) {
-		$fields = $this->get_fields();
+	public function load_base_scripts() {
+		// LOAD: Forminator validation scripts
+		wp_enqueue_script( 'forminator-jquery-validate', forminator_plugin_url() . 'assets/js/library/jquery.validate.min.js', array( 'jquery' ), FORMINATOR_VERSION, false );
 
-		if ( ! empty( $fields ) ) {
-			foreach ( $fields as $field ) {
-				if ( $field_type === $field["type"] ) {
-					if ( is_null( $setting_name ) ) {
-						return true;
-					} elseif ( isset( $field[ $setting_name ] ) ) {
-						$field_settings_value = $field[ $setting_name ];
 
-						if ( is_bool( $setting_value ) ) {
-							// cast to bool
-							$field_settings_value = filter_var( $field[ $setting_name ], FILTER_VALIDATE_BOOLEAN );
-						}
+		$slug = 'quiz' !== static::$module_slug ? static::$module_slug : 'ui';
+		// LOAD: Forminator UI JS
+		wp_enqueue_script(
+			'forminator-ui',
+			forminator_plugin_url() . 'assets/forminator-ui/js/forminator-' . $slug . '.min.js',
+			array( 'jquery' ),
+			FORMINATOR_VERSION,
+			false
+		);
 
-						if ( $field_settings_value === $setting_value ) {
-							return true;
-						}
+		// LOAD: Forminator front scripts
+		wp_enqueue_script(
+			'forminator-front-scripts',
+			forminator_plugin_url() . 'build/front/front.multi.min.js',
+			array( 'jquery', 'forminator-ui', 'forminator-jquery-validate' ),
+			FORMINATOR_VERSION,
+			false
+		);
 
-						if ( $setting_value === 'true' && $field_settings_value === true ) {
-							return true;
-						}
-					}
-				}
-			}
-		}
-
-		return false;
+		// Localize front script
+		wp_localize_script( 'forminator-front-scripts', 'ForminatorFront', forminator_localize_data() );
 	}
 }

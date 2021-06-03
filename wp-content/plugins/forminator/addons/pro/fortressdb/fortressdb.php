@@ -3,7 +3,7 @@
 /**
  * Addon Name: FortressDB
  * Version: 1.0
- * Plugin URI:  https://premium.wpmudev.org/
+ * Plugin URI:  https://wpmudev.com/
  * Description: Integrate Forminator Custom Forms with FortressDB to get notified in real time.
  * Author: FortressDB
  * Author URI: https://fortressdb.com

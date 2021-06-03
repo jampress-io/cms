@@ -2,13 +2,18 @@
 
 namespace WP_Defender;
 
+use WP_Defender\Model\Scan as Model_Scan;
+use WP_Defender\Model\Scan_Item;
+use WP_Defender\Model\Setting\Security_Headers;
+use WP_Defender\Component\Config\Config_Hub_Helper;
+
 class Upgrader {
 
 	/**
 	 * Migrate old security headers from security tweaks. Trigger it once time
 	 */
 	public function migrate_security_headers() {
-		$model   = new \WP_Defender\Model\Setting\Security_Headers();
+		$model   = wd_di()->get( Security_Headers::class );
 		$new_key = $model->table;
 		$option  = get_site_option( $new_key );
 
@@ -26,12 +31,12 @@ class Upgrader {
 						$mode = ( isset( $header_data['mode'] ) && ! empty( $header_data['mode'] ) )
 							? strtolower( $header_data['mode'] )
 							: false;
+						/**
+						 * Directive ALLOW-FROM is deprecated. If header directive is ALLOW-FROM then set 'sameorigin'.
+						 * @since 2.5.0
+						 */
 						if ( 'allow-from' === $mode ) {
-							$model->sh_xframe_mode = 'allow-from';
-							if ( isset( $header_data['values'] ) && ! empty( $header_data['values'] ) ) {
-								$urls                  = explode( ' ', $header_data['values'] );
-								$model->sh_xframe_urls = implode( PHP_EOL, $urls );
-							}
+							$model->sh_xframe_mode = 'sameorigin';
 						} elseif ( in_array( $mode, array( 'sameorigin', 'deny' ), true ) ) {
 							$model->sh_xframe_mode = $mode;
 						}
@@ -235,6 +240,12 @@ class Upgrader {
 			$this->index_database();
 			$this->migrate_scan_integrity_check();
 		}
+		if ( version_compare( $db_version, '2.4.10', '<' ) ) {
+			$this->upgrade_2_4_10();
+		}
+		if ( version_compare( $db_version, '2.5.0', '<' ) ) {
+			$this->upgrade_2_5_0();
+		}
 
 		// Don't run any function below this line.
 		update_site_option( 'wd_db_version', DEFENDER_DB_VERSION );
@@ -361,5 +372,124 @@ class Upgrader {
 				ADD INDEX `attempt` (`attempt`),
 				ADD INDEX `attempt_404` (`attempt_404`);";
 		$wpdb->query( $sql );
+	}
+
+	/**
+	 * Upgrade to 2.4.10
+	 *
+	 * @since 2.4.10
+	 */
+	private function upgrade_2_4_10() {
+		$service         = wd_di()->get( \WP_Defender\Component\Backup_Settings::class );
+		$configs         = Config_Hub_Helper::get_configs( $service );
+		$deprecated_keys = array(
+			//reason: updated or removed some tweak slugs
+			'security_key',
+			'wp-rest-api',
+			//reason: moved the security headers to a separate module
+			'sh-referrer-policy',
+			'sh-strict-transport',
+			'sh-xframe',
+			'sh-content-security',
+			'sh-content-type-options',
+			'sh-feature-policy',
+			'sh-xss-protection',
+		);
+		foreach ( $configs as $key => $config ) {
+			$is_updated = false;
+			//Remove deprecated 'data' key inside Security tweaks
+			if ( isset( $config['configs']['security_tweaks']['data'] ) ) {
+				unset( $configs[ $key ]['configs']['security_tweaks']['data'] );
+				$is_updated = true;
+			}
+			//Remove deprecated keys in 'issues'
+			if ( isset( $config['configs']['security_tweaks']['issues'] ) ) {
+				foreach ( $config['configs']['security_tweaks']['issues'] as $iss_key => $issue ) {
+					if ( in_array( $issue, $deprecated_keys, true ) ) {
+						unset( $configs[ $key ]['configs']['security_tweaks']['issues'][ $iss_key ] );
+						$is_updated = true;
+					}
+				}
+			}
+			//in 'ignore'
+			if ( isset( $config['configs']['security_tweaks']['ignore'] ) ) {
+				foreach ( $config['configs']['security_tweaks']['ignore'] as $ign_key => $issue ) {
+					if ( in_array( $issue, $deprecated_keys, true ) ) {
+						unset( $configs[ $key ]['configs']['security_tweaks']['ignore'][ $ign_key ] );
+						$is_updated = true;
+					}
+				}
+			}
+			//and in 'fixed'
+			if ( isset( $config['configs']['security_tweaks']['fixed'] ) ) {
+				foreach ( $config['configs']['security_tweaks']['fixed'] as $fix_key => $issue ) {
+					if ( in_array( $issue, $deprecated_keys, true ) ) {
+						unset( $configs[ $key ]['configs']['security_tweaks']['fixed'][ $fix_key ] );
+						$is_updated = true;
+					}
+				}
+			}
+
+			if ( $is_updated ) {
+				update_site_option( $key, $configs[ $key ] );
+				Config_Hub_Helper::update_on_hub( $configs[ $key ] );
+				if ( isset( $config['is_active'] ) ) {
+					$model         = new \WP_Defender\Model\Setting\Security_Tweaks();
+					$model->issues = $configs[ $key ]['configs']['security_tweaks']['issues'];
+					$model->ignore = $configs[ $key ]['configs']['security_tweaks']['ignore'];
+					$model->fixed  = $configs[ $key ]['configs']['security_tweaks']['fixed'];
+					$model->save();
+				}
+			}
+		}
+	}
+
+	/**
+	 * Upgrade to 2.5.0
+	 *
+	 * @since 2.5.0
+	 */
+	private function upgrade_2_5_0() {
+		$model = wd_di()->get( Security_Headers::class );
+		//Directive ALLOW-FROM is deprecated. If header directive is ALLOW-FROM then set 'sameorigin'
+		if ( isset( $model->sh_xframe_mode ) && 'allow-from' === $model->sh_xframe_mode ) {
+			$model->sh_xframe_mode = 'sameorigin';
+			$model->save();
+		}
+		//Display a new feature about Pwned Passwords on Welcome modal
+		update_site_option( 'wd_show_feature_password_pwned', true );
+		/**
+		 * Uncheck 'File change detection' option if there was checked only child 'Scan theme files' option and save
+		 * settings. Also remove items for 'Scan theme files' without run Scan.
+		*/
+		//Step#1
+		$scan_settings = new \WP_Defender\Model\Setting\Scan();
+		if (
+			$scan_settings->integrity_check
+			&& ! $scan_settings->check_core
+			&& ! $scan_settings->check_plugins
+		) {
+			$scan_settings->integrity_check = false;
+			$scan_settings->save();
+		}
+		//Step#2
+		$scan_model = Model_Scan::get_active();
+		if ( is_object( $scan_model ) ) {
+			//nothing changes
+			return;
+		}
+		$scan_model = Model_Scan::get_last();
+		if ( is_object( $scan_model ) && ! is_wp_error( $scan_model ) ) {
+			//Active items
+			$items = $scan_model->get_issues( Scan_Item::TYPE_THEME_CHECK, Scan_Item::STATUS_ACTIVE );
+			foreach ( $items as $item ) {
+				$scan_model->remove_issue( $item->id );
+			}
+			//Ignored items
+			$items = $scan_model->get_issues( Scan_Item::TYPE_THEME_CHECK, Scan_Item::STATUS_IGNORE );
+			foreach ( $items as $item ) {
+				$scan_model->remove_issue( $item->id );
+			}
+		}
 	}
 }

@@ -15,15 +15,15 @@ foreach ( $template_vars as $key => $val ) {
 	<h3 id="dialogTitle2" class="sui-box-title">
 		<?php
 		/* translators: ... */
-		echo esc_html( sprintf( __( 'Activate %1$s', Forminator::DOMAIN ), 'Zapier' ) );
+		echo esc_html( sprintf( __( 'Activate %1$s', 'forminator' ), 'Zapier' ) );
 		?>
 	</h3>
 
-	<span class="sui-description" style="margin-top: 20px;"><?php esc_html_e( 'Activate Zapier to start using it on your forms.', Forminator::DOMAIN ); ?></span>
+	<span class="sui-description" style="margin-top: 20px;"><?php esc_html_e( 'Activate Zapier to start using it on your forms.', 'forminator' ); ?></span>
 
 	<?php if ( ! empty( $vars['is_connected'] ) ) : ?>
 		<div class="sui-notice sui-notice-success" style="text-align: left;">
-			<p><?php esc_html_e( 'Zapier is already active.', Forminator::DOMAIN ); ?></p>
+			<p><?php esc_html_e( 'Zapier is already active.', 'forminator' ); ?></p>
 		</div>
 	<?php endif; ?>
 

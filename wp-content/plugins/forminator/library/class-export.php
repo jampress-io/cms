@@ -93,7 +93,7 @@ class Forminator_Export {
 	public function add_cron_schedule( $schedules ) {
 		$schedules['every_minute'] = array(
 			'interval' => MINUTE_IN_SECONDS,
-			'display'  => __( 'Every minute', FORMINATOR::DOMAIN ),
+			'display'  => __( 'Every minute', 'forminator' ),
 		);
 
 		return $schedules;
@@ -146,7 +146,7 @@ class Forminator_Export {
 			$fields = self::get_formatted_csv_fields( $fields );
 			fputcsv( $fp, $fields );
 		}
-		$filename = sanitize_title( __( 'forminator', FORMINATOR::DOMAIN ) ) . '-' . sanitize_title( $model->name ) . '-' . date( 'ymdHis' ) . '.csv';
+		$filename = sanitize_title( __( 'forminator', 'forminator' ) ) . '-' . sanitize_title( $model->name ) . '-' . date( 'ymdHis' ) . '.csv';
 
 		$output = ob_get_clean();
 
@@ -175,7 +175,7 @@ class Forminator_Export {
 
 				$redirect = add_query_arg(
 					array(
-						'err_msg' => rawurlencode( __( 'Invalid request, you are not allowed to do that action.', Forminator::DOMAIN ) ),
+						'err_msg' => rawurlencode( __( 'Invalid request, you are not allowed to do that action.', 'forminator' ) ),
 					)
 				);
 
@@ -193,7 +193,7 @@ class Forminator_Export {
 			if ( ! isset( $post_data['form_id'] ) || empty( $post_data['form_id'] ) ) {
 				$redirect = add_query_arg(
 					array(
-						'err_msg' => rawurlencode( __( 'Invalid form ID.', Forminator::DOMAIN ) ),
+						'err_msg' => rawurlencode( __( 'Invalid form ID.', 'forminator' ) ),
 					)
 				);
 
@@ -203,7 +203,7 @@ class Forminator_Export {
 			if ( ! isset( $post_data['form_type'] ) || empty( $post_data['form_type'] ) ) {
 				$redirect = add_query_arg(
 					array(
-						'err_msg' => rawurlencode( __( 'Invalid form type.', Forminator::DOMAIN ) ),
+						'err_msg' => rawurlencode( __( 'Invalid form type.', 'forminator' ) ),
 					)
 				);
 
@@ -214,7 +214,7 @@ class Forminator_Export {
 			if ( $enabled && ( ! isset( $post_data['email'] ) || empty( $post_data['email'] ) ) ) {
 				$redirect = add_query_arg(
 					array(
-						'err_msg' => rawurlencode( __( 'Invalid email.', Forminator::DOMAIN ) ),
+						'err_msg' => rawurlencode( __( 'Invalid email.', 'forminator' ) ),
 					)
 				);
 
@@ -427,7 +427,7 @@ class Forminator_Export {
 
 		switch ( $type ) {
 			case 'quiz':
-				$model = Forminator_Quiz_Form_Model::model()->load( $form_id );
+				$model = Forminator_Quiz_Model::model()->load( $form_id );
 				if ( ! is_object( $model ) ) {
 					return null;
 				}
@@ -445,17 +445,17 @@ class Forminator_Export {
 				}
 
 				$headers = array(
-					__( 'Date', Forminator::DOMAIN ),
-					__( 'Question', Forminator::DOMAIN ),
-					__( 'Answer', Forminator::DOMAIN ),
-					__( 'Result', Forminator::DOMAIN ),
+					__( 'Date', 'forminator' ),
+					__( 'Question', 'forminator' ),
+					__( 'Answer', 'forminator' ),
+					__( 'Result', 'forminator' ),
 				);
 
 				$has_leads = isset( $model->settings['hasLeads'] ) ? $model->settings['hasLeads'] : false;
 				$leads_id  = isset( $model->settings['leadsId'] ) ? $model->settings['leadsId'] : 0;
 
 				if ( $has_leads && $leads_id ) {
-					$form_model = Forminator_Custom_Form_Model::model()->load( $leads_id );
+					$form_model = Forminator_Form_Model::model()->load( $leads_id );
 					if ( is_object( $model ) ) {
 						$mappers = $this->get_custom_form_export_mappers( $form_model );
 						foreach ( $mappers as $mapper ) {
@@ -542,7 +542,7 @@ class Forminator_Export {
 								$row[] = ! empty( $answer['question'] ) ? sprintf( '"%s"', $answer['question'] ) : '';
 								$row[] = $answer['answer'];
 								if ( ! empty( $answer['answer'] ) ) {
-									$row[] = ( ( $answer['isCorrect'] ) ? __( 'Correct', Forminator::DOMAIN ) : __( 'Incorrect', Forminator::DOMAIN ) );
+									$row[] = ( ( $answer['isCorrect'] ) ? __( 'Correct', 'forminator' ) : __( 'Incorrect', 'forminator' ) );
 								} else {
 									$row[] = '';
 								}
@@ -573,7 +573,7 @@ class Forminator_Export {
 				$export_result->data = $data;
 				break;
 			case 'poll':
-				$model = Forminator_Poll_Form_Model::model()->load( $form_id );
+				$model = Forminator_Poll_Model::model()->load( $form_id );
 				if ( ! is_object( $model ) ) {
 					return null;
 				}
@@ -591,9 +591,9 @@ class Forminator_Export {
 				$fields_array = $model->get_fields_as_array();
 				$map_entries  = Forminator_Form_Entry_Model::map_polls_entries_for_export( $form_id, $fields_array );
 				$header       = array(
-					__( 'Date', Forminator::DOMAIN ),
-					__( 'Answer', Forminator::DOMAIN ),
-					__( 'Extra', Forminator::DOMAIN ),
+					__( 'Date', 'forminator' ),
+					__( 'Answer', 'forminator' ),
+					__( 'Extra', 'forminator' ),
 				);
 				$addon_header = $this->attach_poll_addons_on_export_render_title_row( $form_id, $entries );
 				$header       = array_merge( $header, $addon_header );
@@ -625,7 +625,7 @@ class Forminator_Export {
 				$export_result->data = $data;
 				break;
 			case 'cform':
-				$model = Forminator_Custom_Form_Model::model()->load( $form_id );
+				$model = Forminator_Form_Model::model()->load( $form_id );
 				if ( ! is_object( $model ) ) {
 					return null;
 				}
@@ -858,12 +858,12 @@ class Forminator_Export {
 	 *
 	 * @since   1.0.5
 	 *
-	 * @param Forminator_Custom_Form_Model|Forminator_Base_Form_Model $model
+	 * @param Forminator_Form_Model|Forminator_Base_Form_Model $model
 	 *
 	 * @return array
 	 */
 	private function get_custom_form_export_mappers( $model ) {
-		/** @var  Forminator_Custom_Form_Model $model */
+		/** @var  Forminator_Form_Model $model */
 		$fields              = $model->get_fields();
 		$ignored_field_types = Forminator_Form_Entry_Model::ignored_fields();
 		$visible_fields      = array();
@@ -876,7 +876,7 @@ class Forminator_Export {
 			array(
 				// read form model's property
 				'property' => 'time_created', // must be on export
-				'label'    => __( 'Submission Time', Forminator::DOMAIN ),
+				'label'    => __( 'Submission Time', 'forminator' ),
 				'type'     => 'entry_time_created',
 			),
 		);
@@ -1019,23 +1019,23 @@ class Forminator_Export {
 				$mapper['sub_metas']   = array();
 				$mapper['sub_metas'][] = array(
 					'key'   => 'mode',
-					'label' => $mapper['label'] . ' - ' . __( 'Mode', Forminator::DOMAIN ),
+					'label' => $mapper['label'] . ' - ' . __( 'Mode', 'forminator' ),
 				);
 				$mapper['sub_metas'][] = array(
 					'key'   => 'status',
-					'label' => $mapper['label'] . ' - ' . __( 'Status', Forminator::DOMAIN ),
+					'label' => $mapper['label'] . ' - ' . __( 'Status', 'forminator' ),
 				);
 				$mapper['sub_metas'][] = array(
 					'key'   => 'amount',
-					'label' => $mapper['label'] . ' - ' . __( 'Amount', Forminator::DOMAIN ),
+					'label' => $mapper['label'] . ' - ' . __( 'Amount', 'forminator' ),
 				);
 				$mapper['sub_metas'][] = array(
 					'key'   => 'currency',
-					'label' => $mapper['label'] . ' - ' . __( 'Currency', Forminator::DOMAIN ),
+					'label' => $mapper['label'] . ' - ' . __( 'Currency', 'forminator' ),
 				);
 				$mapper['sub_metas'][] = array(
 					'key'   => 'transaction_id',
-					'label' => $mapper['label'] . ' - ' . __( 'Transaction ID', Forminator::DOMAIN ),
+					'label' => $mapper['label'] . ' - ' . __( 'Transaction ID', 'forminator' ),
 				);
 			}
 
@@ -1051,7 +1051,7 @@ class Forminator_Export {
 		 *
 		 * @param array $mappers
 		 * @param int $form_id
-		 * @param Forminator_Custom_Form_Model $model
+		 * @param Forminator_Form_Model $model
 		 *
 		 * @return array
 		 */
@@ -1325,7 +1325,7 @@ class Forminator_Export {
 			}
 		}
 
-		$subject = sprintf( __( "Submissions data for %s", Forminator::DOMAIN ), implode( ', ', $form_names ) );
+		$subject = sprintf( __( "Submissions data for %s", 'forminator' ), implode( ', ', $form_names ) );
 
 		/**
 		 * Filter mail subject used for scheduled export email
@@ -1389,12 +1389,12 @@ class Forminator_Export {
 		$total_new_entries = array_sum( $new_entries_counts );
 
 
-		$mail_content = '<p>' . sprintf( __( 'Hi %s,', Forminator::DOMAIN ), $blog_name ) . '</p>' . PHP_EOL;
+		$mail_content = '<p>' . sprintf( __( 'Hi %s,', 'forminator' ), $blog_name ) . '</p>' . PHP_EOL;
 
 		$mail_content .= '<p>' . sprintf(
 				__(
 					'Your scheduled exports have arrived! Forminator has captured %1$s new submission(s) and packaged %2$s total submissions from %3$s since the last scheduled export sent.',
-					Forminator::DOMAIN
+					'forminator'
 				),
 				'<strong>' . (int) $total_new_entries . '</strong>',
 				'<strong>' . (int) $total_entries . '</strong>',
@@ -1413,19 +1413,19 @@ class Forminator_Export {
 						</ul>
 					</li>',
 					   $form_names[ $key ],
-					   __( 'New Submissions', Forminator::DOMAIN ),
+					   __( 'New Submissions', 'forminator' ),
 					   (int) $new_entries_counts[ $key ],
-					   __( 'Total Submissions', Forminator::DOMAIN ),
+					   __( 'Total Submissions', 'forminator' ),
 					   (int) $entries_counts[ $key ],
 					   $submission_links[ $key ],
-					   __( 'View Submissions', Forminator::DOMAIN )
+					   __( 'View Submissions', 'forminator' )
 				   ) . PHP_EOL;
 		}
 		$mail_content .= '</ul>' . PHP_EOL;
 
 
-		$mail_content .= '<p>' . __( 'Cheers,', Forminator::DOMAIN ) . '</p>' . PHP_EOL;
-		$mail_content .= '<p>' . __( 'Forminator', Forminator::DOMAIN ) . '</p>';
+		$mail_content .= '<p>' . __( 'Cheers,', 'forminator' ) . '</p>' . PHP_EOL;
+		$mail_content .= '<p>' . __( 'Forminator', 'forminator' ) . '</p>';
 
 		/**
 		 * Filter mail content used for scheduled export email

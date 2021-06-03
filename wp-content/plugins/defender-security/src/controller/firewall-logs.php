@@ -221,6 +221,10 @@ class Firewall_Logs extends Controller2 {
 					'type'     => 'int',
 					'sanitize' => 'sanitize_text_field',
 				),
+				'per_page'     => array(
+					'type'     => 'int',
+					'sanitize' => 'sanitize_text_field',
+				),
 			)
 		);
 		$logs        = Lockout_Log::get_logs_and_format(
@@ -231,7 +235,10 @@ class Firewall_Logs extends Controller2 {
 				// if this is all, then we set to null to exclude it from the filter
 				'type' => $filter_data['type'] === 'all' ? '' : $filter_data['type'],
 			),
-			$filter_data['paged']
+			$filter_data['paged'],
+			'id',
+			'desc',
+			$filter_data['per_page']
 		);
 
 		return new Response(

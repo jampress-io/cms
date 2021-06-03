@@ -12,6 +12,7 @@ class Config_Hub_Helper {
 
 	const CONFIGS_TRANSIENT_KEY = 'wpdefender_preset_configs';
 	const CONFIGS_TRANSIENT_TIME_KEY = 'wpdefender_preset_configs_transient_time';
+	const ACTIVE_FLAG_CLEAR_KEY = 'wpdefender_config_clear_active_tag';
 	const CONFIGS_TRANSIENT_TIME = 600; // 600 = 10 minutes.
 
 	/**
@@ -70,8 +71,15 @@ class Config_Hub_Helper {
 		$final_configs = array();
 
 		// Loop to set default config.
+		// Exclude default config from match with HUB config.
 		foreach ( $stored_configs as $sc_key => $sc_value ) {
 			if ( 0 === strpos( $sc_key, 'wp_defender_config_default' ) ) {
+				$final_configs[ $sc_key ] = $sc_value;
+				break;
+			}
+
+			// Sometimes key does not match for default config.
+			if ( isset( $sc_value['immortal'] ) && $sc_value['immortal'] ) {
 				$final_configs[ $sc_key ] = $sc_value;
 				break;
 			}
@@ -92,7 +100,13 @@ class Config_Hub_Helper {
 	 */
 	private function check_and_save_configs_to_hub( $stored_configs, $def_details, $wpmudev ) {
 		foreach ( $stored_configs as $sc_key => &$sc_value ) {
+			// Check it is for default config.
 			if ( 0 === strpos( $sc_key, 'wp_defender_config_default' ) ) {
+				continue;
+			}
+
+			// Sometimes key does not match for default config.
+			if ( isset( $sc_value['immortal'] ) && $sc_value['immortal'] ) {
 				continue;
 			}
 
@@ -131,14 +145,20 @@ class Config_Hub_Helper {
 			return false;
 		}
 
+		if ( empty( $sc_value['labels'] ) ) {
+			$config_component   = wd_di()->get( Backup_Settings::class );
+			$sc_value['labels'] = $config_component->prepare_config_labels( $sc_value['configs'] );
+		}
+
 		$data = array(
 			'name'        => $sc_value['name'],
 			'description' => $sc_value['description'],
 			'package'     => $def_details,
-			'config'      => json_encode(
+			'config'      => wp_json_encode(
 				array(
 					'strings' => $sc_value['strings'],
 					'configs' => $sc_value['configs'],
+					'labels'  => $sc_value['labels'],
 				)
 			),
 		);
@@ -211,6 +231,10 @@ class Config_Hub_Helper {
 	 * @return bool
 	 */
 	public static function update_on_hub( $config ) {
+		if ( ! isset( $config['hub_id'] ) ) {
+			return false;
+		}
+
 		if ( ! defined( WPMUDEV::class . '::API_PACKAGE_CONFIGS' ) ) {
 			return false;
 		}
@@ -307,7 +331,8 @@ class Config_Hub_Helper {
 		}
 
 		// Store id of keys that need to delete. Because they are delete on HUB.
-		$delete_hub_ids = array();
+		$delete_hub_ids    = array();
+		$once_delete_unset = array();
 
 		// Loop through all items found in the API.
 		foreach ( $response as $api_config ) {
@@ -316,7 +341,10 @@ class Config_Hub_Helper {
 			// Find key and value from stored configs.
 			foreach ( $stored_configs as $sc_key => $sc_value ) {
 				if ( isset( $sc_value['hub_id'] ) ) {
-					$delete_hub_ids[ $sc_value['hub_id'] ] = $sc_key;
+					// Once it is unset from the delete array don't re-add it.
+					if ( ! isset( $once_delete_unset[ $sc_value['hub_id'] ] ) ) {
+						$delete_hub_ids[ $sc_value['hub_id'] ] = $sc_key;
+					}
 
 					if ( $sc_value['hub_id'] === $api_config['id'] ) {
 						$sc_value['name']         = $api_config['name'];
@@ -325,6 +353,7 @@ class Config_Hub_Helper {
 						$found                    = true;
 
 						unset( $delete_hub_ids[ $sc_value['hub_id'] ] );
+						$once_delete_unset[ $sc_value['hub_id'] ] = $sc_key;
 						break;
 					}
 				}
@@ -395,6 +424,70 @@ class Config_Hub_Helper {
 		}
 
 		return $configs;
+	}
+
+	/**
+	 * Set a flag to clear active tag
+	 */
+	public static function set_clear_active_flag() {
+		$value = get_site_option( self::ACTIVE_FLAG_CLEAR_KEY, 'cleared' );
+
+		if ( 'clear' !== $value ) {
+			update_site_option( self::ACTIVE_FLAG_CLEAR_KEY, 'clear' );
+		}
+	}
+
+	/**
+	 * Check active flag need to remove or not
+	 *
+	 * @return bool
+	 */
+	public static function check_remove_active_flag() {
+		$value = get_site_option( self::ACTIVE_FLAG_CLEAR_KEY, 'cleared' );
+
+		if ( 'clear' === $value ) {
+			update_site_option( self::ACTIVE_FLAG_CLEAR_KEY, 'cleared' );
+
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Active a config from
+	 *
+	 * @param $hub_id
+	 *
+	 * @throws \DI\DependencyException
+	 * @throws \DI\NotFoundException
+	 */
+	public static function active_config_from_hub_id( $hub_id ) {
+		$config_component = wd_di()->get( Backup_Settings::class );
+		$configs          = $config_component->get_configs();
+
+		foreach ( $configs as $key => $config ) {
+			$need_update = false;
+
+			// Remove previous active status.
+			if ( $config['is_active'] ) {
+				$config['is_active'] = false;
+				$need_update         = true;
+			}
+
+			// Add current active status.
+			if ( intval( $config['hub_id'] ) === intval( $hub_id ) ) {
+				$config['is_active'] = true;
+				$need_update         = true;
+			}
+
+			if ( $need_update ) {
+				update_site_option( $key, $config );
+			}
+		}
+
+		// Clear cache to reflect in frontend.
+		delete_site_transient( self::CONFIGS_TRANSIENT_KEY );
 	}
 
 }

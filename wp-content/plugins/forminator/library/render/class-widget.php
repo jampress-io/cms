@@ -18,8 +18,8 @@ class Forminator_Widget extends WP_Widget {
 	public function __construct() {
 		parent::__construct(
 			'forminator_widget',
-			__( "Forminator Widget", Forminator::DOMAIN ),
-			array( 'description' => __( 'Forminator Widget', Forminator::DOMAIN ) )
+			__( "Forminator Widget", 'forminator' ),
+			array( 'description' => __( 'Forminator Widget', 'forminator' ) )
 		);
 	}
 
@@ -117,7 +117,7 @@ class Forminator_Widget extends WP_Widget {
 
 		<p>
 			<label for="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>">
-				<?php esc_html_e( "Title", Forminator::DOMAIN ); ?>
+				<?php esc_html_e( "Title", 'forminator' ); ?>
 			</label>
 			<input
 					type="text"
@@ -129,24 +129,24 @@ class Forminator_Widget extends WP_Widget {
 
 		<p>
 			<label for="<?php echo esc_attr( $this->get_field_id( 'form_type' ) ); ?>">
-				<?php esc_html_e( "Form Type", Forminator::DOMAIN ); ?>
+				<?php esc_html_e( "Form Type", 'forminator' ); ?>
 			</label>
 			<select class="widefat forminator-form-type" id="<?php echo esc_attr( $this->get_field_id( 'form_type' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'form_type' ) ); ?>">
-				<option value="form" <?php selected( 'form', $form_type ); ?>><?php esc_html_e( "Form", Forminator::DOMAIN ); ?></option>
-				<option value="poll" <?php selected( 'poll', $form_type ); ?>><?php esc_html_e( "Poll", Forminator::DOMAIN ); ?></option>
-				<option value="quiz" <?php selected( 'quiz', $form_type ); ?>><?php esc_html_e( "Quiz", Forminator::DOMAIN ); ?></option>
+				<option value="form" <?php selected( 'form', $form_type ); ?>><?php esc_html_e( "Form", 'forminator' ); ?></option>
+				<option value="poll" <?php selected( 'poll', $form_type ); ?>><?php esc_html_e( "Poll", 'forminator' ); ?></option>
+				<option value="quiz" <?php selected( 'quiz', $form_type ); ?>><?php esc_html_e( "Quiz", 'forminator' ); ?></option>
 			</select>
 		</p>
 
 		<p id="forminator-wrapper-form" class="forminator-form-wrapper" style="display:<?php echo $form_style; ?>">
 			<label for="<?php echo esc_attr( $this->get_field_id( 'form_id' ) ); ?>">
-				<?php esc_html_e( "Select Form", Forminator::DOMAIN ); ?>
+				<?php esc_html_e( "Select Form", 'forminator' ); ?>
 			</label>
 			<select class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'form_id' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'form_id' ) ); ?>">
 				<?php
-				$modules = forminator_cform_modules( 999 );
+				$modules = forminator_form_modules( 999 );
 				foreach ( $modules as $module ) {
-					$title = forminator_get_form_name( $module['id'], 'custom_form' );
+					$title = forminator_get_form_name( $module['id'] );
 					if ( strlen( $title ) > 25 ) {
 						$title = substr( $title, 0, 25 ) . '...';
 					}
@@ -158,13 +158,13 @@ class Forminator_Widget extends WP_Widget {
 
 		<p id="forminator-wrapper-poll" class="forminator-form-wrapper" style="display:<?php echo $poll_style; ?>">
 			<label for="<?php echo esc_attr( $this->get_field_id( 'poll_id' ) ); ?>">
-				<?php esc_html_e( "Select Poll", Forminator::DOMAIN ); ?>
+				<?php esc_html_e( "Select Poll", 'forminator' ); ?>
 			</label>
 			<select class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'poll_id' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'poll_id' ) ); ?>">
 				<?php
-				$modules = forminator_polls_modules( 999 );
+				$modules = forminator_poll_modules( 999 );
 				foreach ( $modules as $module ) {
-					$title = forminator_get_form_name( $module['id'], 'poll' );
+					$title = forminator_get_form_name( $module['id'] );
 					if ( strlen( $title ) > 25 ) {
 						$title = substr( $title, 0, 25 ) . '...';
 					}
@@ -176,13 +176,13 @@ class Forminator_Widget extends WP_Widget {
 
 		<p id="forminator-wrapper-quiz" class="forminator-form-wrapper" style="display:<?php echo $quiz_style; ?>">
 			<label for="<?php echo esc_attr( $this->get_field_id( 'quiz_id' ) ); ?>">
-				<?php esc_html_e( "Select Quiz", Forminator::DOMAIN ); ?>
+				<?php esc_html_e( "Select Quiz", 'forminator' ); ?>
 			</label>
 			<select class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'quiz_id' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'quiz_id' ) ); ?>">
 				<?php
-				$modules = forminator_quizzes_modules( 999 );
+				$modules = forminator_quiz_modules( 999 );
 				foreach ( $modules as $module ) {
-					$title = forminator_get_form_name( $module['id'], 'quiz' );
+					$title = forminator_get_form_name( $module['id'] );
 					if ( strlen( $title ) > 25 ) {
 						$title = substr( $title, 0, 25 ) . '...';
 					}

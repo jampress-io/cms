@@ -102,8 +102,8 @@ class Forminator_GFBlock_Forms extends Forminator_GFBlock_Abstract {
 			)
 		);
 
-		forminator_print_forms_admin_styles( FORMINATOR_VERSION );
-		forminator_print_front_scripts( FORMINATOR_VERSION );
+		forminator_print_front_styles();
+		forminator_print_front_scripts();
 
 		wp_enqueue_script(
 			'select2-forminator',
@@ -148,11 +148,11 @@ class Forminator_GFBlock_Forms extends Forminator_GFBlock_Abstract {
 	 * @return array
 	 */
 	public function get_forms() {
-		$forms     = Forminator_API::get_forms( null, 1, 100, Forminator_Custom_Form_Model::STATUS_PUBLISH );
+		$forms     = Forminator_API::get_forms( null, 1, 100, Forminator_Form_Model::STATUS_PUBLISH );
 		$form_list = array(
 			array(
 				'value' => '',
-				'label' => esc_html__( 'Select a form', Forminator::DOMAIN ),
+				'label' => esc_html__( 'Select a form', 'forminator' ),
 			),
 		);
 
@@ -176,11 +176,11 @@ class Forminator_GFBlock_Forms extends Forminator_GFBlock_Abstract {
 
 	public function localize() {
 		return array(
-			'choose_form'      => esc_html__( 'Choose Form', Forminator::DOMAIN ),
-			'customize_form'   => esc_html__( 'Customize form', Forminator::DOMAIN ),
-			'rendering'        => esc_html__( 'Rendering...', Forminator::DOMAIN ),
-			'form'             => esc_html__( 'Form', Forminator::DOMAIN ),
-			'form_description' => esc_html__( 'Embed and display your custom Forminator forms in this block', Forminator::DOMAIN ),
+			'choose_form'      => esc_html__( 'Choose Form', 'forminator' ),
+			'customize_form'   => esc_html__( 'Customize form', 'forminator' ),
+			'rendering'        => esc_html__( 'Rendering...', 'forminator' ),
+			'form'             => esc_html__( 'Form', 'forminator' ),
+			'form_description' => esc_html__( 'Embed and display your custom Forminator forms in this block', 'forminator' ),
 		);
 	}
 }

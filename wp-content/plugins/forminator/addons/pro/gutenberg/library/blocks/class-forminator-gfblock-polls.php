@@ -100,8 +100,8 @@ class Forminator_GFBlock_Polls extends Forminator_GFBlock_Abstract {
 			)
 		);
 
-		forminator_print_polls_admin_styles( FORMINATOR_VERSION );
-		forminator_print_front_scripts( FORMINATOR_VERSION );
+		forminator_print_front_styles();
+		forminator_print_front_scripts();
 	}
 
 	/**
@@ -111,11 +111,11 @@ class Forminator_GFBlock_Polls extends Forminator_GFBlock_Abstract {
 	 * @return array
 	 */
 	public function get_forms() {
-		$forms     = Forminator_API::get_polls( null, 1, 100, Forminator_Custom_Form_Model::STATUS_PUBLISH );
+		$forms     = Forminator_API::get_polls( null, 1, 100, Forminator_Form_Model::STATUS_PUBLISH );
 		$form_list = array(
 			array(
 				'value' => '',
-				'label' => esc_html__( 'Select a poll', Forminator::DOMAIN ),
+				'label' => esc_html__( 'Select a poll', 'forminator' ),
 			),
 		);
 
@@ -139,11 +139,11 @@ class Forminator_GFBlock_Polls extends Forminator_GFBlock_Abstract {
 
 	public function localize() {
 		return array(
-			'choose_poll'      => esc_html__( 'Choose Poll', Forminator::DOMAIN ),
-			'customize_poll'   => esc_html__( 'Customize poll', Forminator::DOMAIN ),
-			'rendering'        => esc_html__( 'Rendering...', Forminator::DOMAIN ),
-			'poll'             => esc_html__( 'Poll', Forminator::DOMAIN ),
-			'poll_description' => esc_html__( 'Embed and display your Forminator polls in this block', Forminator::DOMAIN ),
+			'choose_poll'      => esc_html__( 'Choose Poll', 'forminator' ),
+			'customize_poll'   => esc_html__( 'Customize poll', 'forminator' ),
+			'rendering'        => esc_html__( 'Rendering...', 'forminator' ),
+			'poll'             => esc_html__( 'Poll', 'forminator' ),
+			'poll_description' => esc_html__( 'Embed and display your Forminator polls in this block', 'forminator' ),
 		);
 	}
 }

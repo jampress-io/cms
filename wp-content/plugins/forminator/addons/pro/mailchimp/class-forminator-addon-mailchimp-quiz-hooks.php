@@ -46,7 +46,7 @@ class Forminator_Addon_Mailchimp_Quiz_Hooks extends Forminator_Addon_Quiz_Hooks_
 	 */
 	public function __construct( Forminator_Addon_Abstract $addon, $quiz_id ) {
 		parent::__construct( $addon, $quiz_id );
-		$this->_submit_quiz_error_message = __( 'Mailchimp failed to process submitted data. Please check your form and try again', Forminator::DOMAIN );
+		$this->_submit_quiz_error_message = __( 'Mailchimp failed to process submitted data. Please check your form and try again', 'forminator' );
 	}
 
 	/**
@@ -96,12 +96,12 @@ class Forminator_Addon_Mailchimp_Quiz_Hooks extends Forminator_Addon_Quiz_Hooks_
 		$input_name = 'forminator-addon-mailchimp-gdpr';
 		$input_id   = $input_name . '-' . $uniq_id;
 		$html       = '<div class="forminator-row"><div id="field-' . $input_id . '" class="forminator-col forminator-col-12"><div class="forminator-field">';
-		$html      .= '<div class="forminator-field--label"><label class="forminator-label" id="forminator-label-' . $input_id . '">' . esc_html_e( 'Mailchimp GDPR', Forminator::DOMAIN )
+		$html      .= '<div class="forminator-field--label"><label class="forminator-label" id="forminator-label-' . $input_id . '">' . esc_html_e( 'Mailchimp GDPR', 'forminator' )
 		              . '</label></div>';
 		// matching checkbox with design
 		$form_settings = $this->quiz_settings_instance->get_quiz_settings();
 		$design_class  = self::get_form_setting_value_as( $form_settings, 'form-style', 'default', 'string' );
-		if ( 'clean' === $design_class ) {
+		if ( 'none' === $design_class ) {
 
 			$html .= '<label class="forminator-checkbox">';
 			$html .= sprintf(
@@ -334,7 +334,7 @@ class Forminator_Addon_Mailchimp_Quiz_Hooks extends Forminator_Addon_Quiz_Hooks_
 							throw new Forminator_Addon_Mailchimp_Exception(
 								__(
 									'Forminator Addon Mailchimp was not sending subscriber to mailchimp as GDPR field is not checked on input',
-									Forminator::DOMAIN
+									'forminator'
 								)
 							);
 
@@ -346,13 +346,13 @@ class Forminator_Addon_Mailchimp_Quiz_Hooks extends Forminator_Addon_Quiz_Hooks_
 			// EMAIL : super required**
 			if ( ! isset( $addon_setting_values['fields_map']['EMAIL'] ) ) {
 				throw new Forminator_Addon_Mailchimp_Exception(/* translators: ... */
-					sprintf( __( 'Required Field %1$s not mapped yet to Forminator Form Field, Please check your Mailchimp Configuration on Form Settings', Forminator::DOMAIN ), 'EMAIL' )
+					sprintf( __( 'Required Field %1$s not mapped yet to Forminator Form Field, Please check your Mailchimp Configuration on Form Settings', 'forminator' ), 'EMAIL' )
 				);
 			}
 
 			if ( ! isset( $submitted_data[ $addon_setting_values['fields_map']['EMAIL'] ] ) || empty( $submitted_data[ $addon_setting_values['fields_map']['EMAIL'] ] ) ) {
 				throw new Forminator_Addon_Mailchimp_Exception(/* translators: ... */
-					sprintf( __( 'Required Field %1$s is not filled by user', Forminator::DOMAIN ), 'EMAIL' )
+					sprintf( __( 'Required Field %1$s is not filled by user', 'forminator' ), 'EMAIL' )
 				);
 			}
 
@@ -379,14 +379,14 @@ class Forminator_Addon_Mailchimp_Quiz_Hooks extends Forminator_Addon_Quiz_Hooks_
 					foreach ( $address_fields as $addr => $address ) {
 						if ( ! isset( $addon_setting_values['fields_map'][ $mailchimp_required_field->tag ][ $addr ] ) ) {
 							throw new Forminator_Addon_Mailchimp_Exception(/* translators: ... */
-								sprintf( __( 'Required Field %1$s not mapped yet to Forminator Form Field, Please check your Mailchimp Configuration on Form Settings', Forminator::DOMAIN ), $mailchimp_required_field->name )
+								sprintf( __( 'Required Field %1$s not mapped yet to Forminator Form Field, Please check your Mailchimp Configuration on Form Settings', 'forminator' ), $mailchimp_required_field->name )
 							);
 						}
 
 						if ( ! isset( $submitted_data[ $addon_setting_values['fields_map'][ $mailchimp_required_field->tag ][ $addr ] ] )
 						     || empty( $submitted_data[ $addon_setting_values['fields_map'][ $mailchimp_required_field->tag ][ $addr ] ] ) ) {
 							throw new Forminator_Addon_Mailchimp_Exception(/* translators: ... */
-								sprintf( __( 'Required Field %1$s not filled by user', Forminator::DOMAIN ), $mailchimp_required_field->name )
+								sprintf( __( 'Required Field %1$s not filled by user', 'forminator' ), $mailchimp_required_field->name )
 							);
 						}
 					}
@@ -394,7 +394,7 @@ class Forminator_Addon_Mailchimp_Quiz_Hooks extends Forminator_Addon_Quiz_Hooks_
 
 					if ( ! isset( $addon_setting_values['fields_map'][ $mailchimp_required_field->tag ] ) ) {
 						throw new Forminator_Addon_Mailchimp_Exception(/* translators: ... */
-							sprintf( __( 'Required Field %1$s not mapped yet to Forminator Form Field, Please check your Mailchimp Configuration on Form Settings', Forminator::DOMAIN ), $mailchimp_required_field->name )
+							sprintf( __( 'Required Field %1$s not mapped yet to Forminator Form Field, Please check your Mailchimp Configuration on Form Settings', 'forminator' ), $mailchimp_required_field->name )
 						);
 					}
 
@@ -405,7 +405,7 @@ class Forminator_Addon_Mailchimp_Quiz_Hooks extends Forminator_Addon_Quiz_Hooks_
 
 					if ( ! $is_calculation && ! $is_stripe && ! $has_submit_data ) {
 						throw new Forminator_Addon_Mailchimp_Exception(/* translators: ... */
-							sprintf( __( 'Required Field %1$s not filled by user', Forminator::DOMAIN ), $mailchimp_required_field->name )
+							sprintf( __( 'Required Field %1$s not filled by user', 'forminator' ), $mailchimp_required_field->name )
 						);
 					}
 				}
@@ -546,7 +546,7 @@ class Forminator_Addon_Mailchimp_Quiz_Hooks extends Forminator_Addon_Quiz_Hooks_
 				throw new Forminator_Addon_Mailchimp_Exception(
 					__(
 						'Failed adding or updating member on Mailchimp list',
-						Forminator::DOMAIN
+						'forminator'
 					)
 				);
 			}
@@ -558,7 +558,7 @@ class Forminator_Addon_Mailchimp_Quiz_Hooks extends Forminator_Addon_Quiz_Hooks_
 					'name'  => 'status',
 					'value' => array(
 						'is_sent'       => true,
-						'description'   => __( 'Successfully added or updated member on Mailchimp list', Forminator::DOMAIN ),
+						'description'   => __( 'Successfully added or updated member on Mailchimp list', 'forminator' ),
 						'data_sent'     => $mailchimp_api->get_last_data_sent(),
 						'data_received' => $mailchimp_api->get_last_data_received(),
 						'url_request'   => $mailchimp_api->get_last_url_request(),
@@ -700,23 +700,23 @@ class Forminator_Addon_Mailchimp_Quiz_Hooks extends Forminator_Addon_Quiz_Hooks_
 		}
 
 		$additional_entry_item = array(
-			'label' => __( 'Mailchimp Integration', Forminator::DOMAIN ),
+			'label' => __( 'Mailchimp Integration', 'forminator' ),
 			'value' => '',
 		);
 
 		$status      = $addon_meta_data['value'];
 		$sub_entries = array();
 		if ( isset( $status['is_sent'] ) ) {
-			$is_sent       = true === $status['is_sent'] ? __( 'Yes', Forminator::DOMAIN ) : __( 'No', Forminator::DOMAIN );
+			$is_sent       = true === $status['is_sent'] ? __( 'Yes', 'forminator' ) : __( 'No', 'forminator' );
 			$sub_entries[] = array(
-				'label' => __( 'Sent To Mailchimp', Forminator::DOMAIN ),
+				'label' => __( 'Sent To Mailchimp', 'forminator' ),
 				'value' => $is_sent,
 			);
 		}
 
 		if ( isset( $status['description'] ) ) {
 			$sub_entries[] = array(
-				'label' => __( 'Info', Forminator::DOMAIN ),
+				'label' => __( 'Info', 'forminator' ),
 				'value' => $status['description'],
 			);
 		}
@@ -725,7 +725,7 @@ class Forminator_Addon_Mailchimp_Quiz_Hooks extends Forminator_Addon_Quiz_Hooks_
 			$data_received = $status['data_received'];
 			if ( isset( $data_received->status ) && ! empty( $data_received->status ) && is_string( $data_received->status ) ) {
 				$sub_entries[] = array(
-					'label' => __( 'Member Status', Forminator::DOMAIN ),
+					'label' => __( 'Member Status', 'forminator' ),
 					'value' => strtoupper( $data_received->status ),
 				);
 			}
@@ -735,21 +735,21 @@ class Forminator_Addon_Mailchimp_Quiz_Hooks extends Forminator_Addon_Quiz_Hooks_
 			// too long to be added on entry data enable this with `define('FORMINATOR_ADDON_MAILCHIMP_SHOW_FULL_LOG', true)`
 			if ( isset( $status['url_request'] ) ) {
 				$sub_entries[] = array(
-					'label' => __( 'API URL', Forminator::DOMAIN ),
+					'label' => __( 'API URL', 'forminator' ),
 					'value' => $status['url_request'],
 				);
 			}
 
 			if ( isset( $status['data_sent'] ) ) {
 				$sub_entries[] = array(
-					'label' => __( 'Data sent to Mailchimp', Forminator::DOMAIN ),
+					'label' => __( 'Data sent to Mailchimp', 'forminator' ),
 					'value' => '<pre class="sui-code-snippet">' . wp_json_encode( $status['data_sent'], JSON_PRETTY_PRINT ) . '</pre>',
 				);
 			}
 
 			if ( isset( $status['data_received'] ) ) {
 				$sub_entries[] = array(
-					'label' => __( 'Data received from Mailchimp', Forminator::DOMAIN ),
+					'label' => __( 'Data received from Mailchimp', 'forminator' ),
 					'value' => '<pre class="sui-code-snippet">' . wp_json_encode( $status['data_received'], JSON_PRETTY_PRINT ) . '</pre>',
 				);
 			}

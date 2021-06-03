@@ -42,35 +42,48 @@ class Firewall_Notification extends \WP_Defender\Model\Notification {
 	}
 
 	/**
+	 * @param Lockout_Log $model
+	 *
 	 * @return bool
 	 */
-	public function maybe_send() {
+	public function check_options( Lockout_Log $model ) {
 		if ( self::STATUS_ACTIVE !== $this->status ) {
 			return false;
 		}
-		if ( $this->configs['login_lockout'] === true || $this->configs['nf_lockout'] === true ) {
+		//Check 'Login Protection Lockout'
+		if ( Lockout_Log::AUTH_LOCK === $model->type && true === $this->configs['login_lockout'] ) {
+			return true;
+		}
+		//Check '404 Protection Lockout'
+		if ( Lockout_Log::LOCKOUT_404 === $model->type && true === $this->configs['nf_lockout'] ) {
 			return true;
 		}
 
 		return false;
 	}
 
+	/**
+	 * @param Lockout_Log $model
+	 */
 	public function send( Lockout_Log $model ) {
-		if ( filter_var( $this->configs['login_lockout'], FILTER_VALIDATE_BOOLEAN ) === true && $model->type === Lockout_Log::AUTH_LOCK ) {
+		if (
+			true === filter_var( $this->configs['login_lockout'], FILTER_VALIDATE_BOOLEAN )
+			&& Lockout_Log::AUTH_LOCK === $model->type
+		) {
 			$template = 'login-lockout';
 		} else {
 			$template = 'lockout-404';
 		}
 
 		foreach ( $this->in_house_recipients as $user ) {
-			if ( $user['status'] !== \WP_Defender\Model\Notification::USER_SUBSCRIBED ) {
+			if ( \WP_Defender\Model\Notification::USER_SUBSCRIBED !== $user['status'] ) {
 				continue;
 			}
 			$this->send_to_user( $user['email'], $user['name'], $model, $template );
 		}
 
 		foreach ( $this->out_house_recipients as $user ) {
-			if ( $user['status'] !== \WP_Defender\Model\Notification::USER_SUBSCRIBED ) {
+			if ( \WP_Defender\Model\Notification::USER_SUBSCRIBED !== $user['status'] ) {
 				continue;
 			}
 			$this->send_to_user( $user['email'], $user['name'], $model, $template );
@@ -78,56 +91,74 @@ class Firewall_Notification extends \WP_Defender\Model\Notification {
 	}
 
 	/**
-	 * @param $email
-	 * @param $name
+	 * @param string $email
+	 * @param string $name
+	 * @param Lockout_Log $model
+	 * @param string $template
 	 *
 	 * @throws \DI\DependencyException
 	 * @throws \DI\NotFoundException
 	 */
 	private function send_to_user( $email, $name, $model, $template ) {
 		//check if this meet the threshold
-		if ( $this->configs['limit'] === true ) {
+		if ( true === $this->configs['limit'] ) {
 			$count = Email_Track::count( $this->slug, $email, strtotime( '-' . $this->configs['cool_off'] . ' hours' ), time() );
 			if ( $count >= $this->configs['threshold'] ) {
 				//no send
 				return;
 			}
 		}
-		if ( $template === 'login-lockout' ) {
-			$subject  = sprintf( __( 'Login lockout alert for %s', 'wpdef' ), network_site_url() );
+		if ( 'login-lockout' === $template ) {
+			$subject  = sprintf( __( 'Login lockout alert for %s', 'wpdef' ), network_site_url() );// phpcs:ignore
 			$settings = wd_di()->get( Login_Lockout::class );
-			$text     = __( 'We\'ve just locked out the host <strong>%s</strong> from %s due to more than <strong>%s</strong> failed login attempts. %s', 'wpdef' );
-			if ( $settings->lockout_type === 'permanent' ) {
-				$text = sprintf( $text, $model->ip, network_site_url(), $settings->attempt, __( 'They have been banned permanently.', 'wpdef' ) );
+			$text     = __( 'We\'ve just locked out the host <strong>%1$s</strong> from %2$s due to more than <strong>%3$s</strong> failed login attempts. %4$s', 'wpdef' );// phpcs:ignore
+			if ( 'permanent' === $settings->lockout_type ) {
+				$text = sprintf( $text, $model->ip, network_site_url(), $settings->attempt, __( 'They have been banned permanently.', 'wpdef' ) );// phpcs:ignore
 			} else {
-				$string = sprintf( __( 'They have been locked out for <strong>%s %s.</strong>', 'wpdef' ), $settings->duration, $settings->duration_unit );
+				$string = sprintf( __( 'They have been locked out for <strong>%1$s %2$s.</strong>', 'wpdef' ), $settings->duration, $settings->duration_unit );// phpcs:ignore
 				$text   = sprintf( $text, $model->ip, network_site_url(), $settings->attempt, $string );
 			}
 		} else {
-			$subject  = sprintf( __( '404 lockout alert for %s', 'wpdef' ), network_site_url() );
+			$subject  = sprintf( __( '404 lockout alert for %s', 'wpdef' ), network_site_url() );// phpcs:ignore
 			$settings = wd_di()->get( Notfound_Lockout::class );
-			if ( $settings->lockout_type === 'permanent' ) {
-				$text = sprintf( __( "We've just locked out the host <strong>%s</strong> from %s due to more than <strong>%s</strong> 404 requests for the file <strong>%s</strong>. They have been banned permanently.", 'wpdef' ),
-					$model->ip, network_site_url(), $settings->attempt, $model->tried, $settings->duration, $settings->duration_unit
+			if ( 'permanent' === $settings->lockout_type ) {
+				$text = sprintf(
+					__( "We've just locked out the host <strong>%1\$s</strong> from %2\$s due to more than <strong>%3\$s</strong> 404 requests for the file <strong>%4\$s</strong>. They have been banned permanently.", 'wpdef' ),
+					$model->ip,
+					network_site_url(),
+					$settings->attempt,
+					$model->tried,
+					$settings->duration,
+					$settings->duration_unit
 				);
 			} else {
-				$text = sprintf( __( "We've just locked out the host <strong>%s</strong> from %s due to more than <strong>%s</strong> 404 requests for the file <strong>%s</strong>. They have been locked out for <strong>%s %s.</strong>", 'wpdef' ),
-					$model->ip, network_site_url(), $settings->attempt, $model->tried, $settings->duration, $settings->duration_unit
+				$text = sprintf(
+					__( "We've just locked out the host <strong>%1\$s</strong> from %2\$s due to more than <strong>%3\$s</strong> 404 requests for the file <strong>%4\$s</strong>. They have been locked out for <strong>%5\$s %6\$s.</strong>", 'wpdef' ),
+					$model->ip,
+					network_site_url(),
+					$settings->attempt,
+					$model->tried,
+					$settings->duration,
+					$settings->duration_unit
 				);
 			}
 		}
-		$logs_url       = network_admin_url( "admin.php?page=wdf-ip-lockout&view=logs" );
+		$logs_url       = network_admin_url( 'admin.php?page=wdf-ip-lockout&view=logs' );
 		$logs_url       = apply_filters( 'report_email_logs_link', $logs_url, $email );
-		$content        = wd_di()->get( Firewall::class )->render_partial( 'email/' . $template, [
-			'name'     => $name,
-			'text'     => $text,
-			'logs_url' => $logs_url,
-		], false );
-		$no_reply_email = "noreply@" . parse_url( get_site_url(), PHP_URL_HOST );
+		$content        = wd_di()->get( Firewall::class )->render_partial(
+			'email/' . $template,
+			array(
+				'name'     => $name,
+				'text'     => $text,
+				'logs_url' => $logs_url,
+			),
+			false
+		);
+		$no_reply_email = 'noreply@' . parse_url( get_site_url(), PHP_URL_HOST );
 		$no_reply_email = apply_filters( 'wd_lockout_noreply_email', $no_reply_email );
 		$headers        = array(
 			'From: Defender <' . $no_reply_email . '>',
-			'Content-Type: text/html; charset=UTF-8'
+			'Content-Type: text/html; charset=UTF-8',
 		);
 
 		$ret = wp_mail( $email, $subject, $content, $headers );

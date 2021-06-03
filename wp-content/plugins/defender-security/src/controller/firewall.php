@@ -9,6 +9,7 @@ use Calotes\Helper\HTTP;
 use Calotes\Helper\Route;
 use WP_Defender\Behavior\WPMUDEV;
 use WP_Defender\Component\Blacklist_Lockout;
+use WP_Defender\Component\Config\Config_Hub_Helper;
 use WP_Defender\Component\Table_Lockout;
 use WP_Defender\Model\Lockout_Ip;
 use WP_Defender\Model\Lockout_Log;
@@ -60,8 +61,8 @@ class Firewall extends \WP_Defender\Controller2 {
 		if ( ! wp_next_scheduled( 'firewall_clean_up_logs' ) ) {
 			wp_schedule_event( time() + 10, 'hourly', 'firewall_clean_up_logs' );
 		}
-
 		add_action( 'firewall_clean_up_logs', array( &$this, 'clean_up_firewall_logs' ) );
+		//additional hooks
 		add_action( 'defender_enqueue_assets', array( &$this, 'enqueue_assets' ), 11 );
 	}
 
@@ -114,6 +115,7 @@ class Firewall extends \WP_Defender\Controller2 {
 		$this->model->import( $data );
 		if ( $this->model->validate() ) {
 			$this->model->save();
+			Config_Hub_Helper::set_clear_active_flag();
 
 			return new Response(
 				true,

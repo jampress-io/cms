@@ -8,21 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @since 1.0
  */
-class Forminator_CForm_View_Page extends Forminator_Admin_Page {
-
-	/**
-	 * Current model
-	 *
-	 * @var Forminator_Custom_Form_Model|bool
-	 */
-	protected $model = false;
-
-	/**
-	 * Current form id
-	 *
-	 * @var int
-	 */
-	protected $form_id = 0;
+class Forminator_CForm_View_Page extends Forminator_Admin_View_Page {
 
 	/**
 	 * Current model id
@@ -32,116 +18,25 @@ class Forminator_CForm_View_Page extends Forminator_Admin_Page {
 	protected $model_id = 0;
 
 	/**
-	 * Entries
-	 *
-	 * @var array
-	 */
-	protected $entries = array();
-
-	/**
-	 * Fields
-	 *
-	 * @var array
-	 */
-	protected $fields = array();
-
-	/**
-	 * Visible Fields
-	 *
-	 * @var array
-	 */
-	protected $visible_fields = array();
-
-
-	/**
-	 * Number of checked fields
-	 *
-	 * @var int
-	 */
-	protected $checked_fields = 0;
-
-	/**
-	 * Number of total fields
-	 *
-	 * @var int
-	 */
-	protected $total_fields = 0;
-
-	/**
-	 * Per page
-	 *
-	 * @var int
-	 */
-	protected $per_page = 10;
-
-	/**
-	 * Page number
-	 *
-	 * @var int
-	 */
-	protected $page_number = 1;
-
-	/**
-	 * Total Entries
-	 *
-	 * @var int
-	 */
-	protected $total_entries = 0;
-
-	/**
-	 * Error message if avail
+	 * Moduel type
 	 *
 	 * @var string
 	 */
-	protected $error_message = '';
+	protected static $module_slug = 'form';
 
 	/**
-	 * @var Forminator_Addon_Abstract[]
-	 */
-	private static $connected_addons = null;
-
-	/**
-	 * @var Forminator_Addon_Abstract[]
-	 */
-	private static $registered_addons = null;
-
-	/**
-	 * Filters to be used
+	 * Nested Mappers
 	 *
-	 * [key=>value]
-	 * ['search'=>'search term']
-	 *
-	 * @since 1.5.4
 	 * @var array
 	 */
-	public $filters = array();
+	protected $fields_mappers = array();
 
 	/**
-	 * Order to be used
+	 * Flatten version of mappers
 	 *
-	 * [key=>order]
-	 * ['entry_date' => 'ASC']
-	 *
-	 * @since 1.5.4
 	 * @var array
 	 */
-	public $order = array();
-
-	/**
-	 * Flag fields is currently filtered
-	 *
-	 * @since 1.5.4
-	 * @var bool
-	 */
-	public $fields_is_filtered = false;
-
-	/**
-	 * Total filterd Entries
-	 *
-	 * @since 1.5.4
-	 * @var int
-	 */
-	protected $filtered_total_entries = 0;
+	protected $flatten_field_mappers = array();
 
 	/**
 	 * Initialise variables
@@ -149,41 +44,12 @@ class Forminator_CForm_View_Page extends Forminator_Admin_Page {
 	 * @since 1.0
 	 */
 	public function before_render( $form_id = null ) {
-
-		// This view is unused from 1.5.4 on, using "forminator-entries" instead.
-		if ( 'forminator-cform-view' === $this->page_slug ) {
-			$url = '?page=forminator-entries&form_type=forminator_forms';
-			if ( isset( $_REQUEST['form_id'] ) ) { // WPCS: CSRF OK
-				$url .= '&form_id=' . intval( $_REQUEST['form_id'] ); // WPCS: CSRF OK
-			}
-			if ( wp_safe_redirect( $url ) ) {
-				exit;
-			}
-		}
+		$this->maybe_redirect();
 
 		if ( isset( $_REQUEST['form_id'] ) ) { // WPCS: CSRF OK
 			$this->model_id = intval( $_REQUEST['form_id'] );
 			$this->form_id = ! empty( $form_id ) ? $form_id : intval( $_REQUEST['form_id'] );
-			$this->model   = Forminator_Custom_Form_Model::model()->load( $this->form_id );
-			if ( is_object( $this->model ) ) {
-				$this->fields = $this->model->get_fields();
-				if ( is_null( $this->fields ) ) {
-					$this->fields = array();
-				}
-			} else {
-				$this->model = false;
-			}
-
-			$pagenum = isset( $_REQUEST['paged'] ) ? absint( $_REQUEST['paged'] ) : 0; // WPCS: CSRF OK
-
-			$this->parse_filters();
-			$this->parse_order();
-
-			$this->per_page       = forminator_form_view_per_page( 'entries' );
-			$this->page_number    = max( 1, $pagenum );
-			$this->total_fields   = count( $this->fields );
-			$this->checked_fields = $this->total_fields;
-
+			parent::before_render();
 			$form_id           = (int) $this->form_id;
 			$custom_form_model = $this->model;
 			$visible_fields    = $this->get_visible_fields();
@@ -194,7 +60,7 @@ class Forminator_CForm_View_Page extends Forminator_Admin_Page {
 			 * @since 1.1
 			 *
 			 * @param int                          $form_id           Current Form ID
-			 * @param Forminator_Custom_Form_Model $custom_form_model Current Form Model
+			 * @param Forminator_Form_Model $custom_form_model Current Form Model
 			 * @param array                        $visible_fields    Visible fields on page
 			 * @param int                          $pagenum           current page number
 			 */
@@ -203,7 +69,7 @@ class Forminator_CForm_View_Page extends Forminator_Admin_Page {
 				$form_id,
 				$custom_form_model,
 				$visible_fields,
-				$pagenum
+				$this->pagenum
 			);
 
 			$this->process_request();
@@ -212,116 +78,15 @@ class Forminator_CForm_View_Page extends Forminator_Admin_Page {
 	}
 
 	/**
-	 * Process request
-	 *
-	 * @since 1.0
+	 * Action delete_all
 	 */
-	public function process_request() {
-
-		if ( isset( $_GET['err_msg'] ) ) {
-			$this->error_message = wp_kses_post( $_GET['err_msg'] );
+	public function delete_all_action() {
+		if ( isset( $_REQUEST['entry'] ) && is_array( $_REQUEST['entry'] ) ) {
+			$entries = implode( ",", $_REQUEST['entry'] );
+			Forminator_Form_Entry_Model::delete_by_entrys( $this->model->id, $entries );
+			$this->maybe_redirect_to_referer();
+			exit;
 		}
-
-		if ( isset( $_REQUEST['field'] ) ) {
-			$this->visible_fields     = $_REQUEST['field']; // wpcs XSRF ok, via GET
-			$this->checked_fields     = count( $this->visible_fields );
-			$this->fields_is_filtered = true;
-		}
-
-		/**
-		 * Start modifying data
-		 */
-		if ( ! isset( $_REQUEST['forminatorEntryNonce'] ) ) {
-			return;
-		}
-
-		$nonce = $_REQUEST['forminatorEntryNonce']; // WPCS: CSRF OK
-		if ( ! wp_verify_nonce( $nonce, 'forminatorCustomFormEntries' ) ) {
-			return;
-		}
-
-		$action = '';
-		if ( isset( $_REQUEST['entries-action'] ) || isset( $_REQUEST['entries-action-bottom'] ) ) {
-			if ( isset( $_REQUEST['entries-action'] ) && ! empty( $_REQUEST['entries-action'] ) ) {
-				$action = sanitize_text_field( $_REQUEST['entries-action'] );
-			} elseif ( isset( $_REQUEST['entries-action-bottom'] ) ) {
-				$action = sanitize_text_field( $_REQUEST['entries-action-bottom'] );
-			}
-
-			switch ( $action ) {
-				case 'delete-all' :
-					if ( isset( $_REQUEST['entry'] ) && is_array( $_REQUEST['entry'] ) ) {
-						$entries = implode( ",", $_REQUEST['entry'] );
-						Forminator_Form_Entry_Model::delete_by_entrys( $this->model->id, $entries );
-						$this->maybe_redirect_to_referer();
-						exit;
-					}
-					break;
-				default:
-					break;
-			}
-		}
-
-		if ( isset( $_POST['forminator_action'] ) ) {
-			switch ( $_POST['forminator_action'] ) {
-				case 'delete':
-					if ( isset( $_POST['id'] ) ) {
-						$id = $_POST['id'];
-
-						Forminator_Form_Entry_Model::delete_by_entrys( $this->model->id, $id );
-						$this->maybe_redirect_to_referer();
-						exit;
-					}
-					break;
-				default:
-					break;
-			}
-		}
-	}
-
-	/**
-	 * Content boxes
-	 *
-	 * @since 1.0
-	 */
-	public function register_content_boxes() {
-		$this->add_box(
-			'custom-form/entries/popup/exports-list',
-			__( 'Your Exports', Forminator::DOMAIN ),
-			'entries-popup-exports-list',
-			null,
-			null,
-			null
-		);
-
-		$this->add_box(
-			'custom-form/entries/popup/schedule-export',
-			__( 'Edit Schedule Export', Forminator::DOMAIN ),
-			'entries-popup-schedule-export',
-			null,
-			null,
-			null
-		);
-	}
-
-	/**
-	 * Get fields
-	 *
-	 * @since 1.0
-	 * @return array
-	 */
-	public function get_fields() {
-		return $this->fields;
-	}
-
-	/**
-	 * Visible fields
-	 *
-	 * @since 1.0
-	 * @return array
-	 */
-	public function get_visible_fields() {
-		return $this->visible_fields;
 	}
 
 	/**
@@ -332,27 +97,6 @@ class Forminator_CForm_View_Page extends Forminator_Admin_Page {
 	 */
 	public function get_visible_fields_as_string() {
 		return implode( ',', $this->visible_fields );
-	}
-
-	/**
-	 * Checked field option
-	 *
-	 * @since 1.0
-	 *
-	 * @param string $slug - the field slug
-	 *
-	 * @return string
-	 */
-	public function checked_field( $slug ) {
-		if ( ! empty( $this->visible_fields ) && is_array( $this->visible_fields ) ) {
-			if ( in_array( $slug, $this->visible_fields, true ) ) {
-				return checked( $slug, $slug );
-			} else {
-				return '';
-			}
-		}
-
-		return checked( $slug, $slug );
 	}
 
 	/**
@@ -374,112 +118,6 @@ class Forminator_CForm_View_Page extends Forminator_Admin_Page {
 		}
 
 		return true;
-	}
-
-	/**
-	 * Get model name
-	 *
-	 * @since 1.0
-	 * @return string
-	 */
-	public function get_model_name() {
-		if ( $this->model ) {
-			return $this->model->name;
-		}
-
-		return '';
-	}
-
-	/**
-	 * Fields header
-	 *
-	 * @since 1.0
-	 * @return string
-	 */
-	public function fields_header() {
-		printf( esc_html__( "Showing %s of %s fields", Forminator::DOMAIN ), $this->checked_fields, $this->total_fields ); // phpcs:ignore
-	}
-
-	/**
-	 * Prepare results
-	 *
-	 * @since 1.0
-	 */
-	public function prepare_results() {
-		if ( is_object( $this->model ) ) {
-			$paged    = $this->page_number;
-			$per_page = $this->per_page;
-			$offset   = ( $paged - 1 ) * $per_page;
-
-			$this->total_entries = Forminator_Form_Entry_Model::count_entries( $this->model->id );
-
-			$args = array(
-				'form_id'  => $this->model->id,
-				'is_spam'  => 0,
-				'per_page' => $per_page,
-				'offset'   => $offset,
-				'order_by' => 'entries.date_created',
-				'order'    => 'DESC',
-			);
-
-			$args = wp_parse_args( $this->filters, $args );
-			$args = wp_parse_args( $this->order, $args );
-
-			$count = 0;
-
-			$this->entries                = Forminator_Form_Entry_Model::query_entries( $args, $count );
-			$this->filtered_total_entries = $count;
-		}
-	}
-
-	/**
-	 * The total entries
-	 *
-	 * @since 1.0
-	 * @return int
-	 */
-	public function total_entries() {
-		return $this->total_entries;
-	}
-
-	/**
-	 * The total filtered entries
-	 *
-	 * @since 1.5.4
-	 * @return int
-	 */
-	public function filtered_total_entries() {
-		return $this->filtered_total_entries;
-	}
-
-	/**
-	 * Get Entries
-	 *
-	 * @since 1.0
-	 * @return array
-	 */
-	public function get_entries() {
-		return $this->entries;
-	}
-
-	/**
-	 * Get Page Number
-	 *
-	 * @since 1.0
-	 * @return int
-	 */
-	public function get_page_number() {
-		return $this->page_number;
-	}
-
-	/**
-	 * Get Per Page
-	 *
-	 * @since 1.0
-	 * @return int
-	 */
-	public function get_per_page() {
-		return $this->per_page;
 	}
 
 	/**
@@ -565,44 +203,6 @@ class Forminator_CForm_View_Page extends Forminator_Admin_Page {
 	}
 
 	/**
-	 * Get fields table
-	 *
-	 * @since 1.0
-	 * @return Forminator_Entries_List_Table
-	 */
-	public function get_table() {
-		return new Forminator_Entries_List_Table(
-			array(
-				'model'          => $this->model,
-				'visible_fields' => $this->visible_fields,
-			) );
-	}
-
-	public function bulk_actions( $position = 'top' ) { ?>
-
-		<select name="<?php echo ( 'top' === $position ) ? 'entries-action' : 'entries-action-bottom'; ?>"
-				class="sui-select-sm sui-select-inline"
-				style="min-width: 200px;">
-			<option value=""><?php esc_html_e( "Bulk Actions", Forminator::DOMAIN ); ?></option>
-			<option value="delete-all"><?php esc_html_e( "Delete Entries", Forminator::DOMAIN ); ?></option>
-		</select>
-
-		<button class="sui-button forminator-entries-apply-bulk-actions"><?php esc_html_e( "Apply", Forminator::DOMAIN ); ?></button>
-
-		<?php
-	}
-
-	/**
-	 * Pagination
-	 *
-	 * @since 1.0
-	 */
-	public function paginate() {
-		$count = $this->filtered_total_entries;
-		forminator_list_pagination( $count, 'entries' );
-	}
-
-	/**
 	 * Mimic from export
 	 *
 	 * @see Forminator_Export::get_custom_form_export_mappers()
@@ -611,7 +211,7 @@ class Forminator_CForm_View_Page extends Forminator_Admin_Page {
 	 * @return array
 	 */
 	private function build_fields_mappers() {
-		/** @var  Forminator_Custom_Form_Model $model */
+		/** @var  Forminator_Form_Model $model */
 		$model               = $this->model;
 		$fields              = apply_filters( 'forminator_custom_form_build_fields_mappers', $model->get_fields() );
 		$visible_fields      = $this->get_visible_fields();
@@ -622,13 +222,13 @@ class Forminator_CForm_View_Page extends Forminator_Admin_Page {
 			array(
 				// read form model's property
 				'property' => 'entry_id', // must be on entries
-				'label'    => __( 'ID', Forminator::DOMAIN ),
+				'label'    => __( 'ID', 'forminator' ),
 				'type'     => 'entry_entry_id',
 			),
 			array(
 				// read form model's property
 				'property' => 'time_created', // must be on entries
-				'label'    => __( 'Date Submitted', Forminator::DOMAIN ),
+				'label'    => __( 'Date Submitted', 'forminator' ),
 				'type'     => 'entry_time_created',
 			),
 		);
@@ -768,30 +368,30 @@ class Forminator_CForm_View_Page extends Forminator_Admin_Page {
 					$mapper = array();
 				}
 			} elseif ( 'stripe' === $field_type ) {
-				$mapper['label']       = __( 'Stripe Payment', Forminator::DOMAIN );
+				$mapper['label']       = __( 'Stripe Payment', 'forminator' );
 				$mapper['sub_metas']   = array();
 				$mapper['sub_metas'][] = array(
 					'key'                => 'mode',
-					'label'              => __( 'Mode', Forminator::DOMAIN ),
+					'label'              => __( 'Mode', 'forminator' ),
 					'transform_callback' => 'strtoupper',
 				);
 				$mapper['sub_metas'][] = array(
 					'key'                => 'status',
-					'label'              => __( 'Status', Forminator::DOMAIN ),
+					'label'              => __( 'Status', 'forminator' ),
 					'transform_callback' => 'ucfirst',
 				);
 				$mapper['sub_metas'][] = array(
 					'key'                => 'amount',
-					'label'              => __( 'Amount', Forminator::DOMAIN ),
+					'label'              => __( 'Amount', 'forminator' ),
 				);
 				$mapper['sub_metas'][] = array(
 					'key'                => 'currency',
-					'label'              => __( 'Currency', Forminator::DOMAIN ),
+					'label'              => __( 'Currency', 'forminator' ),
 					'transform_callback' => 'strtoupper',
 				);
 				$transaction_link_mapper = array(
 					'key'                => 'transaction_id',
-					'label'              => __( 'Transaction ID', Forminator::DOMAIN ),
+					'label'              => __( 'Transaction ID', 'forminator' ),
 				);
 				if ( class_exists( 'Forminator_Stripe' ) ) {
 					$transaction_link_mapper['transform_callback'] = array( 'Forminator_Stripe', 'linkify_transaction_id' );
@@ -799,30 +399,30 @@ class Forminator_CForm_View_Page extends Forminator_Admin_Page {
 				}
 				$mapper['sub_metas'][] = $transaction_link_mapper;
 			} elseif ( 'paypal' === $field_type ) {
-				$mapper['label']       = __( 'PayPal Checkout', Forminator::DOMAIN );
+				$mapper['label']       = __( 'PayPal Checkout', 'forminator' );
 				$mapper['sub_metas']   = array();
 				$mapper['sub_metas'][] = array(
 					'key'                => 'mode',
-					'label'              => __( 'Mode', Forminator::DOMAIN ),
+					'label'              => __( 'Mode', 'forminator' ),
 					'transform_callback' => 'strtoupper',
 				);
 				$mapper['sub_metas'][] = array(
 					'key'                => 'status',
-					'label'              => __( 'Status', Forminator::DOMAIN ),
+					'label'              => __( 'Status', 'forminator' ),
 					'transform_callback' => 'ucfirst',
 				);
 				$mapper['sub_metas'][] = array(
 					'key'                => 'amount',
-					'label'              => __( 'Amount', Forminator::DOMAIN ),
+					'label'              => __( 'Amount', 'forminator' ),
 				);
 				$mapper['sub_metas'][] = array(
 					'key'                => 'currency',
-					'label'              => __( 'Currency', Forminator::DOMAIN ),
+					'label'              => __( 'Currency', 'forminator' ),
 					'transform_callback' => 'strtoupper',
 				);
 				$transaction_link_mapper = array(
 					'key'                => 'transaction_id',
-					'label'              => __( 'Transaction ID', Forminator::DOMAIN ),
+					'label'              => __( 'Transaction ID', 'forminator' ),
 				);
 				if ( class_exists( 'Forminator_PayPal' ) ) {
 					$transaction_link_mapper['transform_callback'] = array( 'Forminator_PayPal', 'linkify_transaction_id' );
@@ -838,20 +438,6 @@ class Forminator_CForm_View_Page extends Forminator_Admin_Page {
 
 		return $mappers;
 	}
-
-	/**
-	 * Nested Mappers
-	 *
-	 * @var array
-	 */
-	protected $fields_mappers = array();
-
-	/**
-	 * Flatten version of mappers
-	 *
-	 * @var array
-	 */
-	protected $flatten_field_mappers = array();
 
 	/**
 	 * Get Fields Mappers based on current state of form
@@ -913,12 +499,12 @@ class Forminator_CForm_View_Page extends Forminator_Admin_Page {
 				<label class="sui-checkbox">
 					<input type="checkbox" id="wpf-cform-check_all">
 					<span></span>
-					<span class="sui-screen-reader-text"><?php esc_html_e( 'Select all entries', Forminator::DOMAIN ); ?></span>
+					<span class="sui-screen-reader-text"><?php esc_html_e( 'Select all entries', 'forminator' ); ?></span>
 				</label>
-				<?php esc_html_e( 'ID', Forminator::DOMAIN ); ?>
+				<?php esc_html_e( 'ID', 'forminator' ); ?>
 			</th>
 
-			<th><?php esc_html_e( 'Date Submitted', Forminator::DOMAIN ); ?></th>
+			<th><?php esc_html_e( 'Date Submitted', 'forminator' ); ?></th>
 
 			<?php
 			foreach ( $fields_headers as $header ) { ?>
@@ -1138,38 +724,6 @@ class Forminator_CForm_View_Page extends Forminator_Admin_Page {
 	}
 
 	/**
-	 * Executor of adding additional items on entry page
-	 *
-	 * @see   Forminator_Addon_Form_Hooks_Abstract::on_render_entry()
-	 * @since 1.1
-	 *
-	 * @param Forminator_Form_Entry_Model $entry_model
-	 *
-	 * @return array
-	 */
-	private function attach_addon_on_render_entry( Forminator_Form_Entry_Model $entry_model ) {
-		$additonal_items = array();
-		//find all registered addons, so history can be shown even for deactivated addons
-		$registered_addons = $this->get_registered_addons();
-
-		foreach ( $registered_addons as $registered_addon ) {
-			try {
-				$form_hooks = $registered_addon->get_addon_form_hooks( $this->form_id );
-				$meta_data  = forminator_find_addon_meta_data_from_entry_model( $registered_addon, $entry_model );
-
-				$addon_additional_items = $form_hooks->on_render_entry( $entry_model, $meta_data );// run and forget
-
-				$addon_additional_items = self::format_addon_additional_items( $addon_additional_items );
-				$additonal_items        = array_merge( $additonal_items, $addon_additional_items );
-			} catch ( Exception $e ) {
-				forminator_addon_maybe_log( $registered_addon->get_slug(), 'failed to on_render_entry', $e->getMessage() );
-			}
-		}
-
-		return $additonal_items;
-	}
-
-	/**
 	 * Ensuring additional items for addons met the entries data requirement
 	 * Format used is,
 	 * - label
@@ -1254,160 +808,6 @@ class Forminator_CForm_View_Page extends Forminator_Admin_Page {
 	}
 
 	/**
-	 * Get Globally registered Addons, avoid overhead for checking registered addons many times
-	 *
-	 * @since 1.5.3
-	 *
-	 * @return array|Forminator_Addon_Abstract[]
-	 */
-	public function get_registered_addons() {
-		if ( empty( self::$registered_addons ) ) {
-			self::$registered_addons = array();
-
-			$registered_addons = forminator_get_registered_addons();
-			foreach ( $registered_addons as $registered_addon ) {
-				try {
-					$form_hooks = $registered_addon->get_addon_form_hooks( $this->form_id );
-					if ( $form_hooks instanceof Forminator_Addon_Form_Hooks_Abstract ) {
-						self::$registered_addons[] = $registered_addon;
-					}
-				} catch ( Exception $e ) {
-					forminator_addon_maybe_log( $registered_addon->get_slug(), 'failed to get_addon_form_hooks', $e->getMessage() );
-				}
-			}
-		}
-
-		return self::$registered_addons;
-	}
-
-	/**
-	 * Get current error message
-	 *
-	 * @return string
-	 *
-	 * @since 1.5.2
-	 */
-	public function error_message() {
-		return $this->error_message;
-	}
-
-	/**
-	 * Parsing filters from $_REQUEST
-	 *
-	 * @since 1.5.4
-	 */
-	protected function parse_filters() {
-		$request_data = $_REQUEST;// WPCS CSRF ok.
-		$data_range   = isset( $request_data['date_range'] ) ? sanitize_text_field( $request_data['date_range'] ) : '';
-		$search       = isset( $request_data['search'] ) ? sanitize_text_field( $request_data['search'] ) : '';
-		$min_id       = isset( $request_data['min_id'] ) ? sanitize_text_field( $request_data['min_id'] ) : '';
-		$max_id       = isset( $request_data['max_id'] ) ? sanitize_text_field( $request_data['max_id'] ) : '';
-
-		$filters = array();
-		if ( ! empty( $data_range ) ) {
-			$date_ranges = explode( ' - ', $data_range );
-			if ( is_array( $date_ranges ) && isset( $date_ranges[0] ) && isset( $date_ranges[1] ) ) {
-				$date_ranges[0] = date( 'Y-m-d', strtotime( $date_ranges[0] ) );
-				$date_ranges[1] = date( 'Y-m-d', strtotime( $date_ranges[1] ) );
-
-				forminator_maybe_log( __METHOD__, $date_ranges );
-				$filters['date_created'] = array( $date_ranges[0], $date_ranges[1] );
-			}
-		}
-		if ( ! empty( $search ) ) {
-			$filters['search'] = $search;
-		}
-
-		if ( ! empty( $min_id ) ) {
-			$min_id = intval( $min_id );
-			if ( $min_id > 0 ) {
-				$filters['min_id'] = $min_id;
-			}
-		}
-
-		if ( ! empty( $max_id ) ) {
-			$max_id = intval( $max_id );
-			if ( $max_id > 0 ) {
-				$filters['max_id'] = $max_id;
-			}
-		}
-
-		$this->filters = $filters;
-	}
-
-	/**
-	 * Parsing order from $_REQUEST
-	 *
-	 * @since 1.5.4
-	 */
-	protected function parse_order() {
-		$valid_order_bys = array(
-			'entries.date_created',
-			'entries.entry_id',
-		);
-
-		$valid_orders = array(
-			'DESC',
-			'ASC',
-		);
-		$request_data = $_REQUEST;// WPCS CSRF ok.
-		$order_by     = 'entries.date_created';
-		if ( isset( $request_data['order_by' ] ) ) {
-			switch ( $request_data['order_by' ] ) {
-				case 'entries.entry_id':
-					$order_by = 'entries.entry_id';
-					break;
-				case 'entries.date_created':
-					$order_by = 'entries.date_created';
-					break;
-				default:
-					break;
-			}
-		}
-
-		$order = 'DESC';
-		if ( isset( $request_data['order'] ) ) {
-			switch ( $request_data['order' ] ) {
-				case 'DESC':
-					$order = 'DESC';
-					break;
-				case 'ASC':
-					$order = 'ASC';
-					break;
-				default:
-					break;
-			}
-		}
-
-		if ( ! empty( $order_by ) ) {
-			if ( ! in_array( $order, $valid_order_bys, true ) ) {
-				$order_by = 'entries.date_created';
-			}
-
-			$this->order['order_by'] = $order_by;
-		}
-
-		if ( ! empty( $order ) ) {
-			$order = strtoupper( $order );
-			if ( ! in_array( $order, $valid_orders, true ) ) {
-				$order = 'DESC';
-			}
-
-			$this->order['order'] = $order;
-		}
-	}
-
-	/**
-	 * Flag whether box filter opened or nope
-	 *
-	 * @since 1.5.4
-	 * @return bool
-	 */
-	protected function is_filter_box_enabled() {
-		return ( ! empty( $this->filters ) && ! empty( $this->order ) );
-	}
-
-	/**
 	 * Get form type param
 	 *
 	 * @since 1.5.4
@@ -1454,7 +854,7 @@ class Forminator_CForm_View_Page extends Forminator_Admin_Page {
 	 * @return bool
 	 */
 	public function has_payments() {
-		$model = Forminator_Custom_Form_Model::model()->load( $this->form_id );
+		$model = Forminator_Form_Model::model()->load( $this->form_id );
 		if ( is_object( $model ) ) {
 			if ( $model->has_stripe_field() || $model->has_paypal_field() ) {
 				return true;

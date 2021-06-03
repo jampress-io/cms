@@ -36,8 +36,9 @@ class Security_Tweak extends Component {
 		$issue_tweaks = $this->get_model()->issues;
 		foreach ( $issue_tweaks as $slug ) {
 			if ( isset( $tweaks[ $slug ] ) ) {
-				$issues[] = array(
-					'label' => ( $tweaks[ $slug ]->to_array() )['title'],
+				$tweak_arr = $tweaks[ $slug ]->to_array();
+				$issues[]  = array(
+					'label' => $tweak_arr['title'],
 					'url'   => network_admin_url( 'admin.php?page=wdf-hardener' ) . '#' . $slug,
 				);
 			}
@@ -51,8 +52,9 @@ class Security_Tweak extends Component {
 		$ignored_tweaks = $this->get_model()->ignore;
 		foreach ( $ignored_tweaks as $slug ) {
 			if ( isset( $tweaks[ $slug ] ) ) {
+				$tweak_arr = $tweaks[ $slug ]->to_array();
 				$ignored[] = array(
-					'label' => ( $tweaks[ $slug ]->to_array() )['title'],
+					'label' => $tweak_arr['title'],
 					'url'   => network_admin_url( 'admin.php?page=wdf-hardener&view=ignored' ) . '#' . $slug,
 				);
 			}
@@ -66,8 +68,9 @@ class Security_Tweak extends Component {
 		$fixed_tweaks = $this->get_model()->fixed;
 		foreach ( $fixed_tweaks as $slug ) {
 			if ( isset( $tweaks[ $slug ] ) ) {
-				$fixed[] = array(
-					'label' => ( $tweaks[ $slug ]->to_array() )['title'],
+				$tweak_arr = $tweaks[ $slug ]->to_array();
+				$fixed[]   = array(
+					'label' => $tweak_arr['title'],
 					'url'   => network_admin_url( 'admin.php?page=wdf-hardener&view=resolved' ) . '#' . $slug,
 				);
 			}

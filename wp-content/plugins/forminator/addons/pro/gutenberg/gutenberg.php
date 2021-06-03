@@ -3,10 +3,10 @@
 /**
  * Addon Name: Gutenberg
  * Version: 1.0
- * Plugin URI:  https://premium.wpmudev.org/
+ * Plugin URI:  https://wpmudev.com/
  * Description: Gutenberg blocks for Forminator
  * Author: WPMU DEV
- * Author URI: http://premium.wpmudev.org
+ * Author URI: http://wpmudev.com
  */
 
 define( 'FORMINATOR_ADDON_GUTENBERG_VERSION', '1.0' );

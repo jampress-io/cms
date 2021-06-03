@@ -14,6 +14,8 @@
 	// as this (slightly) quickens the resolution process and can be more efficiently
 	// minified (especially when both are regularly referenced in your plugin).
 
+	window.paypalHasCondition = false;
+
 	// Create the defaults once
 	var pluginName = "forminatorFrontCondition",
 		defaults = {
@@ -46,8 +48,18 @@
 			this.$el.find( ".forminator-field input, .forminator-row input[type=hidden], .forminator-field select, .forminator-field textarea, .forminator-field-signature").on( 'change input', function (e) {
 				var $element = $(this),
 					element_id = $element.closest('.forminator-col').attr('id');
+
 				if (typeof element_id === 'undefined') {
-					element_id = $element.attr('id');
+                    /*
+                     * data-multi attribute was added to Name field - multiple
+                     * We had to use name attribute for Name multi-field because we cannot change
+                     * the IDs of elements. Some functions rely on the ID text pattern already.
+                     */
+                    if ( $element.attr( 'data-multi' ) === '1' ) {
+					   element_id = $element.attr( 'name' );
+                    } else {
+					   element_id = $element.attr( 'id' );
+                    }
 				}
 				element_id = $.trim( element_id );
 				//lookup condition of fields
@@ -56,7 +68,6 @@
 				if( self.has_siblings(element_id) ) {
 					self.trigger_fake_parent_date_field(element_id);
 				}
-
 				if(!self.has_relations(element_id) && self.has_siblings(element_id)){
 					self.trigger_siblings(element_id);
 					return false;
@@ -65,6 +76,8 @@
 				self.process_relations( element_id, $element, e );
 
 				self.paypal_button_condition();
+
+				self.maybe_clear_upload_container();
 			});
 
             // Trigger change event to textarea that has tinyMCE editor
@@ -83,7 +96,7 @@
 
 			this.$el.find('.forminator-button.forminator-button-back, .forminator-button.forminator-button-next').click(function (e) {
 				e.preventDefault();
-				form.find('.forminator-field input, .forminator-row input[type=hidden], .forminator-field select, .forminator-field textarea').change();
+				form.find('.forminator-field input:not([type="file"]), .forminator-row input[type=hidden], .forminator-field select, .forminator-field textarea').change();
 				$(this).trigger('forminator.front.pagination.move');
 			});
 			// Simulate change
@@ -103,6 +116,13 @@
 					conditions = logic.conditions, // Conditions rules
 					matches = 0 // Number of matches
 				;
+
+				// If paypal has logic set paypalHasCondition to true
+				if ( 0 === relation.indexOf( 'paypal' ) ) {
+					if ( 0 !== logic.length ) {
+						window.paypalHasCondition = true;
+					}
+				}
 
 				conditions.forEach(function (condition) {
 					// If rule is applicable save in matches
@@ -161,7 +181,7 @@
 		 */
 		on_restart: function (e) {
 			// restart condition
-			this.$el.find('.forminator-field input, .forminator-row input[type=hidden], .forminator-field select, .forminator-field textarea').change();
+			this.$el.find('.forminator-field input:not([type="file"]), .forminator-row input[type=hidden], .forminator-field select, .forminator-field textarea').change();
 		},
 
 		/**
@@ -207,6 +227,10 @@
 		},
 
 		get_field_value: function (element_id) {
+            if ( '' === element_id ) {
+                return '';
+            }
+
 			var $element = this.get_form_field(element_id),
 				value = $element.val();
 
@@ -222,6 +246,11 @@
 						value.push($(this).val().toLowerCase());
 					}
 				});
+
+				// if value is empty, return it as null
+                if ( 0 === value.length ) {
+                    value = null;
+                }
 			} else if ( this.field_is_textarea_wpeditor( $element ) ) {
                 if ( typeof tinyMCE !== 'undefined' && tinyMCE.activeEditor ) {
                     value = tinyMCE.activeEditor.getContent();
@@ -233,6 +262,9 @@
 		},
 
 		get_date_field_value: function(element_id){
+            if ( '' === element_id ) {
+                return '';
+            }
 
 			var $element = this.get_form_field(element_id);
 			//element may not be a real jQuery element for fake virtual parent date field
@@ -346,6 +378,10 @@
 			return is_checkbox;
 		},
 
+		field_is_select: function ($element) {
+			return $element.is('select');
+		},
+
         field_is_textarea_wpeditor: function ($element) {
 			var is_textarea_wpeditor = false;
 			$element.each(function () {
@@ -359,6 +395,16 @@
 			return is_textarea_wpeditor;
 		},
 
+        field_is_upload: function ($element) {
+			var is_upload = false;
+
+			if ( -1 !== $element.indexOf( 'upload' ) ) {
+				is_upload = true;
+			}
+
+			return is_upload;
+		},
+
 		// used in forminatorFrontCalculate
 		get_form_field: function (element_id) {
 			//find element by suffix -field on id input (default behavior)
@@ -367,16 +413,16 @@
 				$element = this.$el.find('.' + element_id + '-payment');
 				if ($element.length === 0) {
 					//find element by its on name (for radio on singlevalue)
-					$element = this.$el.find('input[name=' + element_id + ']');
+					$element = this.$el.find('input[name="' + element_id + '"]');
 					if ($element.length === 0) {
 						// for text area that have uniqid, so we check its name instead
-						$element = this.$el.find('textarea[name=' + element_id + ']');
+						$element = this.$el.find('textarea[name="' + element_id + '"]');
 						if ($element.length === 0) {
 							//find element by its on name[] (for checkbox on multivalue)
 							$element = this.$el.find('input[name="' + element_id + '[]"]');
 							if ($element.length === 0) {
 								//find element by select name
-								$element = this.$el.find('select[name=' + element_id + ']');
+								$element = this.$el.find('select[name="' + element_id + '"]');
 								if ($element.length === 0) {
 									//find element by direct id (for name field mostly)
 									//will work for all field with element_id-[somestring]
@@ -397,16 +443,16 @@
 			var $element = this.$el.find('#' + element_id + '-field');
 			if ($element.length === 0) {
 				//find element by its on name (for radio on singlevalue)
-				$element = this.$el.find('input[name=' + element_id + ']');
+				$element = this.$el.find('input[name="' + element_id + '"]');
 				if ($element.length === 0) {
 					// for text area that have uniqid, so we check its name instead
-					$element = this.$el.find('textarea[name=' + element_id + ']');
+					$element = this.$el.find('textarea[name="' + element_id + '"]');
 					if ($element.length === 0) {
 						//find element by its on name[] (for checkbox on multivalue)
 						$element = this.$el.find('input[name="' + element_id + '[]"]');
 						if ($element.length === 0) {
 							//find element by select name
-							$element = this.$el.find('select[name=' + element_id + ']');
+							$element = this.$el.find('select[name="' + element_id + '"]');
 							if ($element.length === 0) {
 								//find element by direct id (for name field mostly)
 								//will work for all field with element_id-[somestring]
@@ -433,6 +479,10 @@
 		},
 
 		has_siblings: function(element){
+            if ( '' === element ) {
+                return false;
+            }
+
 			element = this.get_form_field(element);
 			if( element.data('parent') ) return true;
 			return false;
@@ -645,7 +695,7 @@
 				$paypal_field = this.$el.find('.forminator-pagination-footer').find('#forminator-paypal-submit')
 				;
 			if( 'submit' === element_id ) {
-				var $pagination_field = this.$el.find('.forminator-pagination-footer').find('.forminator-button-submit')
+				var $pagination_field = this.$el.find('.forminator-pagination-footer').find('.forminator-button-submit');
 			} else {
 				var $pagination_field = this.$el.find('.forminator-pagination-footer').find('#forminator-paypal-submit');
 			}
@@ -655,7 +705,6 @@
 				if (type === "valid") {
 					$row_field.removeClass('forminator-hidden');
 					$column_field.removeClass('forminator-hidden');
-					$pagination_field.removeClass('forminator-hidden');
 					$pagination_next_field.removeClass('forminator-hidden');
 					if ($hidden_upload.length > 0) {
 						$hidden_upload.addClass('do-validate');
@@ -666,12 +715,20 @@
 					if ($hidden_signature.length > 0) {
 						$hidden_signature.addClass('do-validate');
 					}
-					if ($paypal_field.length > 0) {
-						$paypal_field.removeClass('forminator-hidden');
+					if ( 'submit' === element_id ) {
+						$pagination_field.removeClass('forminator-hidden');
+					}
+					if ( 0 === element_id.indexOf( 'paypal' ) ) {
+						$pagination_field.removeClass('forminator-hidden');
 					}
 				} else {
 					$column_field.addClass('forminator-hidden');
-					$pagination_field.addClass('forminator-hidden');
+					if ( 'submit' === element_id ) {
+						$pagination_field.addClass('forminator-hidden');
+					}
+					if ( 0 === element_id.indexOf( 'paypal' ) ) {
+						$pagination_field.addClass('forminator-hidden');
+					}
 					if ($hidden_upload.length > 0) {
 						$hidden_upload.removeClass('do-validate');
 					}
@@ -727,21 +784,25 @@
 			var $element = this.get_form_field(element_id),
 				value = this.get_field_value(element_id)
 			;
+			if ( $element.hasClass('forminator-cleared-value') ) {
+				return;
+			}
+			$element.addClass('forminator-cleared-value');
 
 			// Execute only on human action
 			if (e.originalEvent !== undefined) {
 				if (this.field_is_radio($element)) {
-					$element.data('previous-value', value);
+					$element.attr('data-previous-value', value);
 					$element.removeAttr('checked');
 				} else if (this.field_is_checkbox($element)) {
 					$element.each(function () {
 						if($(this).is(':checked')) {
-							$(this).data('previous-value', value);
+							$(this).attr('data-previous-value', value);
 						}
 						$(this).removeAttr('checked');
 					});
 				} else {
-					$element.data('previous-value', value);
+					$element.attr('data-previous-value', value);
 					$element.val('');
 				}
 			}
@@ -749,28 +810,40 @@
 
 		restore_value: function(element_id, e) {
 			var $element = this.get_form_field(element_id),
-				value = $element.data('previous-value')
+				value = $element.attr('data-previous-value')
 			;
+			if ( ! $element.hasClass('forminator-cleared-value') ) {
+				return;
+			}
+
+			// Execute only on human action
+			if (e.originalEvent === undefined) {
+				return;
+			}
+
+			$element.removeClass('forminator-cleared-value');
+
+			// Return after class is removed if field is upload
+			if ( this.field_is_upload( element_id ) ) {
+				return;
+			}
 
 			if(!value) return;
 
-			// Execute only on human action
-			if (e.originalEvent !== undefined) {
-				if (this.field_is_radio($element)) {
-					$element.val([value]);
-				} else if (this.field_is_checkbox($element)) {
-					$element.each(function () {
-						var value = $(this).data('previous-value');
+			if (this.field_is_radio($element)) {
+				$element.val([value]);
+			} else if (this.field_is_checkbox($element)) {
+				$element.each(function () {
+					var value = $(this).attr('data-previous-value');
 
-						if (!value) return;
+					if (!value) return;
 
-						if (value.indexOf($(this).val()) >= 0) {
-							$(this).attr("checked", "checked");
-						}
-					});
-				} else {
-					$element.val(value);
-				}
+					if (value.indexOf($(this).val()) >= 0) {
+						$(this).attr("checked", "checked");
+					}
+				});
+			} else {
+				$element.val(value);
 			}
 		},
 
@@ -828,6 +901,19 @@
 					this.$el.find('.forminator-button-submit').closest('.forminator-row').addClass('forminator-hidden');
 				}
 			}
+		},
+
+		maybe_clear_upload_container: function() {
+			this.$el.find( '.forminator-row.forminator-hidden input[type="file"]' ).each( function () {
+				if ( '' === $(this).val() ) {
+					if ( $(this).parent().hasClass( 'forminator-multi-upload' ) ) {
+						$(this).parent().siblings( '.forminator-uploaded-files' ).empty();
+					} else {
+						$(this).siblings( 'span' ).text( $(this).siblings( 'span' ).data( 'empty-text' ) );
+						$(this).siblings( '.forminator-button-delete' ).hide();
+					}
+				}
+			});
 		},
 	});
 

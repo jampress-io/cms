@@ -6,7 +6,7 @@ $section = isset( $_GET['section'] ) ? $_GET['section'] : 'dashboard'; // wpcs c
 <div class="sui-box" data-nav="import" style="<?php echo esc_attr( 'import' !== $section ? 'display: none;' : '' ); ?>">
 
 	<div class="sui-box-header">
-		<h2 class="sui-box-title"><?php esc_html_e( 'Import', Forminator::DOMAIN ); ?></h2>
+		<h2 class="sui-box-title"><?php esc_html_e( 'Import', 'forminator' ); ?></h2>
 	</div>
 
 	<form class="forminator-settings-save" action="">
@@ -17,9 +17,9 @@ $section = isset( $_GET['section'] ) ? $_GET['section'] : 'dashboard'; // wpcs c
 
 				<div class="sui-box-settings-col-1">
 
-					<h2 class="sui-settings-label"><?php esc_html_e( 'Third-Party Plugins', Forminator::DOMAIN ); ?></h2>
+					<h2 class="sui-settings-label"><?php esc_html_e( 'Third-Party Plugins', 'forminator' ); ?></h2>
 
-					<p class="sui-description"><?php esc_html_e( 'Use this tool to import your existing forms from other third-party form builder plugins automatically to Forminator.', Forminator::DOMAIN ); ?></p>
+					<p class="sui-description"><?php esc_html_e( 'Use this tool to import your existing forms from other third-party form builder plugins automatically to Forminator.', 'forminator' ); ?></p>
 
 				</div>
 
@@ -27,9 +27,9 @@ $section = isset( $_GET['section'] ) ? $_GET['section'] : 'dashboard'; // wpcs c
 
 					<div class="sui-form-field">
 
-						<h3 class="sui-settings-label"><?php esc_html_e( 'Contact Form 7', Forminator::DOMAIN ); ?></h3>
+						<h3 class="sui-settings-label"><?php esc_html_e( 'Contact Form 7', 'forminator' ); ?></h3>
 
-						<p class="sui-description" style="margin-bottom: 10px;"><?php esc_html_e( 'Import your existing forms and the relevant plugin settings from the Contact Form 7. The importer supports a few widely used add-ons as well.', Forminator::DOMAIN ); ?></p>
+						<p class="sui-description" style="margin-bottom: 10px;"><?php esc_html_e( 'Import your existing forms and the relevant plugin settings from the Contact Form 7. The importer supports a few widely used add-ons as well.', 'forminator' ); ?></p>
 
 						<?php if ( forminator_is_import_plugin_enabled( 'cf7' ) ) : ?>
 
@@ -40,13 +40,13 @@ $section = isset( $_GET['section'] ) ? $_GET['section'] : 'dashboard'; // wpcs c
 								data-modal-title=""
 								data-nonce="<?php echo esc_attr( wp_create_nonce( 'forminator_popup_import_cform_cf7' ) ); ?>"
 							>
-								<i class="sui-icon-upload-cloud" aria-hidden="true"></i> <?php esc_html_e( 'Import', Forminator::DOMAIN ); ?>
+								<i class="sui-icon-upload-cloud" aria-hidden="true"></i> <?php esc_html_e( 'Import', 'forminator' ); ?>
 							</button>
 
 						<?php else : ?>
 
 							<div class="sui-notice" style="margin-top: 10px;">
-								<p><?php echo esc_html__( 'Contact Form 7 plugin is not active on your website.', Forminator::DOMAIN ); ?></p>
+								<p><?php echo esc_html__( 'Contact Form 7 plugin is not active on your website.', 'forminator' ); ?></p>
 							</div>
 
 						<?php endif; ?>
@@ -57,9 +57,9 @@ $section = isset( $_GET['section'] ) ? $_GET['section'] : 'dashboard'; // wpcs c
 
 						<div class="sui-form-field">
 
-							<h3 class="sui-settings-label"><?php esc_html_e( 'Ninja Forms', Forminator::DOMAIN ); ?></h3>
+							<h3 class="sui-settings-label"><?php esc_html_e( 'Ninja Forms', 'forminator' ); ?></h3>
 
-							<p class="sui-description" style="margin-bottom: 10px;"><?php esc_html_e( 'Import your forms from Ninja Forms', Forminator::DOMAIN ); ?></p>
+							<p class="sui-description" style="margin-bottom: 10px;"><?php esc_html_e( 'Import your forms from Ninja Forms', 'forminator' ); ?></p>
 
 							<button
 								role="button"
@@ -68,7 +68,7 @@ $section = isset( $_GET['section'] ) ? $_GET['section'] : 'dashboard'; // wpcs c
 								data-modal-title=""
 								data-nonce="<?php echo esc_attr( wp_create_nonce( 'forminator_popup_import_cform_ninjaforms' ) ); ?>"
 							>
-								<i class="sui-icon-upload-cloud" aria-hidden="true"></i> <?php esc_html_e( 'Import Ninja Forms', Forminator::DOMAIN ); ?>
+								<i class="sui-icon-upload-cloud" aria-hidden="true"></i> <?php esc_html_e( 'Import Ninja Forms', 'forminator' ); ?>
 							</button>
 
 						</div>
@@ -79,9 +79,9 @@ $section = isset( $_GET['section'] ) ? $_GET['section'] : 'dashboard'; // wpcs c
 
 						<div class="sui-form-field">
 
-							<h3 class="sui-settings-label"><?php esc_html_e( 'Gravity Forms', Forminator::DOMAIN ); ?></h3>
+							<h3 class="sui-settings-label"><?php esc_html_e( 'Gravity Forms', 'forminator' ); ?></h3>
 
-							<p class="sui-description" style="margin-bottom: 10px;"><?php esc_html_e( 'Import your forms from Gravity Forms', Forminator::DOMAIN ); ?></p>
+							<p class="sui-description" style="margin-bottom: 10px;"><?php esc_html_e( 'Import your forms from Gravity Forms', 'forminator' ); ?></p>
 
 							<button
 								role="button"
@@ -90,7 +90,7 @@ $section = isset( $_GET['section'] ) ? $_GET['section'] : 'dashboard'; // wpcs c
 								data-modal-title=""
 								data-nonce="<?php echo esc_attr( wp_create_nonce( 'forminator_popup_import_cform_gravityforms' ) ); ?>"
 							>
-								<i class="sui-icon-upload-cloud" aria-hidden="true"></i> <?php esc_html_e( 'Import Gravity Forms', Forminator::DOMAIN ); ?>
+								<i class="sui-icon-upload-cloud" aria-hidden="true"></i> <?php esc_html_e( 'Import Gravity Forms', 'forminator' ); ?>
 							</button>
 
 						</div>

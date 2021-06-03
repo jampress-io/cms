@@ -33,7 +33,7 @@ class Forminator_Addon_Hubspot_Quiz_Settings extends Forminator_Addon_Quiz_Setti
 
 		$this->_update_quiz_settings_error_message = __(
 			'The update to your settings for this quiz failed, check the quiz input and try again.',
-			Forminator::DOMAIN
+			'forminator'
 		);
 	}
 
@@ -91,7 +91,7 @@ class Forminator_Addon_Hubspot_Quiz_Settings extends Forminator_Addon_Quiz_Setti
 
 		$quiz_questions = $this->get_quiz_fields();
 		$quiz_fields    = array(
-			'quiz-name' => __( 'Quiz Name', Forminator::DOMAIN ),
+			'quiz-name' => __( 'Quiz Name', 'forminator' ),
 		);
 		foreach ( $quiz_questions as $quiz_question ) {
 			// collect element ids
@@ -99,11 +99,11 @@ class Forminator_Addon_Hubspot_Quiz_Settings extends Forminator_Addon_Quiz_Setti
 			$quiz_fields[ $quiz_question['slug'] ] = $quiz_question['title'];
 		}
 		if ( 'knowledge' === $this->quiz->quiz_type ) {
-			$quiz_fields['correct-answers'] = __( 'Correct Answers', Forminator::DOMAIN );
-			$quiz_fields['total-answers']   = __( 'Total Answers', Forminator::DOMAIN );
+			$quiz_fields['correct-answers'] = __( 'Correct Answers', 'forminator' );
+			$quiz_fields['total-answers']   = __( 'Total Answers', 'forminator' );
 			array_push( $forminator_quiz_element_ids, 'quiz-name', 'correct-answers', 'total-answers' );
 		} elseif ( 'nowrong' === $this->quiz->quiz_type ) {
-			$quiz_fields['result-answers'] = __( 'Result Answer', Forminator::DOMAIN );
+			$quiz_fields['result-answers'] = __( 'Result Answer', 'forminator' );
 			array_push( $forminator_quiz_element_ids, 'quiz-name', 'result-answers' );
 		}
 
@@ -125,10 +125,10 @@ class Forminator_Addon_Hubspot_Quiz_Settings extends Forminator_Addon_Quiz_Setti
 		unset( $submitted_data['multi_id'] );
 
 		$fields                    = array(
-			'email'     => __( 'Email Address', Forminator::DOMAIN ),
-			'firstname' => __( 'First Name', Forminator::DOMAIN ),
-			'lastname'  => __( 'Last Name', Forminator::DOMAIN ),
-			'jobtitle'  => __( 'Job Title', Forminator::DOMAIN ),
+			'email'     => __( 'Email Address', 'forminator' ),
+			'firstname' => __( 'First Name', 'forminator' ),
+			'lastname'  => __( 'Last Name', 'forminator' ),
+			'jobtitle'  => __( 'Job Title', 'forminator' ),
 		);
 		$template_params['fields'] = $fields;
 		try {
@@ -178,7 +178,7 @@ class Forminator_Addon_Hubspot_Quiz_Settings extends Forminator_Addon_Quiz_Setti
 						$element_id = $fields_map[ $key ];
 						if ( ! in_array( $element_id, $forminator_field_element_ids, true ) ) {
 							$input_exceptions->add_input_exception(/* translators: ... */
-								sprintf( __( 'Please assign valid field for %s', Forminator::DOMAIN ), $title ),
+								sprintf( __( 'Please assign valid field for %s', 'forminator' ), $title ),
 								$key . '_error'
 							);
 							continue;
@@ -219,14 +219,14 @@ class Forminator_Addon_Hubspot_Quiz_Settings extends Forminator_Addon_Quiz_Setti
 
 		if ( $this->map_fields_is_completed( array( 'multi_id' => $multi_id ) ) ) {
 			$buttons['disconnect']['markup'] = Forminator_Addon_Abstract::get_button_markup(
-				esc_html__( 'Deactivate', Forminator::DOMAIN ),
+				esc_html__( 'Deactivate', 'forminator' ),
 				'sui-button-ghost sui-tooltip sui-tooltip-top-center forminator-addon-form-disconnect',
-				esc_html__( 'Deactivate this HubSpot Integration from this Form.', Forminator::DOMAIN )
+				esc_html__( 'Deactivate this HubSpot Integration from this Form.', 'forminator' )
 			);
 		}
 
 		$buttons['next']['markup'] = '<div class="sui-actions-right">' .
-		                             Forminator_Addon_Abstract::get_button_markup( esc_html__( 'Continue', Forminator::DOMAIN ), 'forminator-addon-next' ) .
+		                             Forminator_Addon_Abstract::get_button_markup( esc_html__( 'Continue', 'forminator' ), 'forminator-addon-next' ) .
 		                             '</div>';
 
 		return array(
@@ -283,7 +283,7 @@ class Forminator_Addon_Hubspot_Quiz_Settings extends Forminator_Addon_Quiz_Setti
 		$template = forminator_addon_hubspot_dir() . 'views/quiz-settings/create-ticket.php';
 
 		if ( ! isset( $submitted_data['multi_id'] ) ) {
-			return $this->get_force_closed_wizard( __( 'Please pick valid connection', Forminator::DOMAIN ) );
+			return $this->get_force_closed_wizard( __( 'Please pick valid connection', 'forminator' ) );
 		}
 
 		$multi_id = $submitted_data['multi_id'];
@@ -371,11 +371,11 @@ class Forminator_Addon_Hubspot_Quiz_Settings extends Forminator_Addon_Quiz_Setti
 				}
 			}
 			if ( empty( $pipeline ) ) {
-				throw new Forminator_Addon_Hubspot_Exception( __( 'No pipeline found on your HubSpot account. Please create one.', Forminator::DOMAIN ) );
+				throw new Forminator_Addon_Hubspot_Exception( __( 'No pipeline found on your HubSpot account. Please create one.', 'forminator' ) );
 			}
 
 			if ( empty( $status ) ) {
-				throw new Forminator_Addon_Hubspot_Exception( __( 'No status found on your HubSpot account. Please create one.', Forminator::DOMAIN ) );
+				throw new Forminator_Addon_Hubspot_Exception( __( 'No status found on your HubSpot account. Please create one.', 'forminator' ) );
 			}
 
 			$template_params['status']   = $status;
@@ -455,18 +455,18 @@ class Forminator_Addon_Hubspot_Quiz_Settings extends Forminator_Addon_Quiz_Setti
 		$buttons = array();
 		if ( $this->create_ticket_is_completed( array( 'multi_id' => $multi_id ) ) ) {
 			$buttons['disconnect']['markup'] = Forminator_Addon_Abstract::get_button_markup(
-				esc_html__( 'Deactivate', Forminator::DOMAIN ),
+				esc_html__( 'Deactivate', 'forminator' ),
 				'sui-button-ghost sui-tooltip sui-tooltip-top-center forminator-addon-form-disconnect',
-				esc_html__( 'Deactivate this HubSpot Integration from this Form.', Forminator::DOMAIN )
+				esc_html__( 'Deactivate this HubSpot Integration from this Form.', 'forminator' )
 			);
 			$buttons['next']['markup']       = '<div class="sui-actions-right">' .
-			                                   Forminator_Addon_Abstract::get_button_markup( esc_html__( 'Update', Forminator::DOMAIN ), 'forminator-addon-next sui-button-blue' ) .
+			                                   Forminator_Addon_Abstract::get_button_markup( esc_html__( 'Update', 'forminator' ), 'forminator-addon-next sui-button-blue' ) .
 			                                   '</div>';
 		} else if ( ( isset( $submitted_data['create_ticket'] ) && '1' === $submitted_data['create_ticket'] ) && empty( $settings['re-authorize'] ) ) {
 			$buttons = array();
 		} else {
 			$buttons['next']['markup'] = '<div class="sui-actions-right" id="' . $buttonID . '">' .
-			                             Forminator_Addon_Abstract::get_button_markup( esc_html__( 'Activate', Forminator::DOMAIN ), 'forminator-addon-next sui-button-blue' ) .
+			                             Forminator_Addon_Abstract::get_button_markup( esc_html__( 'Activate', 'forminator' ), 'forminator-addon-next sui-button-blue' ) .
 			                             '</div>';
 		}
 

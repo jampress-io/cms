@@ -31,7 +31,7 @@ class Forminator_Addon_Mailchimp_Quiz_Settings extends Forminator_Addon_Quiz_Set
 
 		$this->_update_quiz_settings_error_message = __(
 			'The update to your settings for this quiz failed, check the quiz input and try again.',
-			Forminator::DOMAIN
+			'forminator'
 		);
 	}
 
@@ -102,7 +102,7 @@ class Forminator_Addon_Mailchimp_Quiz_Settings extends Forminator_Addon_Quiz_Set
 
 			// Get mailchimp list to be selected, bail on empty
 			if ( empty( $mail_lists ) ) {
-				throw new Forminator_Addon_Mailchimp_Exception( 'Your Mailchimp Lists is empty, please create one.' );
+				throw new Forminator_Addon_Mailchimp_Exception( 'Your Mailchimp Audiences is empty, please create one.' );
 			}
 
 			$html_select_mail_list  = '<div class="forminator-select-refresh">';
@@ -118,7 +118,7 @@ class Forminator_Addon_Mailchimp_Quiz_Settings extends Forminator_Addon_Quiz_Set
 				$mail_list_name = $this->get_choosen_mail_list_name( $mail_lists, $submitted_data );
 				forminator_addon_maybe_log( __METHOD__, '$mail_list_name', $mail_list_name );
 				if ( empty( $mail_list_name ) ) {
-					throw new Forminator_Addon_Mailchimp_Quiz_Settings_Exception( __( 'Please select valid Email List', Forminator::DOMAIN ), 'mail_list_id' );
+					throw new Forminator_Addon_Mailchimp_Quiz_Settings_Exception( __( 'Please select a valid Email Audience', 'forminator' ), 'mail_list_id' );
 				}
 				$this->addon_quiz_settings['mail_list_id']   = $submitted_data['mail_list_id'];
 				$this->addon_quiz_settings['mail_list_name'] = $mail_list_name;
@@ -146,7 +146,7 @@ class Forminator_Addon_Mailchimp_Quiz_Settings extends Forminator_Addon_Quiz_Set
 
 			$html_field_mail_list
 				= '<div class="sui-form-field">
-						<label class="sui-label">' . __( 'Email List', Forminator::DOMAIN ) . '</label>
+						<label class="sui-label">' . __( 'Email Audience', 'forminator' ) . '</label>
 						' . $html_select_mail_list . '
 					</div>';
 
@@ -156,7 +156,7 @@ class Forminator_Addon_Mailchimp_Quiz_Settings extends Forminator_Addon_Quiz_Set
 			if ( isset( $input_error_messages['mail_list_id'] ) ) {
 				$html_field_mail_list
 					= '<div class="sui-form-field sui-form-field-error">
-							<label class="sui-label">' . __( 'Email List', Forminator::DOMAIN ) . '</label>
+							<label class="sui-label">' . __( 'Email Audience', 'forminator' ) . '</label>
 							' . $html_select_mail_list . '
 							<span class="sui-error-message">' . esc_html( $input_error_messages['mail_list_id'] ) . '</span>
 						</div>';
@@ -170,32 +170,32 @@ class Forminator_Addon_Mailchimp_Quiz_Settings extends Forminator_Addon_Quiz_Set
 		// add disconnect button if already is_quiz_connected
 		if ( $this->addon->is_quiz_connected( $this->quiz_id ) ) {
 			$buttons['disconnect']['markup'] = Forminator_Addon_Mailchimp::get_button_markup(
-				esc_html__( 'Deactivate', Forminator::DOMAIN ),
+				esc_html__( 'Deactivate', 'forminator' ),
 				'sui-button-ghost sui-tooltip sui-tooltip-top-center forminator-addon-form-disconnect',
-				esc_html__( 'Deactivate Mailchimp from this quiz.', Forminator::DOMAIN )
+				esc_html__( 'Deactivate Mailchimp from this quiz.', 'forminator' )
 			);
 		}
 
 		$buttons['next']['markup'] = '<div class="sui-actions-right">' .
-									Forminator_Addon_Mailchimp::get_button_markup( esc_html__( 'Next', Forminator::DOMAIN ), 'forminator-addon-next' ) .
+									Forminator_Addon_Mailchimp::get_button_markup( esc_html__( 'Next', 'forminator' ), 'forminator-addon-next' ) .
 									'</div>';
 
 		$gdpr_fields = '';
 		if ( Forminator_Addon_Mailchimp::is_enable_gdpr() ) {
 			$gdpr_fields = '<div class="sui-form-field">' .
-						'<label class="sui-label">' . __( 'Enable GDPR', Forminator::DOMAIN ) . '</label>
+						'<label class="sui-label">' . __( 'Enable GDPR', 'forminator' ) . '</label>
 								<input type="checkbox" name="enable_gdpr" value="1" ' . checked( 1, $current_data['enable_double_opt_in'], false ) . '>
 							</div>
 
 							<div class="sui-form-field">
-								<label class="sui-label">' . __( 'GDPR Text', Forminator::DOMAIN ) . '</label>
+								<label class="sui-label">' . __( 'GDPR Text', 'forminator' ) . '</label>
 								<textarea name="gdpr_text">' . $current_data['gdpr_text'] . '</textarea>
 							</div>';
 		}
 
 		return array(
-			'html'       => '<div class="sui-box-content integration-header"><h3 class="sui-box-title" id="dialogTitle2">' . __( 'Choose your list', Forminator::DOMAIN ) . '</h3>
-							<span class="sui-description" style="margin-top: 20px;">' . __( 'Choose the list you want to send quiz data to.', Forminator::DOMAIN ) . '</span>
+			'html'       => '<div class="sui-box-content integration-header"><h3 class="sui-box-title" id="dialogTitle2">' . __( 'Choose your audience', 'forminator' ) . '</h3>
+							<span class="sui-description" style="margin-top: 20px;">' . __( 'Choose the audience you want to send quiz data to.', 'forminator' ) . '</span>
 							' . $error_message . '</div>
 							<form enctype="multipart/form-data">
 								' . $html_field_mail_list . '
@@ -207,7 +207,7 @@ class Forminator_Addon_Mailchimp_Quiz_Settings extends Forminator_Addon_Quiz_Set
 										value="1" ' . checked( 1, $current_data['enable_double_opt_in'], false ) . '>
 										<span class="sui-toggle-slider"></span>
 									</label>
-									<span class="sui-toggle-label" for="forminator_addon_mailchimp_enable_double_opt_in">' . __( 'Use Double Opt in', Forminator::DOMAIN ) . '</span>
+									<span class="sui-toggle-label" for="forminator_addon_mailchimp_enable_double_opt_in">' . __( 'Use Double Opt in', 'forminator' ) . '</span>
 								</div>
 								' . $gdpr_fields . '
 							</form>',
@@ -340,14 +340,14 @@ class Forminator_Addon_Mailchimp_Quiz_Settings extends Forminator_Addon_Quiz_Set
 		$buttons = array();
 		if ( $this->addon->is_quiz_connected( $this->quiz_id ) ) {
 			$buttons['disconnect']['markup'] = Forminator_Addon_Mailchimp::get_button_markup(
-				esc_html__( 'Deactivate', Forminator::DOMAIN ),
+				esc_html__( 'Deactivate', 'forminator' ),
 				'sui-button-ghost sui-tooltip sui-tooltip-top-center forminator-addon-form-disconnect',
-				esc_html__( 'Deactivate Mailchimp from this quiz.', Forminator::DOMAIN )
+				esc_html__( 'Deactivate Mailchimp from this quiz.', 'forminator' )
 			);
 		}
 
 		$buttons['next']['markup'] = '<div class="sui-actions-right">' .
-									Forminator_Addon_Mailchimp::get_button_markup( esc_html__( 'Save', Forminator::DOMAIN ), 'sui-button-primary forminator-addon-finish' ) .
+									Forminator_Addon_Mailchimp::get_button_markup( esc_html__( 'Save', 'forminator' ), 'sui-button-primary forminator-addon-finish' ) .
 									'</div>';
 
 		$notification = array();
@@ -360,8 +360,8 @@ class Forminator_Addon_Mailchimp_Quiz_Settings extends Forminator_Addon_Quiz_Set
 		}
 
 		return array(
-			'html'         => '<div class="sui-box-content integration-header"><h3 class="sui-box-title" id="dialogTitle2">' . __( 'Assign Fields', Forminator::DOMAIN ) . '</h3>
-							<span class="sui-description" style="margin-top: 20px;">' . __( 'Lastly, match up your quiz fields with your campaign fields to make sure we\'re sending data to the right place.', Forminator::DOMAIN ) . '</span>
+			'html'         => '<div class="sui-box-content integration-header"><h3 class="sui-box-title" id="dialogTitle2">' . __( 'Assign Fields', 'forminator' ) . '</h3>
+							<span class="sui-description" style="margin-top: 20px;">' . __( 'Lastly, match up your quiz fields with your campaign fields to make sure we\'re sending data to the right place.', 'forminator' ) . '</span>
 							' . $error_message . '</div>
 							<form enctype="multipart/form-data">
 								' . $html_input_map_fields . '
@@ -390,33 +390,33 @@ class Forminator_Addon_Mailchimp_Quiz_Settings extends Forminator_Addon_Quiz_Set
 
 		$quiz_questions = $this->get_quiz_fields();
 		$quiz_fields    = array(
-			'quiz-name'       => __( 'Quiz Name', Forminator::DOMAIN ),
+			'quiz-name'       => __( 'Quiz Name', 'forminator' ),
 		);
 		foreach ( $quiz_questions as $quiz_question ) {
 			$quiz_fields[ $quiz_question['slug'] ] = $quiz_question['title'];
 		}
 		if ( 'knowledge' === $this->quiz->quiz_type ) {
-			$quiz_fields['correct-answers'] = __( 'Correct Answers', Forminator::DOMAIN );
-			$quiz_fields['total-answers']   = __( 'Total Answers', Forminator::DOMAIN );
+			$quiz_fields['correct-answers'] = __( 'Correct Answers', 'forminator' );
+			$quiz_fields['total-answers']   = __( 'Total Answers', 'forminator' );
 		} elseif ( 'nowrong' === $this->quiz->quiz_type ) {
-			$quiz_fields['result-answers'] = __( 'Result Answer', Forminator::DOMAIN );
+			$quiz_fields['result-answers'] = __( 'Result Answer', 'forminator' );
 		}
 		?>
         <table class="sui-table">
             <thead>
             <tr>
-                <th><?php echo esc_html( __( 'Mailchimp Field', Forminator::DOMAIN ) ); ?></th>
-                <th><?php echo esc_html( __( 'Forminator Field', Forminator::DOMAIN ) ); ?></th>
+                <th><?php echo esc_html( __( 'Mailchimp Field', 'forminator' ) ); ?></th>
+                <th><?php echo esc_html( __( 'Forminator Field', 'forminator' ) ); ?></th>
             </tr>
             </thead>
             <tbody>
             <tr>
-                <td><?php echo esc_html( __( 'Email Address', Forminator::DOMAIN ) ); ?> <span class="integrations-required-field">*</span></td>
+                <td><?php echo esc_html( __( 'Email Address', 'forminator' ) ); ?> <span class="integrations-required-field">*</span></td>
                 <td>
                     <div class="sui-form-field {{$error_css_class_EMAIL}}">
                         <select class="sui-select" name="fields_map[EMAIL]">
 							<?php if ( empty( $email_fields ) ) { ?>
-                                <option value=""><?php esc_html_e( 'None', Forminator::DOMAIN ); ?></option>
+                                <option value=""><?php esc_html_e( 'None', 'forminator' ); ?></option>
 							<?php } else { ?>
 								<?php foreach ( $email_fields as $email_field ) { ?>
                                     <option value="<?php echo esc_attr( $email_field['element_id'] ); ?>"
@@ -443,7 +443,7 @@ class Forminator_Addon_Mailchimp_Quiz_Settings extends Forminator_Addon_Quiz_Set
                             <td>
                                 <div class="sui-form-field {{$error_css_class_<?php echo esc_attr( $item->tag ); ?>_<?php echo esc_attr( $addr ); ?>}}">
                                     <select class="sui-select" name="fields_map[<?php echo esc_attr( $item->tag ); ?>][<?php echo esc_attr( $addr ); ?>]">
-                                        <option value=""><?php esc_html_e( 'None', Forminator::DOMAIN ); ?></option>
+                                        <option value=""><?php esc_html_e( 'None', 'forminator' ); ?></option>
 										<?php foreach ( $this->form_fields as $form_field ) { ?>
                                             <option value="<?php echo esc_attr( $form_field['element_id'] ); ?>"
 												<?php selected( $current_data['fields_map'][ $item->tag ][ $addr ], $form_field['element_id'] ); ?>>
@@ -464,7 +464,7 @@ class Forminator_Addon_Mailchimp_Quiz_Settings extends Forminator_Addon_Quiz_Set
                         <td>
                             <div class="sui-form-field {{$error_css_class_<?php echo esc_attr( $item->tag ); ?>}}">
                                 <select class="sui-select" name="fields_map[<?php echo esc_attr( $item->tag ); ?>]">
-                                    <option value=""><?php esc_html_e( 'None', Forminator::DOMAIN ); ?></option>
+                                    <option value=""><?php esc_html_e( 'None', 'forminator' ); ?></option>
 									<?php foreach ( $this->form_fields as $form_field ) { ?>
                                         <option value="<?php echo esc_attr( $form_field['element_id'] ); ?>"
 											<?php selected( $current_data['fields_map'][ $item->tag ], $form_field['element_id'] ); ?>>
@@ -574,7 +574,7 @@ class Forminator_Addon_Mailchimp_Quiz_Settings extends Forminator_Addon_Quiz_Set
 		$input_exceptions = new Forminator_Addon_Mailchimp_Quiz_Settings_Exception();
 		// EMAIL : super required**
 		if ( ! isset( $post_data['EMAIL'] ) || empty( $post_data['EMAIL'] ) ) {
-			$this->_update_quiz_settings_error_message = __( 'Please choose valid Forminator field for email address.', Forminator::DOMAIN );
+			$this->_update_quiz_settings_error_message = __( 'Please choose valid Forminator field for email address.', 'forminator' );
 			$input_exceptions->add_input_exception( $this->_update_quiz_settings_error_message, 'EMAIL' );
 		}
 
@@ -587,7 +587,7 @@ class Forminator_Addon_Mailchimp_Quiz_Settings extends Forminator_Addon_Quiz_Set
 						if ( ! isset( $post_data[ $mailchimp_required_field->tag ][ $addr ] ) || empty( $post_data[ $mailchimp_required_field->tag ][ $addr ] ) ) {
 							$this->_update_quiz_settings_error_message =
 								/* translators: ... */
-								sprintf( __( '%s is required by Mailchimp, please choose valid Forminator field.', Forminator::DOMAIN ), $mailchimp_required_field->name );
+								sprintf( __( '%s is required by Mailchimp, please choose valid Forminator field.', 'forminator' ), $mailchimp_required_field->name );
 							$input_exceptions->add_sub_input_exception( $this->_update_quiz_settings_error_message, $mailchimp_required_field->tag, $addr );
 						}
 					}
@@ -596,7 +596,7 @@ class Forminator_Addon_Mailchimp_Quiz_Settings extends Forminator_Addon_Quiz_Set
 			if ( ! isset( $post_data[ $mailchimp_required_field->tag ] ) || empty( $post_data[ $mailchimp_required_field->tag ] ) ) {
 				$this->_update_quiz_settings_error_message =
 					/* translators: ... */
-					sprintf( __( '%s is required by Mailchimp, please choose valid Forminator field.', Forminator::DOMAIN ), $mailchimp_required_field->name );
+					sprintf( __( '%s is required by Mailchimp, please choose valid Forminator field.', 'forminator' ), $mailchimp_required_field->name );
 				$input_exceptions->add_input_exception( $this->_update_quiz_settings_error_message, $mailchimp_required_field->tag );
 			}
 		}
@@ -622,14 +622,14 @@ class Forminator_Addon_Mailchimp_Quiz_Settings extends Forminator_Addon_Quiz_Set
 
 						$this->_update_quiz_settings_error_message =
 							/* translators: ... */
-							sprintf( __( 'Please choose valid Forminator field for %s.', Forminator::DOMAIN ), $mailchimp_field_name );
+							sprintf( __( 'Please choose valid Forminator field for %s.', 'forminator' ), $mailchimp_field_name );
 						$input_exceptions->add_sub_input_exception( $this->_update_quiz_settings_error_message, $mailchimp_field_tag, $addr );
 					}
 				}
 			}
 			if ( ! is_array( $forminator_field_id ) && ! in_array( $forminator_field_id, $forminator_field_element_ids, true ) ) {
 				if ( 'EMAIL' === $mailchimp_field_tag ) {
-					$mailchimp_field_name = __( 'Email Address', Forminator::DOMAIN );
+					$mailchimp_field_name = __( 'Email Address', 'forminator' );
 				} else {
 					$mailchimp_field      = $tag_maped_mailchimp_fields[ $mailchimp_field_tag ];
 					$mailchimp_field_name = $mailchimp_field->name;
@@ -637,7 +637,7 @@ class Forminator_Addon_Mailchimp_Quiz_Settings extends Forminator_Addon_Quiz_Set
 
 				$this->_update_quiz_settings_error_message =
 					/* translators: ... */
-					sprintf( __( 'Please choose valid Forminator field for %s.', Forminator::DOMAIN ), $mailchimp_field_name );
+					sprintf( __( 'Please choose valid Forminator field for %s.', 'forminator' ), $mailchimp_field_name );
 				$input_exceptions->add_input_exception( $this->_update_quiz_settings_error_message, $mailchimp_field_tag );
 			}
 		}

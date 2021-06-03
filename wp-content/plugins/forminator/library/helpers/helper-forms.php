@@ -127,7 +127,7 @@ function forminator_get_post_data( $property, $post_id = null, $default = '' ) {
  */
 
 function forminator_cforms_total( $status = '' ) {
-	return Forminator_Custom_Form_Model::model()->count_all( $status );
+	return Forminator_Form_Model::model()->count_all( $status );
 }
 
 /**
@@ -137,7 +137,7 @@ function forminator_cforms_total( $status = '' ) {
  * @return Forminator_Base_Form_Model[]
  */
 function forminator_custom_forms() {
-	return Forminator_Custom_Form_Model::model()->get_all_paged();
+	return Forminator_Form_Model::model()->get_all_paged();
 }
 
 /**
@@ -151,9 +151,9 @@ function forminator_custom_forms() {
  *
  * @return mixed
  */
-function forminator_cform_modules( $limit = 4, $status = '' ) {
+function forminator_form_modules( $limit = 4, $status = '' ) {
 	$modules   = array();
-	$models    = Forminator_Custom_Form_Model::model()->get_models( $limit, $status );
+	$models    = Forminator_Form_Model::model()->get_models( $limit, $status );
 	$form_view = Forminator_Form_Views_Model::get_instance();
 
 	if ( ! empty( $models ) ) {
@@ -165,6 +165,7 @@ function forminator_cform_modules( $limit = 4, $status = '' ) {
 				'views'   => $form_view->count_views( $model->id ),
 				'date'    => date( get_option( 'date_format' ), strtotime( $model->raw->post_date ) ), // phpcs:ignore
 				'status'  => $model->status,
+				'name'    => forminator_get_name_from_model( $model ),
 			);
 		}
 	}
@@ -197,7 +198,7 @@ function forminator_get_rate( $module ) {
  * @return int
  */
 function forminator_polls_total( $status = '' ) {
-	return Forminator_Poll_Form_Model::model()->count_all( $status );
+	return Forminator_Poll_Model::model()->count_all( $status );
 }
 
 /**
@@ -208,7 +209,7 @@ function forminator_polls_total( $status = '' ) {
  */
 
 function forminator_polls_forms() {
-	return Forminator_Poll_Form_Model::model()->get_all_paged();
+	return Forminator_Poll_Model::model()->get_all_paged();
 }
 
 /**
@@ -222,9 +223,9 @@ function forminator_polls_forms() {
  *
  * @return array
  */
-function forminator_polls_modules( $limit = 4, $status = '' ) {
+function forminator_poll_modules( $limit = 4, $status = '' ) {
 	$modules   = array();
-	$models    = Forminator_Poll_Form_Model::model()->get_models( $limit, $status );
+	$models    = Forminator_Poll_Model::model()->get_models( $limit, $status );
 	$form_view = Forminator_Form_Views_Model::get_instance();
 
 	if ( ! empty( $models ) ) {
@@ -253,7 +254,7 @@ function forminator_polls_modules( $limit = 4, $status = '' ) {
  * @return int
  */
 function forminator_quizzes_total( $status = '' ) {
-	return Forminator_Quiz_Form_Model::model()->count_all( $status );
+	return Forminator_Quiz_Model::model()->count_all( $status );
 }
 
 /**
@@ -263,7 +264,7 @@ function forminator_quizzes_total( $status = '' ) {
  * @return Forminator_Base_Form_Model[]
  */
 function forminator_quizzes_forms() {
-	return Forminator_Quiz_Form_Model::model()->get_all_paged();
+	return Forminator_Quiz_Model::model()->get_all_paged();
 }
 
 /**
@@ -277,9 +278,9 @@ function forminator_quizzes_forms() {
  *
  * @return array
  */
-function forminator_quizzes_modules( $limit = 4, $status = '' ) {
+function forminator_quiz_modules( $limit = 4, $status = '' ) {
 	$modules   = array();
-	$models    = Forminator_Quiz_Form_Model::model()->get_models( $limit, $status );
+	$models    = Forminator_Quiz_Model::model()->get_models( $limit, $status );
 	$form_view = Forminator_Form_Views_Model::get_instance();
 
 	if ( ! empty( $models ) ) {
@@ -363,14 +364,8 @@ function forminator_total_forms( $status = '' ) {
  *
  * @return mixed
  */
-function forminator_get_form_name( $id, $type = 'custom_form' ) {
-	if ( 'custom_form' === $type ) {
-		$model = Forminator_Custom_Form_Model::model()->load( $id );
-	} elseif ( 'poll' === $type ) {
-		$model = Forminator_Poll_Form_Model::model()->load( $id );
-	} elseif ( 'quiz' === $type ) {
-		$model = Forminator_Quiz_Form_Model::model()->load( $id );
-	}
+function forminator_get_form_name( $id ) {
+	$model = Forminator_Base_Form_Model::get_model( $id );
 
 	//Fallback just in case
 	if ( ! empty( $model->settings['formName'] ) ) {
@@ -395,7 +390,7 @@ function forminator_top_converting_form() {
 		return '-';
 	}
 
-	return forminator_get_form_name( $top_conversion->form_id, 'custom_form' );
+	return forminator_get_form_name( $top_conversion->form_id );
 }
 
 /**
@@ -413,7 +408,7 @@ function forminator_most_shared_quiz() {
 		return '-';
 	}
 
-	return forminator_get_form_name( $most_popular->form_id, 'quiz' );
+	return forminator_get_form_name( $most_popular->form_id );
 }
 
 /**
@@ -431,7 +426,7 @@ function forminator_most_popular_poll() {
 		return '-';
 	}
 
-	return forminator_get_form_name( $most_popular->form_id, 'poll' );
+	return forminator_get_form_name( $most_popular->form_id );
 }
 
 /**
@@ -633,7 +628,7 @@ function forminator_prepare_css( $css_string, $prefix, $as_array = false, $separ
 				$space_needed = true;
 			} elseif ( $separate_prefix && ! empty( $wildcard ) ) {
 				// wildcard is the sibling class of target selector e.g. "wph-modal"
-				if ( strpos( $name, $wildcard ) ) {
+				if ( strpos( $name, $wildcard ) && ! strpos( $name, $wildcard . '-' ) ) {
 					$space_needed = false;
 				} else {
 					$space_needed = true;
@@ -834,9 +829,9 @@ function forminator_get_model_from_id( $id ) {
 		return null;
 	}
 
-	$custom_form_model = Forminator_Custom_Form_Model::model();
-	$quiz_form_model   = Forminator_Quiz_Form_Model::model();
-	$poll_form_model   = Forminator_Poll_Form_Model::model();
+	$custom_form_model = Forminator_Form_Model::model();
+	$quiz_form_model   = Forminator_Quiz_Model::model();
+	$poll_form_model   = Forminator_Poll_Model::model();
 
 	switch ( $post->post_type ) {
 		case $custom_form_model->get_post_type():
@@ -884,11 +879,11 @@ function forminator_get_latest_entry_time( $entry_type ) {
 	if ( $latest_entry instanceof Forminator_Form_Entry_Model ) {
 		$last_entry_time = mysql2date( 'U', $latest_entry->date_created_sql );
 		$time_diff       = human_time_diff( current_time( 'timestamp' ), $last_entry_time );
-		$last_entry_time = sprintf( /* translators: ... */ __( '%s ago', Forminator::DOMAIN ), $time_diff );
+		$last_entry_time = sprintf( /* translators: ... */ __( '%s ago', 'forminator' ), $time_diff );
 
 		return $last_entry_time;
 	} else {
-		return __( 'Never', Forminator::DOMAIN );
+		return __( 'Never', 'forminator' );
 	}
 }
 
@@ -918,7 +913,7 @@ function forminator_get_latest_entry_time_by_form_id( $form_id ) {
 	if ( $latest_entry instanceof Forminator_Form_Entry_Model ) {
 		return $latest_entry->time_created;
 	} else {
-		return esc_html__( 'Never', Forminator::DOMAIN );
+		return esc_html__( 'Never', 'forminator' );
 	}
 }
 
@@ -971,7 +966,7 @@ function forminator_clone_form_submissions_retention( $old_id, $new_id ) {
  * @param $retention_number
  * @param $retention_unit
  */
-function forminator_update_poll_ip_address_retention( $poll_id, $retention_number, $retention_unit ) {
+function forminator_update_poll_submissions_retention( $poll_id, $retention_number, $retention_unit ) {
 	$opt = get_option( 'forminator_poll_privacy_settings', array() );
 	if ( is_null( $retention_number ) && is_null( $retention_unit ) ) {
 		//deletion mode
@@ -994,7 +989,7 @@ function forminator_update_poll_ip_address_retention( $poll_id, $retention_numbe
  * @param $old_id
  * @param $new_id
  */
-function forminator_clone_poll_ip_address_retention( $old_id, $new_id ) {
+function forminator_clone_poll_submissions_retention( $old_id, $new_id ) {
 	$opt = get_option( 'forminator_poll_privacy_settings', array() );
 	if ( isset( $opt[ $old_id ] ) ) {
 		$opt[ $new_id ] = $opt[ $old_id ];
@@ -1032,7 +1027,7 @@ function forminator_get_name_from_model( $model ) {
  * @return mixed|string
  */
 function forminator_get_social_message( $settings, $title, $result, $data = array() ) {
-    $message = __( "I got {quiz_result} on {quiz_name} quiz!", Forminator::DOMAIN );
+    $message = __( "I got {quiz_result} on {quiz_name} quiz!", 'forminator' );
     if( isset( $settings['social-share-message'] ) && ! empty( $settings['social-share-message'] ) ) {
         $message = $settings['social-share-message'];
     }
@@ -1051,11 +1046,11 @@ function forminator_get_social_message( $settings, $title, $result, $data = arra
 /**
  * Get Chart data of Poll
  *
- * @param Forminator_Poll_Form_Model $poll
+ * @param Forminator_Poll_Model $poll
  *
  * @return array
  */
-function forminator_get_chart_data( Forminator_Poll_Form_Model $poll ) {
+function forminator_get_chart_data( Forminator_Poll_Model $poll ) {
 	$chart_colors         = forminator_get_poll_chart_colors( $poll->id );
 	$default_chart_colors = $chart_colors;
 	$chart_datas          = array();
@@ -1164,7 +1159,7 @@ function forminator_is_subdomain_network() {
  * @return string
  */
 function forminator_get_quiz_name( $id ) {
-	$model = Forminator_Quiz_Form_Model::model()->load( $id );
+	$model = Forminator_Quiz_Model::model()->load( $id );
 
 	return ! empty( $model->settings['quiz_name'] ) ? $model->settings['quiz_name'] : '';
 }

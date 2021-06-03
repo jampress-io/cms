@@ -31,7 +31,7 @@ class Forminator_Addon_Aweber_Quiz_Settings extends Forminator_Addon_Quiz_Settin
 
 		$this->_update_quiz_settings_error_message = __(
 			'The update to your settings for this quiz failed, check the quiz input and try again.',
-			Forminator::DOMAIN
+			'forminator'
 		);
 	}
 
@@ -118,14 +118,14 @@ class Forminator_Addon_Aweber_Quiz_Settings extends Forminator_Addon_Quiz_Settin
 		$buttons = array();
 		if ( $this->pick_name_is_completed( array( 'multi_id' => $multi_id ) ) ) {
 			$buttons['disconnect']['markup'] = Forminator_Addon_Abstract::get_button_markup(
-				esc_html__( 'Deactivate', Forminator::DOMAIN ),
+				esc_html__( 'Deactivate', 'forminator' ),
 				'sui-button-ghost sui-tooltip sui-tooltip-top-center forminator-addon-form-disconnect',
-				esc_html__( 'Deactivate this AWeber Integration from this Quiz.', Forminator::DOMAIN )
+				esc_html__( 'Deactivate this AWeber Integration from this Quiz.', 'forminator' )
 			);
 		}
 
 		$buttons['next']['markup'] = '<div class="sui-actions-right">' .
-									Forminator_Addon_Abstract::get_button_markup( esc_html__( 'Next', Forminator::DOMAIN ), 'forminator-addon-next' ) .
+									Forminator_Addon_Abstract::get_button_markup( esc_html__( 'Next', 'forminator' ), 'forminator-addon-next' ) .
 									'</div>';
 
 		return array(
@@ -177,7 +177,7 @@ class Forminator_Addon_Aweber_Quiz_Settings extends Forminator_Addon_Quiz_Settin
 		$template = forminator_addon_aweber_dir() . 'views/quiz-settings/setup-list.php';
 
 		if ( ! isset( $submitted_data['multi_id'] ) ) {
-			return $this->get_force_closed_wizard( __( 'Please pick valid connection', Forminator::DOMAIN ) );
+			return $this->get_force_closed_wizard( __( 'Please pick valid connection', 'forminator' ) );
 		}
 
 		$multi_id = $submitted_data['multi_id'];
@@ -202,7 +202,7 @@ class Forminator_Addon_Aweber_Quiz_Settings extends Forminator_Addon_Quiz_Settin
 			$lists_request = $api->get_account_lists( $this->addon->get_account_id() );
 
 			if ( ! is_object( $lists_request ) || ! isset( $lists_request->entries ) || ! is_array( $lists_request->entries ) || empty( $lists_request->entries ) ) {
-				throw new Forminator_Addon_Aweber_Exception( __( 'No lists found on your AWeber. Please create one.', Forminator::DOMAIN ) );
+				throw new Forminator_Addon_Aweber_Exception( __( 'No lists found on your AWeber. Please create one.', 'forminator' ) );
 			}
 
 			foreach ( $lists_request->entries as $entry ) {
@@ -250,14 +250,14 @@ class Forminator_Addon_Aweber_Quiz_Settings extends Forminator_Addon_Quiz_Settin
 		$buttons = array();
 		if ( $this->pick_name_is_completed( array( 'multi_id' => $multi_id ) ) ) {
 			$buttons['disconnect']['markup'] = Forminator_Addon_Abstract::get_button_markup(
-				esc_html__( 'Deactivate', Forminator::DOMAIN ),
+				esc_html__( 'Deactivate', 'forminator' ),
 				'sui-button-ghost sui-tooltip sui-tooltip-top-center forminator-addon-form-disconnect',
-				esc_html__( 'Deactivate this AWeber Integration from this Quiz.', Forminator::DOMAIN )
+				esc_html__( 'Deactivate this AWeber Integration from this Quiz.', 'forminator' )
 			);
 		}
 
 		$buttons['next']['markup'] = '<div class="sui-actions-right">' .
-									Forminator_Addon_Abstract::get_button_markup( esc_html__( 'Next', Forminator::DOMAIN ), 'forminator-addon-next' ) .
+									Forminator_Addon_Abstract::get_button_markup( esc_html__( 'Next', 'forminator' ), 'forminator-addon-next' ) .
 									'</div>';
 
 		return array(
@@ -310,7 +310,7 @@ class Forminator_Addon_Aweber_Quiz_Settings extends Forminator_Addon_Quiz_Settin
 		$template = forminator_addon_aweber_dir() . 'views/quiz-settings/map-fields.php';
 
 		if ( ! isset( $submitted_data['multi_id'] ) ) {
-			return $this->get_force_closed_wizard( __( 'Please pick valid connection', Forminator::DOMAIN ) );
+			return $this->get_force_closed_wizard( __( 'Please pick valid connection', 'forminator' ) );
 		}
 
 		$multi_id = $submitted_data['multi_id'];
@@ -330,7 +330,7 @@ class Forminator_Addon_Aweber_Quiz_Settings extends Forminator_Addon_Quiz_Settin
 
 		$quiz_questions = $this->get_quiz_fields();
 		$quiz_fields    = array(
-			'quiz-name'       => __( 'Quiz Name', Forminator::DOMAIN ),
+			'quiz-name'       => __( 'Quiz Name', 'forminator' ),
 		);
 		foreach ( $quiz_questions as $quiz_question ) {
 			// collect element ids
@@ -338,11 +338,11 @@ class Forminator_Addon_Aweber_Quiz_Settings extends Forminator_Addon_Quiz_Settin
 			$quiz_fields[ $quiz_question['slug'] ] = $quiz_question['title'];
 		}
 		if ( 'knowledge' === $this->quiz->quiz_type ) {
-			$quiz_fields['correct-answers'] = __( 'Correct Answers', Forminator::DOMAIN );
-			$quiz_fields['total-answers']   = __( 'Total Answers', Forminator::DOMAIN );
+			$quiz_fields['correct-answers'] = __( 'Correct Answers', 'forminator' );
+			$quiz_fields['total-answers']   = __( 'Total Answers', 'forminator' );
 			array_push( $forminator_quiz_element_ids,'quiz-name','correct-answers', 'total-answers' );
 		} elseif ( 'nowrong' === $this->quiz->quiz_type ) {
-			$quiz_fields['result-answers'] = __( 'Result Answer', Forminator::DOMAIN );
+			$quiz_fields['result-answers'] = __( 'Result Answer', 'forminator' );
 			array_push( $forminator_quiz_element_ids,'quiz-name', 'result-answers' );
 		}
 
@@ -362,8 +362,8 @@ class Forminator_Addon_Aweber_Quiz_Settings extends Forminator_Addon_Quiz_Settin
 		$has_errors = false;
 
 		$fields = array(
-			'default_field_email' => __( 'Email Address', Forminator::DOMAIN ),
-			'default_field_name'  => __( 'Name', Forminator::DOMAIN ),
+			'default_field_email' => __( 'Email Address', 'forminator' ),
+			'default_field_name'  => __( 'Name', 'forminator' ),
 		);
 
 		$list_id = $this->get_multi_id_quiz_settings_value( $multi_id, 'list_id', 0 );
@@ -374,7 +374,7 @@ class Forminator_Addon_Aweber_Quiz_Settings extends Forminator_Addon_Quiz_Settin
 			$list_custom_fields_request = $api->get_account_list_custom_fields( $this->addon->get_account_id(), $list_id );
 
 			if ( ! is_object( $list_custom_fields_request ) || ! isset( $list_custom_fields_request->entries ) || ! is_array( $list_custom_fields_request->entries ) ) {
-				throw new Forminator_Addon_Aweber_Exception( __( 'Failed to get Custom Fields on the list.', Forminator::DOMAIN ) );
+				throw new Forminator_Addon_Aweber_Exception( __( 'Failed to get Custom Fields on the list.', 'forminator' ) );
 			}
 
 			foreach ( $list_custom_fields_request->entries as $entry ) {
@@ -394,7 +394,7 @@ class Forminator_Addon_Aweber_Quiz_Settings extends Forminator_Addon_Quiz_Settin
 
 			try {
 				if ( empty( $fields_map ) ) {
-					throw new Forminator_Addon_Aweber_Exception( __( 'Please assign fields.', Forminator::DOMAIN ) );
+					throw new Forminator_Addon_Aweber_Exception( __( 'Please assign fields.', 'forminator' ) );
 				}
 
 				$input_exceptions = new Forminator_Addon_Aweber_Quiz_Settings_Exception();
@@ -408,7 +408,7 @@ class Forminator_Addon_Aweber_Quiz_Settings extends Forminator_Addon_Quiz_Settin
 						$element_id = $fields_map[ $key ];
 						if ( ! in_array( $element_id, $forminator_field_element_ids, true ) ) {
 							$input_exceptions->add_input_exception(/* translators: ... */
-								sprintf( __( 'Please assign valid field for %s', Forminator::DOMAIN ), $title ),
+								sprintf( __( 'Please assign valid field for %s', 'forminator' ), $title ),
 								$key . '_error'
 							);
 							continue;
@@ -442,14 +442,14 @@ class Forminator_Addon_Aweber_Quiz_Settings extends Forminator_Addon_Quiz_Settin
 		$buttons = array();
 		if ( $this->pick_name_is_completed( array( 'multi_id' => $multi_id ) ) ) {
 			$buttons['disconnect']['markup'] = Forminator_Addon_Abstract::get_button_markup(
-				esc_html__( 'Deactivate', Forminator::DOMAIN ),
+				esc_html__( 'Deactivate', 'forminator' ),
 				'sui-button-ghost sui-tooltip sui-tooltip-top-center forminator-addon-form-disconnect',
-				esc_html__( 'Deactivate this AWeber Integration from this Quiz.', Forminator::DOMAIN )
+				esc_html__( 'Deactivate this AWeber Integration from this Quiz.', 'forminator' )
 			);
 		}
 
 		$buttons['next']['markup'] = '<div class="sui-actions-right">' .
-									Forminator_Addon_Abstract::get_button_markup( esc_html__( 'Next', Forminator::DOMAIN ), 'forminator-addon-next' ) .
+									Forminator_Addon_Abstract::get_button_markup( esc_html__( 'Next', 'forminator' ), 'forminator-addon-next' ) .
 									'</div>';
 
 		return array(
@@ -516,7 +516,7 @@ class Forminator_Addon_Aweber_Quiz_Settings extends Forminator_Addon_Quiz_Settin
 		$template = forminator_addon_aweber_dir() . 'views/quiz-settings/setup-options.php';
 
 		if ( ! isset( $submitted_data['multi_id'] ) ) {
-			return $this->get_force_closed_wizard( __( 'Please pick valid connection', Forminator::DOMAIN ) );
+			return $this->get_force_closed_wizard( __( 'Please pick valid connection', 'forminator' ) );
 		}
 
 		$multi_id = $submitted_data['multi_id'];
@@ -609,14 +609,14 @@ class Forminator_Addon_Aweber_Quiz_Settings extends Forminator_Addon_Quiz_Settin
 		$buttons = array();
 		if ( $this->pick_name_is_completed( array( 'multi_id' => $multi_id ) ) ) {
 			$buttons['disconnect']['markup'] = Forminator_Addon_Abstract::get_button_markup(
-				esc_html__( 'Deactivate', Forminator::DOMAIN ),
+				esc_html__( 'Deactivate', 'forminator' ),
 				'sui-button-ghost sui-tooltip sui-tooltip-top-center forminator-addon-form-disconnect',
-				esc_html__( 'Deactivate this Campaign Monitor Integration from this Quiz.', Forminator::DOMAIN )
+				esc_html__( 'Deactivate this Campaign Monitor Integration from this Quiz.', 'forminator' )
 			);
 		}
 
 		$buttons['next']['markup'] = '<div class="sui-actions-right">' .
-									Forminator_Addon_Abstract::get_button_markup( esc_html__( 'Save', Forminator::DOMAIN ), 'sui-button-primary forminator-addon-finish' ) .
+									Forminator_Addon_Abstract::get_button_markup( esc_html__( 'Save', 'forminator' ), 'sui-button-primary forminator-addon-finish' ) .
 									'</div>';
 
 		return array(

@@ -19,8 +19,8 @@ class Forminator_Template_Login extends Forminator_Template {
 	public function defaults() {
 		return array(
 			'id'          => 'login',
-			'name'        => __( 'Login', Forminator::DOMAIN ),
-			'description' => __( "A simple contact form for your users to contact you", Forminator::DOMAIN ),
+			'name'        => __( 'Login', 'forminator' ),
+			'description' => __( "A simple contact form for your users to contact you", 'forminator' ),
 			'icon'        => 'profile-male',
 			'priortiy'    => 6,
 		);
@@ -67,8 +67,8 @@ class Forminator_Template_Login extends Forminator_Template {
 						'type'              => 'text',
 						'cols'              => '12',
 						'required'          => 'true',
-						'field_label'       => __( 'Username or Email Address', Forminator::DOMAIN ),
-						'placeholder'       => __( 'Enter username or email address', Forminator::DOMAIN ),
+						'field_label'       => __( 'Username or Email Address', 'forminator' ),
+						'placeholder'       => __( 'Enter username or email address', 'forminator' ),
 					),
 				),
 			),
@@ -80,12 +80,12 @@ class Forminator_Template_Login extends Forminator_Template {
 						'type'                         => 'password',
 						'cols'                         => '12',
 						'required'                     => 'true',
-						'required_message'             => __( 'Your password is required', Forminator::DOMAIN ),
-						'field_label'                  => __( 'Password', Forminator::DOMAIN ),
-						'placeholder'                  => __( 'Enter your password', Forminator::DOMAIN ),
-						'description'                  => sprintf( __( '<a href="%s" title="Lost Password" target="_blank">Lost your password?</a>', Forminator::DOMAIN ), $lostpassword_url ),
-						'confirm-password-label'       => __( 'Confirm Password', Forminator::DOMAIN ),
-						'confirm-password-placeholder' => __( 'Confirm new password', Forminator::DOMAIN ),
+						'required_message'             => __( 'Your password is required', 'forminator' ),
+						'field_label'                  => __( 'Password', 'forminator' ),
+						'placeholder'                  => __( 'Enter your password', 'forminator' ),
+						'description'                  => sprintf( __( '<a href="%s" title="Lost Password" target="_blank">Lost your password?</a>', 'forminator' ), $lostpassword_url ),
+						'confirm-password-label'       => __( 'Confirm Password', 'forminator' ),
+						'confirm-password-placeholder' => __( 'Confirm new password', 'forminator' ),
 					),
 				),
 			),
@@ -102,11 +102,11 @@ class Forminator_Template_Login extends Forminator_Template {
 		return array(
 			'form-type'                     => 'login',
 			'submission-behaviour'          => 'behaviour-redirect',
-			'thankyou-message'              => __( 'Thank you for contacting us, we will be in touch shortly.', Forminator::DOMAIN ),
+			'thankyou-message'              => __( 'Thank you for contacting us, we will be in touch shortly.', 'forminator' ),
 			'redirect-url'                  => admin_url(),
 			'submitData'                    => array(
-				'custom-submit-text'          => __( 'Login', Forminator::DOMAIN ),
-				'custom-invalid-form-message' => __( 'Error: Your form is not valid, please fix the errors!', Forminator::DOMAIN ),
+				'custom-submit-text'          => __( 'Login', 'forminator' ),
+				'custom-invalid-form-message' => __( 'Error: Your form is not valid, please fix the errors!', 'forminator' ),
 			),
 			'enable-ajax'                   => 'true',
 			'validation-inline'             => true,
@@ -195,12 +195,12 @@ class Forminator_Template_Login extends Forminator_Template {
 			'login-username-field'          => 'text-1',
 			'login-password-field'          => 'password-1',
 			'remember-me'                   => 'true',
-			'remember-me-label'             => __( 'Remember Me', Forminator::DOMAIN ),
+			'remember-me-label'             => __( 'Remember Me', 'forminator' ),
 			'remember-me-cookie-number'     => '2',
 			'remember-me-cookie-type'       => 'weeks',
 			// Additional settings
 			'hide-login-form'               => true,
-			'hidden-login-form-message'     => __( 'You are already logged in.', Forminator::DOMAIN ),
+			'hidden-login-form-message'     => __( 'You are already logged in.', 'forminator' ),
 		);
 	}
 }

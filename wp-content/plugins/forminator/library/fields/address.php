@@ -52,7 +52,7 @@ class Forminator_Address extends Forminator_Field {
 	 */
 	public function __construct() {
 		parent::__construct();
-		$this->name = __( 'Address', Forminator::DOMAIN );
+		$this->name = __( 'Address', 'forminator' );
 	}
 
 	/**
@@ -69,22 +69,22 @@ class Forminator_Address extends Forminator_Field {
 			'address_zip'                      => 'true',
 			'address_country'                  => 'true',
 			'address_line'                     => 'true',
-			'street_address_label'             => __( 'Street Address', Forminator::DOMAIN ),
-			'street_address_placeholder'       => __( 'E.g., 42 Wallaby Way', Forminator::DOMAIN ),
-			'address_city_label'               => __( 'City', Forminator::DOMAIN ),
-			'address_city_placeholder'         => __( 'E.g., Sydney', Forminator::DOMAIN ),
-			'address_state_label'              => __( 'State/Province', Forminator::DOMAIN ),
-			'address_state_placeholder'        => __( 'E.g., New South Wales', Forminator::DOMAIN ),
-			'address_zip_label'                => __( 'ZIP / Postal Code', Forminator::DOMAIN ),
-			'address_zip_placeholder'          => __( 'E.g., 2000', Forminator::DOMAIN ),
-			'address_country_label'            => __( 'Country', Forminator::DOMAIN ),
-			'address_line_label'               => __( 'Apartment, suite, etc', Forminator::DOMAIN ),
-			'street_address_required_message'  => __( 'This field is required. Please enter the street address.', Forminator::DOMAIN ),
-			'address_zip_required_message'     => __( 'This field is required. Please enter the zip code.', Forminator::DOMAIN ),
-			'address_country_required_message' => __( 'This field is required. Please select the country.', Forminator::DOMAIN ),
-			'address_city_required_message'    => __( 'This field is required. Please enter the city.', Forminator::DOMAIN ),
-			'address_state_required_message'   => __( 'This field is required. Please enter the state.', Forminator::DOMAIN ),
-			'address_line_required_message'    => __( 'This field is required. Please enter address line.', Forminator::DOMAIN ),
+			'street_address_label'             => __( 'Street Address', 'forminator' ),
+			'street_address_placeholder'       => __( 'E.g. 42 Wallaby Way', 'forminator' ),
+			'address_city_label'               => __( 'City', 'forminator' ),
+			'address_city_placeholder'         => __( 'E.g. Sydney', 'forminator' ),
+			'address_state_label'              => __( 'State/Province', 'forminator' ),
+			'address_state_placeholder'        => __( 'E.g. New South Wales', 'forminator' ),
+			'address_zip_label'                => __( 'ZIP / Postal Code', 'forminator' ),
+			'address_zip_placeholder'          => __( 'E.g. 2000', 'forminator' ),
+			'address_country_label'            => __( 'Country', 'forminator' ),
+			'address_line_label'               => __( 'Apartment, suite, etc', 'forminator' ),
+			'street_address_required_message'  => __( 'This field is required. Please enter the street address.', 'forminator' ),
+			'address_zip_required_message'     => __( 'This field is required. Please enter the zip code.', 'forminator' ),
+			'address_country_required_message' => __( 'This field is required. Please select the country.', 'forminator' ),
+			'address_city_required_message'    => __( 'This field is required. Please enter the city.', 'forminator' ),
+			'address_state_required_message'   => __( 'This field is required. Please enter the state.', 'forminator' ),
+			'address_line_required_message'    => __( 'This field is required. Please enter address line.', 'forminator' ),
 		);
 	}
 
@@ -403,15 +403,17 @@ class Forminator_Address extends Forminator_Field {
 			if ( $address_country ) {
 
 				$country_data = array(
-					'name'  => $id . '-country',
-					'id'    => $id . '-country',
-					'class' => 'forminator-select2',
+					'name'        => $id . '-country',
+					'id'          => $id . '-country',
+					'class'       => 'forminator-select2',
+					'data-search' => 'true',
+					'data-placeholder' => __( 'Select country', 'forminator' )
 				);
 
 				$countries = array(
 					array(
 						'value' => '',
-						'label' => __( 'Select country', Forminator::DOMAIN ),
+						'label' => '',
 					),
 				);
 
@@ -636,7 +638,7 @@ class Forminator_Address extends Forminator_Field {
 				$field,
 				'street_address_required_message',
 				'street_address',
-				__( 'This field is required. Please enter the street address.', Forminator::DOMAIN )
+				__( 'This field is required. Please enter the street address.', 'forminator' )
 			);
 			$messages        .= '"' . $this->get_id( $field ) . '-street_address": "' . forminator_addcslashes( $required_message ) . '",' . "\n";
 		}
@@ -646,7 +648,7 @@ class Forminator_Address extends Forminator_Field {
 				$field,
 				'address_line_required_message',
 				'address_line',
-				__( 'This field is required. Please enter address line.', Forminator::DOMAIN )
+				__( 'This field is required. Please enter address line.', 'forminator' )
 			);
 			$messages        .= '"' . $this->get_id( $field ) . '-address_line": "' . forminator_addcslashes( $required_message ) . '",' . "\n";
 		}
@@ -657,7 +659,7 @@ class Forminator_Address extends Forminator_Field {
 				$field,
 				'address_city_required_message',
 				'address_city',
-				__( 'This field is required. Please enter the city.', Forminator::DOMAIN )
+				__( 'This field is required. Please enter the city.', 'forminator' )
 			);
 			$messages        .= '"' . $this->get_id( $field ) . '-city": "' . forminator_addcslashes( $required_message ) . '",' . "\n";
 		}
@@ -668,7 +670,7 @@ class Forminator_Address extends Forminator_Field {
 				$field,
 				'address_state_required_message',
 				'address_state',
-				__( 'This field is required. Please enter the state.', Forminator::DOMAIN )
+				__( 'This field is required. Please enter the state.', 'forminator' )
 			);
 			$messages        .= '"' . $this->get_id( $field ) . '-state": "' . forminator_addcslashes( $required_message ) . '",' . "\n";
 		}
@@ -679,7 +681,7 @@ class Forminator_Address extends Forminator_Field {
 				$field,
 				'address_zip_required_message',
 				'address_zip',
-				__( 'This field is required. Please enter the zip code.', Forminator::DOMAIN )
+				__( 'This field is required. Please enter the zip code.', 'forminator' )
 			);
 			$messages        .= '"' . $this->get_id( $field ) . '-zip": "' . forminator_addcslashes( $required_message ) . '",' . "\n";
 		}
@@ -690,7 +692,7 @@ class Forminator_Address extends Forminator_Field {
 				$field,
 				'address_country_required_message',
 				'address_country',
-				__( 'This field is required. Please select the country.', Forminator::DOMAIN )
+				__( 'This field is required. Please select the country.', 'forminator' )
 			);
 			$messages        .= '"' . $this->get_id( $field ) . '-country": "' . forminator_addcslashes( $required_message ) . '",' . "\n";
 		}
@@ -737,7 +739,7 @@ class Forminator_Address extends Forminator_Field {
 				$field,
 				'street_address_required_message',
 				'street_address',
-				__( 'This field is required. Please enter the street address.', Forminator::DOMAIN )
+				__( 'This field is required. Please enter the street address.', 'forminator' )
 			);
 		}
 		if ( $line && $line_required && empty( $line_data ) ) {
@@ -746,7 +748,7 @@ class Forminator_Address extends Forminator_Field {
 				$field,
 				'address_line_required_message',
 				'address_line',
-				__( 'This field is required. Please enter address line.', Forminator::DOMAIN )
+				__( 'This field is required. Please enter address line.', 'forminator' )
 			);
 		}
 
@@ -756,7 +758,7 @@ class Forminator_Address extends Forminator_Field {
 				$field,
 				'address_city_required_message',
 				'address_city',
-				__( 'This field is required. Please enter the city.', Forminator::DOMAIN )
+				__( 'This field is required. Please enter the city.', 'forminator' )
 			);
 		}
 
@@ -766,7 +768,7 @@ class Forminator_Address extends Forminator_Field {
 				$field,
 				'address_state_required_message',
 				'address_state',
-				__( 'This field is required. Please enter the state.', Forminator::DOMAIN )
+				__( 'This field is required. Please enter the state.', 'forminator' )
 			);
 		}
 
@@ -776,7 +778,7 @@ class Forminator_Address extends Forminator_Field {
 				$field,
 				'address_zip_required_message',
 				'address_zip',
-				__( 'This field is required. Please enter the zip code.', Forminator::DOMAIN )
+				__( 'This field is required. Please enter the zip code.', 'forminator' )
 			);
 		}
 
@@ -786,7 +788,7 @@ class Forminator_Address extends Forminator_Field {
 				$field,
 				'address_country_required_message',
 				'address_country',
-				__( 'This field is required. Please select the country.', Forminator::DOMAIN )
+				__( 'This field is required. Please select the country.', 'forminator' )
 			);
 		}
 	}

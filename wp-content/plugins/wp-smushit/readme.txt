@@ -1,13 +1,13 @@
 === Smush - Lazy Load Images, Optimize & Compress Images ===
 Plugin Name: Smush - Lazy Load Images, Optimize & Compress Images
-Version: 3.8.3
+Version: 3.8.5
 Author: WPMU DEV
 Author URI: https://wpmudev.com/
 Contributors: WPMUDEV, alexdunae
 Tags: optimize images, convert webp, lazy load, resize images, compress images, webp, performance, optimization, photography, optimizer, image optimizer, image compress, image optimize, webp format
 Requires at least: 5.2
-Tested up to: 5.6
-Stable tag: 3.8.3
+Tested up to: 5.7
+Stable tag: 3.8.5
 Requires PHP: 5.6.20
 License: GPL v2 - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 
@@ -44,6 +44,8 @@ Smush has been benchmarked and tested number one for speed and quality. It is al
 - [How to Get the Most Out of Smush Image Optimization](https://wpmudev.com/blog/how-to-get-the-most-out-of-smush/)
 - [How To Ace Google’s Image Page Speed Recommendations With Smush](https://wpmudev.com/blog/smush-pagespeed-image-compression/)
 - [How To Bulk Optimize Images With Smush](https://wpmudev.com/blog/smush-bulk-optimize-images/)
+- [How To Optimize Elementor for Free Using Smush and Hummingbird](https://wpmudev.com/blog/optimize-elementor-wordpress-smush-hummingbird/)
+- [How To Optimize WPBakery Sites Using Smush And Hummingbird](https://wpmudev.com/blog/optimize-wordpress-wpbakery-free-plugins/)
 
 ### Compress Image While Preserving Image Quality
 
@@ -183,6 +185,43 @@ It depends what side of the pond you live on...but whether you say optimize, opt
 
 == Changelog ==
 
+= 3.8.5 ( 2021-05-13 ) =
+
+- Enhance: Allow filtering the resulting image markup after the Lazy Load processing
+- Enhance: Prevent the description text next to the "Update settings" button from saving
+- Enhance: Use the shared module for Tutorials
+- Fix: Incompatibility issue with WPBakery Page Builder
+- Fix: Total savings value loosing decimal point on image re-check
+- Fix: Inability to unselect all thumbnail sizes
+- Fix: Lazy loading on Avada (use 'WP_SMUSH_LAZY_LOAD_AVADA' define in case of conflicts on Avada 6.x)
+- Fix: Icons in Directory Smush modal
+- Fix: Links in summary meta box on multisite
+- Fix: Warning: count(): Parameter must be an array or an object that implements Countable
+- Fix: Uploading images to Gutenberg blocks
+- Fix: Styling issue in Smush's network-admin upgrade page
+- Fix: Undefined offset in multisite when smushing the "uploads" directory
+- Fix: Wrong directories listed in "Directory Smush" under Windows
+
+= 3.8.4 ( 2021-03-18 ) =
+
+- Enhance: Compatibility with WordPress 5.7
+- Enhance: Lazy load compatibility with Slider Revolution
+- Enhance: Apache rules for local WebP on multisite
+- Enhance: Apache rules for local WebP on subdirectory installs
+- Enhance: Local Webp description texts
+- Fix: Backups not properly removing from S3 containers
+- Fix: Compatibility with Jetpack Site Accelerator
+- Fix: Compatibility with WordPress native lazy loading
+- Fix: UI inconsistencies in local WebP module
+- Fix: Browser console errors on upgrade page
+- Fix: Menu not working on mobile views
+- Fix: PHP warnings with images offloaded to S3 buckets
+- Fix: Image preview on WPML Media Translation screen
+- Fix: Directory Smush empty folder detection
+- Fix: Image resize detection UI
+- Fix: PHP Notice:  Trying to access array offset on value of type bool
+- Fix: Translation strings
+
 = 3.8.3 ( 2021-02-10 ) =
 
 - Enhance: Allow local WebP on WPMU DEV staging sites
@@ -242,112 +281,6 @@ It depends what side of the pond you live on...but whether you say optimize, opt
 - Fix: Image counter when re-checking images
 - Fix: Bulk Smush counter going over total number of images
 - Fix: Bulk Smush counter on network admin
-
-= 3.7.1 ( 2020-09-24 ) =
-
-- New: Tutorials sections
-- Enhance: Update the modal that displays the highlights of this release
-- Enhance: Compatibility with NextGen
-- Enhance: Compatibility with SVG images
-- Fix: Image resize detection styles
-- Fix: Tracking option on network subsites
-- Fix: Lazy load placeholder background colors
-- Fix: Lazy load custom placeholders on network installs
-- Fix: Jetpack CDN compatibility
-- Fix: Notice on CDN page
-
-= 3.7.0 ( 2020-09-03 ) =
-
-- New: Option to disable noscript in lazy load
-- New: WordPress 5.5 lazy load compatibility
-- New: Integration with Translate Press
-- New: WP_SMUSH_CDN_DELAY_SRCSET constant to delay wp_calculate_image_srcset filter
-- New: WP_SMUSH_ASYNC_LAZY constant to utilize async loading for lazy load scripts
-- Enhance: Compatibility with S3-Uploads plugin
-- Enhance: Disable CDN and lazy load modules on customizer pages
-- Enhance: CDN parsing of background images
-- Enhance: Allow directory Smush in site directories
-- Enhance: Improve wording in directory Smush notices
-- Enhance: Async load lazy load scripts
-- Fix: Image resize detection styles
-- Fix: Fix errors detecting mime type of remote streams
-- Fix: Lazy loading integration with fusion galleries (Avada)
-- Fix: Lazy loading not working with images that have GET parameters
-- Fix: Lazy loading placeholders not visible on some themes
-- Fix: CDN background images not working with images that have GET parameters
-- Fix: CDN usage of content_width global
-- Fix: Skip iframes with invalid URLs from lazy loading
-- Fix: W3C validation warnings with CDN
-- Fix: Compatibility with Vimeography plugin
-- Fix: Soliloquy slider images' incorrect source
-- Fix: Soliloquy navigation misalignment when lazy loading
-- Fix: Smush page in NextGen Gallery plugin looking unstyled
-
-= 3.6.3 ( 2020-05-06 ) =
-
-- Fix: CDN auto resize option causing issues with images
-
-= 3.6.2 ( 2020-05-04 ) =
-
-- New: CDN and lazy load integration with Soliloquy slider
-- Enhance: Native lazy loading disabled by default, added option to enable it
-- Enhance: Lazy load and CDN page parsing
-- Enhance: Summary module layout
-- Enhance: Image resize detection highlighting
-- Fix: Images with relative paths not processing by CDN
-- Fix: Object cache not clearing out stats during Re-Check Images action
-- Fix: Pages with lazy loading showing errors during W3C validation
-- Fix: Multiple noscript tags when lazy loading duplicate images
-- Fix: NextGen Re-Smush UI
-- Fix: Image resize settings not respecting the largest dimension
-
-= 3.6.1 ( 2020-03-06 ) =
-
-- Enhance: Directory Smush image processing
-- Enhance: CDN background image processing performance
-- Fix: Lazy loading breaking visual editors (Oxygen, Thrive Architect, Tatsu)
-- Fix: WooCommerce breaking Smush onboarding dialog
-- Fix: CDN processing of background images with spaces
-- Fix: REST API errors
-
-= 3.6.0 ( 2020-02-25 ) =
-
-- New: CDN support for images in REST API responses
-- New: Media library filter to show uncompressed images
-- New: Native lazy loading support
-- Enhance: Image resize detection functionality
-- Enhance: Allow excluding images from lazy loading with data-skip-lazy attribute
-- Enhance: Improve restore backup UI
-- Enhance: Bulk smush UI
-- Fix: NextGEN Gallery integration
-- Fix: Error detecting language error on Settings page
-- Fix: "Choose directory" button disabled state after first click
-- Fix: Some notices not being dismissible
-- Fix: Image restore
-
-= 3.5.1 ( 2020-02-10 ) =
-
-- Fix: Browser console errors on pages without Backbone js scripts
-- Fix: Lazy load compatibility with Beaver Builder
-- Fix: Lazy load breaking videos
-
-= 3.5.0 ( 2020-02-03 ) =
-
-- New: Add custom post types to include/exclude filters in the lazy load module
-- New: CDN support for source in the picture element
-- New: Lazy loading for WebP images
-- New: Lazy loading support for picture element
-- Enhance: Page parsing performance
-- Enhance: Media library UI
-- Enhance: CDN compatibility with empty srcset and sizes image attributes
-- Enhance: CDN support for background images
-- Enhance: Lazy load compatibility with Envira Gallery plugin
-- Enhance: Plugins page links
-- Fix: CDN not detecting background images surrounded by HTML entities
-- Fix: CDN not replacing srcset in some cases
-- Fix: Lazy load Gravatars
-- Fix: WPBakery Page Builder integration
-- Fix: Typos in the lazy load module
 
 [Changelog for previous versions](https://wpmudev.com/project/wp-smush-pro/#view-changelog).
 

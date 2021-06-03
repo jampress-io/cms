@@ -591,6 +591,8 @@ class Dir extends Abstract_Module {
 				return $tree;
 			}
 		}
+
+		return array();
 	}
 
 	/**
@@ -613,6 +615,7 @@ class Dir extends Abstract_Module {
 			$content_path = explode( '/', WP_CONTENT_DIR );
 			// Get root path and explod.
 			$root_path = explode( '/', get_home_path() );
+			
 			// Find the length of the shortest one.
 			$end         = min( count( $content_path ), count( $root_path ) );
 			$i           = 0;
@@ -761,14 +764,6 @@ class Dir extends Abstract_Module {
 				$validated_dirs[] = $relative_path;
 			}
 
-			// Yes, this is silly. The actual validation is done by self::validate_path(),
-			// this is just to keep RIPS happy.
-			$whitelisted_paths[] = $base_dir;
-			if ( ! in_array( $base_dir, $whitelisted_paths, true ) ) {
-				// The loop 'continues' before reaching this point. This won't execute.
-				throw new \Exception();
-			}
-
 			// Directory Iterator, Exclude . and ..
 			$filtered_dir = new Helpers\Iterator( new RecursiveDirectoryIterator( $base_dir ) );
 
@@ -808,21 +803,15 @@ class Dir extends Abstract_Module {
 			}
 		}
 
-		// Update rest of the images.
-		if ( ! empty( $images ) && $count > 0 ) {
-			$this->store_images( $values, $images );
+		if ( empty( $images ) || 0 === $count ) {
+			return array();
 		}
 
-		// Remove scanned images from cache.
-		wp_cache_delete( 'wp_smush_scanned_images' );
+		// Update rest of the images.
+		$this->store_images( $values, $images );
 
 		// Get the image ids.
-		$images = $this->get_scanned_images();
-
-		// Store scanned images in cache.
-		wp_cache_add( 'wp_smush_scanned_images', $images );
-
-		return $images;
+		return $this->get_scanned_images();
 	}
 
 	/**
@@ -1009,7 +998,7 @@ class Dir extends Abstract_Module {
 		if ( false !== strpos( $path, $base_dir . '/sites' ) ) {
 			// If matches the current upload path contains one of the year sub folders of the media library.
 			$path_arr = explode( '/', str_replace( $base_dir.'/sites' . '/', '', $path ) );
-			if ( count( $path_arr ) >= 1
+			if ( is_array( $path_arr ) && count( $path_arr ) > 1
 			     && is_numeric( $path_arr[1] ) && $path_arr[1] > 1900 && $path_arr[1] < 2100 // Contains the year sub folder.
 			) {
 				$skip = true;

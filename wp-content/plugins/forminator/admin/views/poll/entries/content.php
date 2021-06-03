@@ -1,8 +1,8 @@
 <?php
 $count = Forminator_Form_Entry_Model::count_entries( $this->form_id );
 
-$poll_question    = $this->get_poll_question();
-$poll_description = $this->get_poll_description();
+$poll_question    = Forminator_Poll_Front::get_poll_question( $this->model );
+$poll_description = Forminator_Poll_Front::get_poll_description( $this->model );
 
 $custom_votes = $this->map_custom_votes();
 ?>
@@ -17,7 +17,7 @@ $custom_votes = $this->map_custom_votes();
 
 		<div class="sui-box-body">
 
-			<?php $this->template( 'poll/entries/prompt' ); ?>
+			<?php $this->template( 'common/entries/prompt', array( 'submissions' => $count ) ); ?>
 
 			<div class="sui-block-content-center">
 				<?php if ( ! empty( $poll_question ) ) { ?>
@@ -51,7 +51,7 @@ $custom_votes = $this->map_custom_votes();
 						echo '<div style="margin-top: 10px;">';
 
 					foreach ( $custom_vote as $answer => $vote ) {
-						echo '<span class="sui-tag">' . /* translators: ... */ esc_html( sprintf( _n( '%1$s (%2$s) vote', '%1$s (%2$s) votes', $vote, Forminator::DOMAIN ), $answer, $vote ) ) . '</span>';
+						echo '<span class="sui-tag">' . /* translators: ... */ esc_html( sprintf( _n( '%1$s (%2$s) vote', '%1$s (%2$s) votes', $vote, 'forminator' ), $answer, $vote ) ) . '</span>';
 					}
 
 						echo '</div>';
@@ -73,12 +73,12 @@ $custom_votes = $this->map_custom_votes();
 						type="button"
 						class="sui-button sui-button-ghost wpmudev-open-modal"
 						data-modal="delete-poll-submission"
-						data-modal-title="<?php esc_attr_e( 'Delete Submissions', Forminator::DOMAIN ); ?>"
-						data-modal-content="<?php esc_attr_e( 'Are you sure you wish to delete the submissions on this poll?', Forminator::DOMAIN ); ?>"
+						data-modal-title="<?php esc_attr_e( 'Delete Submissions', 'forminator' ); ?>"
+						data-modal-content="<?php esc_attr_e( 'Are you sure you wish to delete the submissions on this poll?', 'forminator' ); ?>"
 						data-form-id="<?php echo esc_attr( $this->form_id ); ?>"
 						data-nonce="<?php echo esc_attr( wp_create_nonce( 'forminatorPollEntries' ) ); ?>"
 				>
-					<i class="sui-icon-trash" aria-hidden="true"></i> <?php esc_html_e( 'Delete Submissions', Forminator::DOMAIN ); ?>
+					<i class="sui-icon-trash" aria-hidden="true"></i> <?php esc_html_e( 'Delete Submissions', 'forminator' ); ?>
 				</button>
 
 			</div>
@@ -89,12 +89,6 @@ $custom_votes = $this->map_custom_votes();
 
 <?php else : ?>
 
-	<div class="sui-box sui-message">
-		<?php
-		$form_id = $this->form_id;
-			include_once forminator_plugin_dir() . 'admin/views/poll/entries/content-none.php';
-		?>
-	</div>
-
+	<?php include_once forminator_plugin_dir() . 'admin/views/common/entries/content-none.php'; ?>
 	<?php
 endif;

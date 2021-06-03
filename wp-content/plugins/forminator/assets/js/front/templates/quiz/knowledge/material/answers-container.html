@@ -1,5 +1,5 @@
 /* ELEMENT: Quiz Answers (Container) */
-.forminator-ui.forminator-quiz-<?php echo $properties['form_id'] ?> .forminator-answer .forminator-answer--design {
+.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-answer .forminator-answer--design {
 	<?php if ( forminator_array_value_exists( $properties, 'knowledge-toggle-palette' ) ) { ?>
 		<?php if ( forminator_array_value_exists( $properties, 'knowledge-answer-background-static' ) ) { ?>
 			background-color: <?php echo $properties['knowledge-answer-background-static'] ?>;
@@ -11,8 +11,8 @@
 	<?php } ?>
 }
 
-.forminator-ui.forminator-quiz-<?php echo $properties['form_id'] ?> .forminator-answer .forminator-answer--design:hover,
-.forminator-ui.forminator-quiz-<?php echo $properties['form_id'] ?> .forminator-answer .forminator-answer--design:focus {
+.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-answer .forminator-answer--design:hover,
+.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-answer .forminator-answer--design:focus {
 	<?php if ( forminator_array_value_exists( $properties, 'knowledge-toggle-palette' ) ) { ?>
 		<?php if ( forminator_array_value_exists( $properties, 'knowledge-answer-background-hover' ) ) { ?>
 			background-color: <?php echo $properties['knowledge-answer-background-hover'] ?>;
@@ -24,7 +24,7 @@
 	<?php } ?>
 }
 
-.forminator-ui.forminator-quiz-<?php echo $properties['form_id'] ?> .forminator-answer input:checked + .forminator-answer--design {
+.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-answer input:checked + .forminator-answer--design {
 	<?php if ( forminator_array_value_exists( $properties, 'knowledge-toggle-palette' ) ) { ?>
 		<?php if ( forminator_array_value_exists( $properties, 'knowledge-answer-background-active' ) ) { ?>
 			background-color: <?php echo $properties['knowledge-answer-background-active'] ?>;
@@ -36,7 +36,7 @@
 	<?php } ?>
 }
 
-.forminator-ui.forminator-quiz-<?php echo $properties['form_id'] ?> .forminator-answer.forminator-is_correct input:checked + .forminator-answer--design {
+.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-answer.forminator-is_correct input:checked + .forminator-answer--design {
 	<?php if ( forminator_array_value_exists( $properties, 'knowledge-toggle-palette' ) ) { ?>
 		<?php if ( forminator_array_value_exists( $properties, 'knowledge-aright-background' ) ) { ?>
 			background-color: <?php echo $properties['knowledge-aright-background'] ?>;
@@ -48,7 +48,7 @@
 	<?php } ?>
 }
 
-.forminator-ui.forminator-quiz-<?php echo $properties['form_id'] ?> .forminator-answer.forminator-is_incorrect input:checked + .forminator-answer--design {
+.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-answer.forminator-is_incorrect input:checked + .forminator-answer--design {
 	<?php if ( forminator_array_value_exists( $properties, 'knowledge-toggle-palette' ) ) { ?>
 		<?php if ( forminator_array_value_exists( $properties, 'knowledge-awrong-background' ) ) { ?>
 			background-color: <?php echo $properties['knowledge-awrong-background'] ?>;

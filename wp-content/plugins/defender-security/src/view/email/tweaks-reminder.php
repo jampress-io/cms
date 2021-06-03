@@ -141,7 +141,7 @@
                     <tbody>
                     <tr style="padding:0;text-align:left;vertical-align:top">
                         <td style="-moz-hyphens:auto;-webkit-hyphens:auto;Margin:0;border-collapse:collapse!important;color:#000;font-family:'Open Sans',Helvetica,Arial,sans-serif;font-size:18px;font-weight:400;hyphens:auto;line-height:25px;margin:0;padding:0;text-align:left;vertical-align:top;word-wrap:break-word">
-                            <div class="text-right" style="text-align:right"><a href="https://premium.wpmudev.org"
+                            <div class="text-right" style="text-align:right"><a href="https://wpmudev.com"
                                  style="Margin:0;color:#888;font-family:'Open Sans',Helvetica,Arial,sans-serif;font-size:12px;font-weight:400;line-height:50px;margin:0;margin-right:10px;padding:0;text-align:right;text-decoration:none"><?php esc_html_e( 'View in browser', 'wpdef' ) ?></a></div>
                         </td>
                     </tr>

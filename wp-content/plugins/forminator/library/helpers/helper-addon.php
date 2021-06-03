@@ -28,7 +28,7 @@ function forminator_get_pro_addon_list() {
 			'_title'                  => 'Mailchimp',
 			'_short_title'            => 'Mailchimp',
 			'_version'                => '1.0',
-			'_description'            => __( 'Unlock this as part of a WPMU DEV Membership', Forminator::DOMAIN ),
+			'_description'            => __( 'Unlock this as part of a WPMU DEV Membership', 'forminator' ),
 			'_min_forminator_version' => FORMINATOR_VERSION,
 		),
 		'zapier'    => array(
@@ -37,7 +37,7 @@ function forminator_get_pro_addon_list() {
 			'_title'                  => 'Zapier',
 			'_short_title'            => 'Zapier',
 			'_version'                => '1.0',
-			'_description'            => __( 'Unlock this as part of a WPMU DEV Membership', Forminator::DOMAIN ),
+			'_description'            => __( 'Unlock this as part of a WPMU DEV Membership', 'forminator' ),
 			'_min_forminator_version' => FORMINATOR_VERSION,
 		),
 	);
@@ -131,48 +131,55 @@ function forminator_get_addons_instance_connected_with_form( $form_id ) {
 }
 
 /**
- * Get addon(s) in array format grouped by connected / not connected with $form_id
+ * Get addon(s) in array format grouped by connected / not connected with $module_id
  *
  * Every addon inside this array will be formatted first by @see Forminator_Addon_Abstract::to_array_with_form()
  *
  * @since 1.1
  *
- * @param $form_id
+ * @param $module_id
  *
  * @return array
  */
-function forminator_get_registered_addons_grouped_by_form_connected( $form_id ) {
+function forminator_get_registered_addons_grouped_by_module_connected( $module_id, $module_type ) {
 	$connected_addons     = array();
 	$not_connected_addons = array();
 
 	$addons = Forminator_Addon_Loader::get_instance()->get_addons();
 	foreach ( $addons as $slug => $addon ) {
+		$allow_method       = 'is_allow_multi_on_' . $module_type;
+		$to_array_method    = 'to_array_with_' . $module_type;
+		$is_conneted_method = 'is_' . $module_type . '_connected';
+		if ( ! method_exists( $addon, $to_array_method ) && method_exists( $addon, $is_conneted_method ) ) {
+			continue;
+		}
+		$addon_settings = $addon->$to_array_method( $module_id );
 		/** @var Forminator_Addon_Abstract $addon */
-		if ( $addon->is_connected() ) {
-			if ( $addon->is_allow_multi_on_form() ) {
-				$addon_array = $addon->to_array_with_form( $form_id );
-				if ( $addon->is_form_connected( $form_id ) && isset( $addon_array['multi_ids'] ) && is_array( $addon_array['multi_ids'] ) ) {
+		if ( $addon->is_connected() && ( 'quiz' !== $module_type || $addon->is_quiz_lead_connected( $module_id ) ) ) {
+			if ( method_exists( $addon, $allow_method ) && $addon->$allow_method() ) {
+				$addon_array = $addon_settings;
+				if ( $addon->$is_conneted_method( $module_id ) && isset( $addon_array['multi_ids'] ) && is_array( $addon_array['multi_ids'] ) ) {
 					foreach ( $addon_array['multi_ids'] as $multi_id ) {
 						$addon_array['multi_id']   = $multi_id['id'];
 						$addon_array['multi_name'] = ! empty( $multi_id['label'] ) ? $multi_id['label'] : $multi_id['id'];
 						$connected_addons[]        = $addon_array;
 					}
 				} else {
-					$not_connected_addons[] = $addon->to_array_with_form( $form_id );
+					$not_connected_addons[] = $addon_settings;
 				}
 			} else {
-				if ( $addon->is_form_connected( $form_id ) ) {
-					$connected_addons[] = $addon->to_array_with_form( $form_id );
+				if ( $addon->$is_conneted_method( $module_id ) ) {
+					$connected_addons[] = $addon_settings;
 				} else {
-					$not_connected_addons[] = $addon->to_array_with_form( $form_id );
+					$not_connected_addons[] = $addon_settings;
 				}
 			}
 		}
 	}
 
 	return array(
-		'form_connected'     => $connected_addons,
-		'not_form_connected' => $not_connected_addons,
+		'connected'     => $connected_addons,
+		'not_connected' => $not_connected_addons,
 	);
 }
 
@@ -331,7 +338,7 @@ function forminator_addon_format_form_fields( Forminator_Base_Form_Model $custom
 	 * @since 1.1
 	 *
 	 * @param array                        $formatted_fields  current formatted fields
-	 * @param Forminator_Custom_Form_Model $custom_form_model Custom form Model
+	 * @param Forminator_Form_Model $custom_form_model Custom form Model
 	 */
 	$formatted_fields = apply_filters( 'forminator_addon_formatted_fields', $formatted_fields, $custom_form_model );
 
@@ -712,8 +719,8 @@ function forminator_format_submitted_data_for_addon( $post_data, $files_data, $f
 				$formatted_post_data[ $form_field['element_id'] ] = $files_data[ $form_field['element_id'] ];
 
 				foreach ( $current_entry_fields as $current_entry_field ) {
-					
-					
+
+
 					if ( isset( $current_entry_field['name'] ) && $form_field['element_id'] === $current_entry_field['name'] ) {
 						if ( isset( $current_entry_field['value'] ) && isset( $current_entry_field['value']['file'] ) ) {
 							$file_props                                       = $current_entry_field['value']['file'];
@@ -722,7 +729,7 @@ function forminator_format_submitted_data_for_addon( $post_data, $files_data, $f
 						}
 					}
 
-					if ( isset($current_entry_field['value']['value']) ) {						
+					if ( isset($current_entry_field['value']['value']) ) {
 						foreach ( $current_entry_field['value']['value'] as $key => $item ) {
 							if ( isset( $current_entry_field['name'] ) && $form_field['element_id'] === $current_entry_field['name'] . '-' . $key ) {
 								if ( isset( $item['uploaded_file'][0] ) ) {
@@ -841,13 +848,14 @@ function forminator_find_addon_meta_data_from_entry_model( Forminator_Addon_Abst
  * Used on Integrations page, and Form Settings Integration Tab
  *
  * @param array $addon     that already formatted to_array
- * @param int   $form_id
+ * @param int   $module_id
+ * @param string $module_slug Module type.
  * @param bool  $show_pro_info
  * @param bool  $is_active (show as active addon ?)
  *
  * @return string
  */
-function forminator_addon_row_html_markup( $addon, $form_id, $show_pro_info = false, $is_active = false ) {
+function forminator_addon_row_html_markup( $addon, $module_id, $module_slug = 'form', $show_pro_info = true, $is_active = true ) {
 	ob_start();
 
 	$single_addon_template_path = forminator_plugin_dir() . 'admin/views/integrations/addon.php';
@@ -859,7 +867,7 @@ function forminator_addon_row_html_markup( $addon, $form_id, $show_pro_info = fa
 	 *
 	 * @param string $single_addon_template_path current used path
 	 */
-	$single_addon_template_path = apply_filters( 'forminator_addon_single_addon_template_path', $single_addon_template_path );
+	$single_addon_template_path = apply_filters( 'forminator_addon_single_' . $module_slug . '_addon_template_path', $single_addon_template_path );
 
 	/** @noinspection PhpIncludeInspection */
 	include $single_addon_template_path;
@@ -874,10 +882,10 @@ function forminator_addon_row_html_markup( $addon, $form_id, $show_pro_info = fa
 	 *
 	 * @param string $html          current html to be displayed
 	 * @param array  $addon         addon instance that already formatted to_array
-	 * @param int    $form_id
+	 * @param int    $module_id
 	 * @param bool   $show_pro_info whether to show pro info
 	 */
-	$html = apply_filters( 'forminator_addon_row_html', $html, $addon, $form_id, $show_pro_info, $is_active );
+	$html = apply_filters( 'forminator_addon_' . $module_slug . '_row_html', $html, $addon, $module_id, $show_pro_info, $is_active );
 
 	return $html;
 }
@@ -926,13 +934,13 @@ function forminator_addon_maybe_log() {
  *
  * @param                              $content
  * @param                              $submitted_data
- * @param Forminator_Custom_Form_Model $custom_form
+ * @param Forminator_Form_Model $custom_form
  * @param                              $entry_meta
  * @param bool                         $allow_html
  *
  * @return mixed|string
  */
-function forminator_addon_replace_custom_vars( $content, $submitted_data, Forminator_Custom_Form_Model $custom_form, $entry_meta, $allow_html = false ) {
+function forminator_addon_replace_custom_vars( $content, $submitted_data, Forminator_Form_Model $custom_form, $entry_meta, $allow_html = false ) {
 	$entry_model = new Forminator_Form_Entry_Model( null );
 	foreach ( $entry_meta as $meta ) {
 		if ( isset( $meta['name'] ) ) {
@@ -1137,105 +1145,11 @@ function forminator_addon_format_poll_fields( Forminator_Base_Form_Model $poll )
 	 * @since 1.1
 	 *
 	 * @param array                        $formatted_fields current formatted fields
-	 * @param Forminator_Custom_Form_Model $poll             Custom form Model
+	 * @param Forminator_Form_Model $poll             Custom form Model
 	 */
 	$formatted_fields = apply_filters( 'forminator_addon_formatted_poll_fields', $formatted_fields, $poll );
 
 	return $formatted_fields;
-}
-
-/**
- * Get addon(s) in array format grouped by connected / not connected with $poll_id
- *
- * Every addon inside this array will be formatted first by @see Forminator_Addon_Abstract::to_array_with_poll()
- *
- * @since 1.6.1
- *
- * @param $poll_id
- *
- * @return array
- */
-function forminator_get_registered_addons_grouped_by_poll_connected( $poll_id ) {
-	$connected_addons     = array();
-	$not_connected_addons = array();
-
-	$addons = Forminator_Addon_Loader::get_instance()->get_addons();
-	foreach ( $addons as $slug => $addon ) {
-		/** @var Forminator_Addon_Abstract $addon */
-		if ( $addon->is_connected() ) {
-			if ( $addon->is_allow_multi_on_poll() ) {
-				$addon_array = $addon->to_array_with_poll( $poll_id );
-				if ( $addon->is_poll_connected( $poll_id ) && isset( $addon_array['multi_ids'] ) && is_array( $addon_array['multi_ids'] ) ) {
-					foreach ( $addon_array['multi_ids'] as $multi_id ) {
-						$addon_array['multi_id']   = $multi_id['id'];
-						$addon_array['multi_name'] = ! empty( $multi_id['label'] ) ? $multi_id['label'] : $multi_id['id'];
-						$connected_addons[]        = $addon_array;
-					}
-				} else {
-					$not_connected_addons[] = $addon->to_array_with_poll( $poll_id );
-				}
-			} else {
-				if ( $addon->is_poll_connected( $poll_id ) ) {
-					$connected_addons[] = $addon->to_array_with_poll( $poll_id );
-				} else {
-					$not_connected_addons[] = $addon->to_array_with_poll( $poll_id );
-				}
-			}
-		}
-	}
-
-	return array(
-		'poll_connected'     => $connected_addons,
-		'not_poll_connected' => $not_connected_addons,
-	);
-}
-
-/**
- * Generate Html for **single** poll addon
- *
- * Used on Integrations page, and Form Settings Integration Tab
- *
- * @since 1.6.1
- *
- * @param array $addon     that already formatted to_array
- * @param int   $poll_id
- * @param bool  $show_pro_info
- * @param bool  $is_active (show as active addon ?)
- *
- * @return string
- */
-function forminator_addon_poll_row_html_markup( $addon, $poll_id, $show_pro_info = false, $is_active = false ) {
-	ob_start();
-
-	$single_addon_template_path = forminator_plugin_dir() . 'admin/views/integrations/poll-addon.php';
-
-	/**
-	 * Filter Template path of single addon html
-	 *
-	 * @since 1.6.1
-	 *
-	 * @param string $single_addon_template_path current used path
-	 */
-	$single_addon_template_path = apply_filters( 'forminator_addon_single_poll_addon_template_path', $single_addon_template_path );
-
-	/** @noinspection PhpIncludeInspection */
-	include $single_addon_template_path;
-
-	$html = ob_get_clean();
-
-	/**
-	 * Filter displayed html **single** addon
-	 *
-	 * @since 1.6.1
-	 *
-	 * @param string $html          current html to be displayed
-	 * @param array  $addon         addon instance that already formatted to_array
-	 * @param int    $poll_id
-	 * @param bool   $show_pro_info whether to show pro info
-	 */
-	$html = apply_filters( 'forminator_addon_poll_row_html', $html, $addon, $poll_id, $show_pro_info, $is_active );
-
-	return $html;
 }
 
 /**
@@ -1334,11 +1248,11 @@ function forminator_get_addons_instance_connected_with_poll( $poll_id ) {
  *
  * @since 1.6.2
  *
- * @param Forminator_Quiz_Form_Model $quiz
+ * @param Forminator_Quiz_Model $quiz
  *
  * @return array formatted and filtered form settings
  */
-function forminator_addon_format_quiz_settings( Forminator_Quiz_Form_Model $quiz ) {
+function forminator_addon_format_quiz_settings( Forminator_Quiz_Model $quiz ) {
 	$quiz_settings = $quiz->settings;
 
 	/**
@@ -1349,105 +1263,11 @@ function forminator_addon_format_quiz_settings( Forminator_Quiz_Form_Model $quiz
 	 * @since 1.6.2
 	 *
 	 * @param array                      $quiz_settings Current formatted quiz_settings
-	 * @param Forminator_Quiz_Form_Model $quiz          Quiz Model
+	 * @param Forminator_Quiz_Model $quiz          Quiz Model
 	 */
 	$quiz_settings = apply_filters( 'forminator_addon_formatted_quiz_settings', $quiz_settings, $quiz );
 
 	return $quiz_settings;
-}
-
-/**
- * Get addon(s) in array format grouped by connected / not connected with $quiz_id
- *
- * Every addon inside this array will be formatted first by @see Forminator_Addon_Abstract::to_array_with_quiz()
- *
- * @since 1.6.2
- *
- * @param $quiz_id
- *
- * @return array
- */
-function forminator_get_registered_addons_grouped_by_quiz_connected( $quiz_id ) {
-	$connected_addons     = array();
-	$not_connected_addons = array();
-
-	$addons = Forminator_Addon_Loader::get_instance()->get_addons();
-	foreach ( $addons as $slug => $addon ) {
-		/** @var Forminator_Addon_Abstract $addon */
-		if ( $addon->is_connected() && $addon->is_quiz_lead_connected( $quiz_id ) ) {
-			if ( $addon->is_allow_multi_on_quiz() ) {
-				$addon_array = $addon->to_array_with_quiz( $quiz_id );
-				if ( $addon->is_quiz_connected( $quiz_id ) && isset( $addon_array['multi_ids'] ) && is_array( $addon_array['multi_ids'] ) ) {
-					foreach ( $addon_array['multi_ids'] as $multi_id ) {
-						$addon_array['multi_id']   = $multi_id['id'];
-						$addon_array['multi_name'] = ! empty( $multi_id['label'] ) ? $multi_id['label'] : $multi_id['id'];
-						$connected_addons[]        = $addon_array;
-					}
-				} else {
-					$not_connected_addons[] = $addon->to_array_with_quiz( $quiz_id );
-				}
-			} else {
-				if ( $addon->is_quiz_connected( $quiz_id ) ) {
-					$connected_addons[] = $addon->to_array_with_quiz( $quiz_id );
-				} else {
-					$not_connected_addons[] = $addon->to_array_with_quiz( $quiz_id );
-				}
-			}
-		}
-	}
-
-	return array(
-		'quiz_connected'     => $connected_addons,
-		'not_quiz_connected' => $not_connected_addons,
-	);
-}
-
-/**
- * Generate Html for **single** quiz addon
- *
- * Used on Quiz Settings Integration Tab
- *
- * @since 1.6.2
- *
- * @param array $addon     that already formatted to_array
- * @param int   $quiz_id
- * @param bool  $show_pro_info
- * @param bool  $is_active (show as active addon ?)
- *
- * @return string
- */
-function forminator_addon_quiz_row_html_markup( $addon, $quiz_id, $show_pro_info = false, $is_active = false ) {
-	ob_start();
-
-	$single_addon_template_path = forminator_plugin_dir() . 'admin/views/integrations/quiz-addon.php';
-
-	/**
-	 * Filter Template path of single addon html
-	 *
-	 * @since 1.6.2
-	 *
-	 * @param string $single_addon_template_path current used path
-	 */
-	$single_addon_template_path = apply_filters( 'forminator_addon_single_quiz_addon_template_path', $single_addon_template_path );
-
-	/** @noinspection PhpIncludeInspection */
-	include $single_addon_template_path;
-
-	$html = ob_get_clean();
-
-	/**
-	 * Filter displayed html **single** addon
-	 *
-	 * @since 1.6.2
-	 *
-	 * @param string $html          current html to be displayed
-	 * @param array  $addon         addon instance that already formatted to_array
-	 * @param int    $quiz_id
-	 * @param bool   $show_pro_info whether to show pro info
-	 */
-	$html = apply_filters( 'forminator_addon_quiz_row_html', $html, $addon, $quiz_id, $show_pro_info, $is_active );
-
-	return $html;
 }
 
 /**

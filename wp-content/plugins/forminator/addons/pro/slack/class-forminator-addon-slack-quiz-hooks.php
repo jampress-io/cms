@@ -135,11 +135,11 @@ class Forminator_Addon_Slack_Quiz_Hooks extends Forminator_Addon_Quiz_Hooks_Abst
 			$lead_attachments = array();
 
 			if ( ! isset( $connection_settings['target_id'] ) ) {
-				throw new Forminator_Addon_Slack_Exception( __( 'Target ID not properly setup.', Forminator::DOMAIN ) );
+				throw new Forminator_Addon_Slack_Exception( __( 'Target ID not properly setup.', 'forminator' ) );
 			}
 
 			if ( ! isset( $connection_settings['message'] ) ) {
-				throw new Forminator_Addon_Slack_Exception( __( 'Message not properly setup.', Forminator::DOMAIN ) );
+				throw new Forminator_Addon_Slack_Exception( __( 'Message not properly setup.', 'forminator' ) );
 			}
 			$text_message = $connection_settings['message'];
 			$text_message = forminator_replace_variables( $text_message );
@@ -224,7 +224,7 @@ class Forminator_Addon_Slack_Quiz_Hooks extends Forminator_Addon_Quiz_Hooks_Abst
 			return array(
 				'is_sent'         => true,
 				'connection_name' => $connection_settings['name'],
-				'description'     => __( 'Successfully send data to Slack', Forminator::DOMAIN ),
+				'description'     => __( 'Successfully send data to Slack', 'forminator' ),
 				'data_sent'       => $api->get_last_data_sent(),
 				'data_received'   => $api->get_last_data_received(),
 				'url_request'     => $api->get_last_url_request(),
@@ -287,7 +287,7 @@ class Forminator_Addon_Slack_Quiz_Hooks extends Forminator_Addon_Quiz_Hooks_Abst
 								'question'   => $question,
 								'answer'     => $answer,
 								'is_correct' => $is_correct,
-								'result'     => $is_correct ? __( 'Correct', Forminator::DOMAIN ) : __( 'Incorrect', Forminator::DOMAIN ),
+								'result'     => $is_correct ? __( 'Correct', 'forminator' ) : __( 'Incorrect', 'forminator' ),
 							);
 							if ( $is_correct ) {
 								$correct_answers ++;
@@ -349,12 +349,12 @@ class Forminator_Addon_Slack_Quiz_Hooks extends Forminator_Addon_Quiz_Hooks_Abst
 
 		if ( 'knowledge' === $this->quiz->quiz_type ) {
 			$attachment_fields[] = array(
-				'title' => __( 'Correct Answers', Forminator::DOMAIN ),
+				'title' => __( 'Correct Answers', 'forminator' ),
 				'value' => $correct_answers,
 				'short' => true,
 			);
 			$attachment_fields[] = array(
-				'title' => __( 'Total Answers', Forminator::DOMAIN ),
+				'title' => __( 'Total Answers', 'forminator' ),
 				'value' => $total_answers,
 				'short' => true,
 			);
@@ -367,7 +367,7 @@ class Forminator_Addon_Slack_Quiz_Hooks extends Forminator_Addon_Quiz_Hooks_Abst
 		}
 
 		$attachments[] = array(
-			'title'  => __( 'Quiz Result', Forminator::DOMAIN ),
+			'title'  => __( 'Quiz Result', 'forminator' ),
 			'fields' => $attachment_fields,
 			'color'  => 'warning',
 		);
@@ -474,7 +474,7 @@ class Forminator_Addon_Slack_Quiz_Hooks extends Forminator_Addon_Quiz_Hooks_Abst
 	public function on_export_render_title_row() {
 
 		$export_headers = array(
-			'info' => __( 'Slack Info', Forminator::DOMAIN ),
+			'info' => __( 'Slack Info', 'forminator' ),
 		);
 
 		$quiz_id                = $this->quiz_id;
@@ -643,29 +643,29 @@ class Forminator_Addon_Slack_Quiz_Hooks extends Forminator_Addon_Quiz_Hooks_Abst
 		}
 		$status                = $addon_meta_data['value'];
 		$additional_entry_item = array(
-			'label' => __( 'Slack Integration', Forminator::DOMAIN ),
+			'label' => __( 'Slack Integration', 'forminator' ),
 			'value' => '',
 		);
 
 		$sub_entries = array();
 		if ( isset( $status['connection_name'] ) ) {
 			$sub_entries[] = array(
-				'label' => __( 'Integration Name', Forminator::DOMAIN ),
+				'label' => __( 'Integration Name', 'forminator' ),
 				'value' => $status['connection_name'],
 			);
 		}
 
 		if ( isset( $status['is_sent'] ) ) {
-			$is_sent       = true === $status['is_sent'] ? __( 'Yes', Forminator::DOMAIN ) : __( 'No', Forminator::DOMAIN );
+			$is_sent       = true === $status['is_sent'] ? __( 'Yes', 'forminator' ) : __( 'No', 'forminator' );
 			$sub_entries[] = array(
-				'label' => __( 'Sent To Slack', Forminator::DOMAIN ),
+				'label' => __( 'Sent To Slack', 'forminator' ),
 				'value' => $is_sent,
 			);
 		}
 
 		if ( isset( $status['description'] ) ) {
 			$sub_entries[] = array(
-				'label' => __( 'Info', Forminator::DOMAIN ),
+				'label' => __( 'Info', 'forminator' ),
 				'value' => $status['description'],
 			);
 		}
@@ -674,21 +674,21 @@ class Forminator_Addon_Slack_Quiz_Hooks extends Forminator_Addon_Quiz_Hooks_Abst
 			// too long to be added on entry data enable this with `define('FORMINATOR_ADDON_SLACK_SHOW_FULL_LOG', true)`
 			if ( isset( $status['url_request'] ) ) {
 				$sub_entries[] = array(
-					'label' => __( 'API URL', Forminator::DOMAIN ),
+					'label' => __( 'API URL', 'forminator' ),
 					'value' => $status['url_request'],
 				);
 			}
 
 			if ( isset( $status['data_sent'] ) ) {
 				$sub_entries[] = array(
-					'label' => __( 'Data sent to Slack', Forminator::DOMAIN ),
+					'label' => __( 'Data sent to Slack', 'forminator' ),
 					'value' => '<pre class="sui-code-snippet">' . wp_json_encode( $status['data_sent'], JSON_PRETTY_PRINT ) . '</pre>',
 				);
 			}
 
 			if ( isset( $status['data_received'] ) ) {
 				$sub_entries[] = array(
-					'label' => __( 'Data received from Slack', Forminator::DOMAIN ),
+					'label' => __( 'Data received from Slack', 'forminator' ),
 					'value' => '<pre class="sui-code-snippet">' . wp_json_encode( $status['data_received'], JSON_PRETTY_PRINT ) . '</pre>',
 				);
 			}

@@ -7,6 +7,19 @@
 $count             = $this->filtered_total_entries();
 $is_filter_enabled = $this->is_filter_box_enabled();
 
+$live_payment_count = $this->has_live_payments( $this->form_id );
+if ( $this->has_payments() && $count <= 100 ) {
+	$notice_args = array(
+		'submissions'     => $live_payment_count,
+		'min_submissions' => 0,
+		'notice'          => sprintf( esc_html__( "%1\$sCongratulations!%2\$s You have started collecting live payments on this form - that's awesome. We have spent countless hours developing this free plugin for you, and we would really appreciate it if you could drop us a rating on wp.org to help us spread the word and boost our motivation.", 'forminator' ), '<strong>', '</strong>' ),
+	);
+} else {
+	$notice_args = array(
+		'submissions' => $count,
+	);
+}
+
 if ( $this->error_message() ) : ?>
 
 	<span class="sui-notice sui-notice-error"><p><?php echo esc_html( $this->error_message() ); ?></p></span>
@@ -24,133 +37,26 @@ if ( $this->total_entries() > 0 ) :
 		<input type="hidden" name="form_id" value="<?php echo esc_attr( $this->get_form_id() ); ?>">
 
 		<div class="fui-pagination-entries sui-pagination-wrap">
-
-			<span class="sui-pagination-results"><?php if ( 1 === $count ) { printf( esc_html__( '%s result', Forminator::DOMAIN ), $count ); } else { printf( esc_html__( '%s results', Forminator::DOMAIN ), $count ); } // phpcs:ignore ?></span>
-
 			<?php $this->paginate(); ?>
-
 		</div>
 
 		<div class="sui-box fui-box-entries">
 
 			<fieldset class="forminator-entries-nonce">
-				<?php wp_nonce_field( 'forminatorCustomFormEntries', 'forminatorEntryNonce' ); ?>
+				<?php wp_nonce_field( 'forminatorFormEntries', 'forminatorEntryNonce' ); ?>
 			</fieldset>
 
 			<div class="sui-box-body fui-box-actions">
 
-				<?php $this->template( 'custom-form/entries/prompt' ); ?>
+				<?php $this->template( 'common/entries/prompt', $notice_args ); ?>
 
-				<div class="sui-box-search">
-
-					<div class="sui-search-left">
-
-						<?php $this->bulk_actions(); ?>
-
-					</div>
-
-					<div class="sui-search-right">
-
-						<div class="sui-pagination-wrap">
-
-							<span class="sui-pagination-results"><?php if ( 1 === $count ) { printf( esc_html__( '%s result', Forminator::DOMAIN ), $count ); } else { printf( esc_html__( '%s results', Forminator::DOMAIN ), $count ); } // phpcs:ignore ?></span>
-
-							<?php $this->paginate(); ?>
-
-							<button class="sui-button-icon sui-button-outlined forminator-toggle-entries-filter <?php echo( $is_filter_enabled ? 'sui-active' : '' ); ?>">
-								<i class="sui-icon-filter" aria-hidden="true"></i>
-							</button>
-
-						</div>
-
-					</div>
-
-				</div>
-
-				<?php $this->template( 'custom-form/entries/filter' ); ?>
+				<?php $this->template( 'common/entries/filter', array( 'fields' => $this->get_fields() ) ); ?>
 
 			</div>
 
 			<?php if ( true === $is_filter_enabled ) : ?>
 
-				<div class="sui-box-body fui-box-actions-filters">
-
-					<label class="sui-label"><?php esc_html_e( 'Active Filters', Forminator::DOMAIN ); ?></label>
-
-					<div class="sui-pagination-active-filters forminator-entries-fields-filters">
-
-						<?php if ( isset( $this->filters['search'] ) ) : ?>
-							<div class="sui-active-filter">
-								<?php
-								printf(/* translators: ... */
-									esc_html__( 'Keyword: %s', Forminator::DOMAIN ),
-									esc_html( $this->filters['search'] )
-								);
-								?>
-								<button class="sui-active-filter-remove" type="submit" name="search" value="">
-									<span class="sui-screen-reader-text"><?php esc_html_e( 'Remove this keyword', Forminator::DOMAIN ); ?></span>
-								</button>
-							</div>
-						<?php endif; ?>
-
-						<?php if ( isset( $this->filters['min_id'] ) ) : ?>
-							<div class="sui-active-filter">
-								<?php
-								printf(/* translators: ... */
-									esc_html__( 'From ID: %s', Forminator::DOMAIN ),
-									esc_html( $this->filters['min_id'] )
-								);
-								?>
-								<button class="sui-active-filter-remove" type="submit" name="min_id" value="">
-									<span class="sui-screen-reader-text"><?php esc_html_e( 'Remove this keyword', Forminator::DOMAIN ); ?></span>
-								</button>
-							</div>
-						<?php endif; ?>
-
-						<?php if ( isset( $this->filters['max_id'] ) ) : ?>
-							<div class="sui-active-filter">
-								<?php
-								printf(/* translators: ... */
-									esc_html__( 'To ID: %s', Forminator::DOMAIN ),
-									esc_html( $this->filters['max_id'] )
-								);
-								?>
-								<button class="sui-active-filter-remove" type="submit" name="max_id" value="">
-									<span class="sui-screen-reader-text"><?php esc_html_e( 'Remove this keyword', Forminator::DOMAIN ); ?></span>
-								</button>
-							</div>
-						<?php endif; ?>
-
-						<?php if ( isset( $this->filters['date_created'][0] ) || isset( $this->filters['date_created'][1] ) ) : ?>
-							<div class="sui-active-filter">
-								<?php
-								printf(/* translators: ... */
-									esc_html__( 'Submission Date Range: %1$s to %2$s', Forminator::DOMAIN ),
-									esc_html( $this->filters['date_created'][0] ),
-									esc_html( $this->filters['date_created'][1] )
-								);
-								?>
-								<button class="sui-active-filter-remove" type="submit" name="date_range" value="">
-									<span class="sui-screen-reader-text"><?php esc_html_e( 'Remove this keyword', Forminator::DOMAIN ); ?></span>
-								</button>
-							</div>
-						<?php endif; ?>
-
-						<div class="sui-active-filter">
-							<?php
-							esc_html_e( 'Sort Order', Forminator::DOMAIN );
-							echo ': ';
-							if ( 'DESC' === $this->order['order'] ) {
-								esc_html_e( 'Descending', Forminator::DOMAIN );
-							} else {
-								esc_html_e( 'Ascending', Forminator::DOMAIN );
-							}
-							?>
-						</div>
-
-					</div>
-
-				</div>
+				<?php $this->template( 'common/entries/active_filters_row' ); ?>
 
 			<?php endif; ?>
 
@@ -185,7 +91,7 @@ if ( $this->total_entries() > 0 ) :
 
 									echo '<td>';
 
-										echo esc_html( $summary_item['value'] );
+										echo '<div class="forminator-submissions-column-ellipsis">' . esc_html( $summary_item['value'] ) . '</div>';
 
 										echo '<span class="sui-accordion-open-indicator">';
 
@@ -206,7 +112,7 @@ if ( $this->total_entries() > 0 ) :
 											echo '<span aria-hidden="true"></span>';
 
 											echo '<span class="sui-screen-reader-text">' . sprintf(/* translators: ... */
-												esc_html__( 'Select entry number %s', Forminator::DOMAIN ),
+												esc_html__( 'Select entry number %s', 'forminator' ),
 												esc_html( $db_entry_id )
 											) . '</span>';
 
@@ -220,7 +126,7 @@ if ( $this->total_entries() > 0 ) :
 
 									echo '<td>';
 
-										echo esc_html( $summary_item['value'] );
+										echo '<div class="forminator-submissions-column-ellipsis">' . esc_html( $summary_item['value'] ) . '</div>';
 
 										echo '<span class="sui-accordion-open-indicator fui-mobile-only" aria-hidden="true">';
 											echo '<i class="sui-icon-chevron-down"></i>';
@@ -238,7 +144,7 @@ if ( $this->total_entries() > 0 ) :
 
 								echo '<td>';
 									echo '' . sprintf(/* translators: ... */
-										esc_html__( '+ %s other fields', Forminator::DOMAIN ),
+										esc_html__( '+ %s other fields', 'forminator' ),
 										esc_html( $summary['num_fields_left'] )
 									) . '';
 									echo '<span class="sui-accordion-open-indicator">';
@@ -387,7 +293,7 @@ if ( $this->total_entries() > 0 ) :
 											type="button"
 											class="sui-button sui-button-ghost sui-button-red wpmudev-open-modal"
 											<?php if ( isset( $entries['activation_key'] ) ) {
-												$button_title = esc_html( 'Delete Submission & User', Forminator::DOMAIN );
+												$button_title = esc_html( 'Delete Submission & User', 'forminator' );
 												$is_activation_key = true;
 												?>
 												data-activation-key="<?php echo $entries['activation_key']; ?>"
@@ -395,15 +301,15 @@ if ( $this->total_entries() > 0 ) :
 												data-entry-id="<?php echo esc_attr( $db_entry_id ); ?>"
 												data-form-id="<?php echo esc_attr( $this->model->id ); ?>"
 											<?php } else {
-												$button_title = esc_html( 'Delete', Forminator::DOMAIN );
+												$button_title = esc_html( 'Delete', 'forminator' );
 												$is_activation_key = false;
 												?>
 												data-modal="delete-module"
 												data-form-id="<?php echo esc_attr( $db_entry_id ); ?>"
 											<?php } ?>
-											data-modal-title="<?php esc_attr_e( 'Delete Submission', Forminator::DOMAIN ); ?>"
-											data-modal-content="<?php esc_attr_e( 'Are you sure you wish to permanently delete this submission?', Forminator::DOMAIN ); ?>"
-											data-nonce="<?php echo esc_attr( wp_create_nonce( 'forminatorCustomFormEntries' ) ); ?>"
+											data-modal-title="<?php esc_attr_e( 'Delete Submission', 'forminator' ); ?>"
+											data-modal-content="<?php esc_attr_e( 'Are you sure you wish to permanently delete this submission?', 'forminator' ); ?>"
+											data-nonce="<?php echo esc_attr( wp_create_nonce( 'forminatorFormEntries' ) ); ?>"
 										>
 											<i class="sui-icon-trash" aria-hidden="true"></i> <?php echo $button_title; ?>
 										</button>
@@ -415,13 +321,13 @@ if ( $this->total_entries() > 0 ) :
 													type="button"
 													class="sui-button wpmudev-open-modal"
 													data-modal="approve-user-module"
-													data-modal-title="<?php esc_attr_e( 'Approve User', Forminator::DOMAIN ); ?>"
-													data-modal-content="<?php esc_attr_e( 'Are you sure you want to approve and activate this user?', Forminator::DOMAIN ); ?>"
+													data-modal-title="<?php esc_attr_e( 'Approve User', 'forminator' ); ?>"
+													data-modal-content="<?php esc_attr_e( 'Are you sure you want to approve and activate this user?', 'forminator' ); ?>"
 													data-form-id="<?php echo esc_attr( $db_entry_id ); ?>"
 													data-activation-key="<?php echo esc_attr( $entries['activation_key'] ); ?>"
-													data-nonce="<?php echo wp_create_nonce( 'forminatorCustomFormEntries' ); // WPCS: XSS ok. ?>"
+													data-nonce="<?php echo wp_create_nonce( 'forminatorFormEntries' ); // WPCS: XSS ok. ?>"
 												>
-													<?php esc_html_e( 'Approve User', Forminator::DOMAIN ); ?>
+													<?php esc_html_e( 'Approve User', 'forminator' ); ?>
 												</button>
 											</div>
 
@@ -457,24 +363,6 @@ if ( $this->total_entries() > 0 ) :
 
 <?php else : ?>
 
-	<div class="sui-box sui-message">
-
-		<?php if ( forminator_is_show_branding() ) : ?>
-			<img src="<?php echo esc_url( forminator_plugin_url() . 'assets/img/forminator-submissions.png' ); ?>"
-				srcset="<?php echo esc_url( forminator_plugin_url() . 'assets/img/forminator-submissions.png' ); ?> 1x, <?php echo esc_url( forminator_plugin_url() . 'assets/img/forminator-submissions@2x.png' ); ?> 2x"
-				alt="<?php esc_html_e( 'Forminator', Forminator::DOMAIN ); ?>"
-				class="sui-image"
-				aria-hidden="true"/>
-		<?php endif; ?>
-
-		<div class="sui-message-content">
-
-			<h2><?php echo forminator_get_form_name( $this->form_id, 'custom_form' );// phpcs:ignore ?></h2>
-
-			<p><?php esc_html_e( 'You haven’t received any submissions for this form yet. When you do, you’ll be able to view all the data here.', Forminator::DOMAIN ); ?></p>
-
-		</div>
-
-	</div>
-
-<?php endif; ?>
+	<?php include_once forminator_plugin_dir() . 'admin/views/common/entries/content-none.php'; ?>
+	<?php
+endif;

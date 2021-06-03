@@ -3,7 +3,7 @@ Contributors: wpninjasllc, kstover, jameslaws, kbjohnson90, klhall1987, krmoorho
 Tags: forms, contact form, email form, form builder, custom form, pdf form, registration form, payment form, login form, contact me, signature form, upload form, file upload form, conditional form, feedback form, appointment form, quote form, survey form, contact button, signup form, form plugin, contact form plugin, subscription form, email subscription form, newsletter form, donation form, booking form, quote request form, multi page form, conditional logic form, subscription form, application form, employment verification form, star rating form, rating form, event form, mailchimp form, campaign monitor form, constant contact form, mailpoet form, aweber form, cleverreach form, emma form, convertkit form, active campaign form, salesforce form, zoho form, capsule form, insightly form, pipelinedeals form, onepagecrm form
 Requires at least: 5.4
 Tested up to: 5.6
-Stable tag: 3.5.1
+Stable tag: 3.5.4
 License: GPLv2 or later
 
 The 100% beginner friendly WordPress form builder. Drag & drop form fields to build beautiful, professional contact forms in minutes.
@@ -303,20 +303,50 @@ This section describes how to install the plugin and get it working.
 
 == Upgrade Notice ==
 
-= 3.5.1 (17 February 2021) =
+= 3.5.4 (21 April 2021) =
 
 *Changes:*
 
-* Repeatable Fieldsets have arrived! For a quick look at how to get those setup, check out our [new documenation](https://ninjaforms.com/docs/field-types/#repeater) for them.
+* The Date Field is now the Date/Time Field. This field now allows for Date, Time, and Date & Time selection.
 
 *Bugs:*
 
-* Our block editor code should now only load on pages where it is actually needed, leading to less page load time in the admin dashboard.
-* Resolved an issue that was always causing required checkbox list fields to throw a required error on submission.
-* The Ninja Forms block should now properly display the form in the page editor if WordPress has been installed in a subdirectory.
-* Cleaned up a few notices and warnings that were displaying on sites running PHP 8.
+* Fixed a bug that caused ReCaptcha fields to fail if more than one appeared on the page.
+* Fixed a conflict with iThemes that was causing a fatal error.
 
 == Changelog ==
+
+= 3.5.4 (21 April 2021) =
+
+*Changes:*
+
+* The Date Field is now the Date/Time Field. This field now allows for Date, Time, and Date & Time selection.
+
+*Bugs:*
+
+* Fixed a bug that caused ReCaptcha fields to fail if more than one appeared on the page.
+* Fixed a conflict with iThemes that was causing a fatal error.
+
+= 3.5.3 (1 April 2021) =
+
+*Changes:*
+
+* Final deprecation phase of Ninja Forms 2.9x codebase.
+
+= 3.5.2 (24 March 2021) =
+
+*Changes:*
+
+* Removed some legacy settings that were no longer required for new installs.
+
+*Bugs:*
+
+* Resolved an issue that was causing errors when Array values were used in API requests.
+* The Ninja Forms block should now fill the entire width of the block editor.
+* Fixed an error that was causing a depreciated method warning when using the classic editor.
+* Forms should now display again in Internet Explorer 11.
+* Resolved an issue that was causing the Ninja Forms dashboard to crash if there was an issue with wp_cron.
+* Fixed some PHP warnings related to our checkbox list field.
 
 = 3.5.1 (17 February 2021) =
 

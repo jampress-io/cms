@@ -31,7 +31,7 @@ class Forminator_Addon_Googlesheet_Poll_Settings extends Forminator_Addon_Poll_S
 
 		$this->_update_poll_settings_error_message = __(
 			'The update to your settings for this poll failed, check the form input and try again.',
-			Forminator::DOMAIN
+			'forminator'
 		);
 	}
 
@@ -110,14 +110,14 @@ class Forminator_Addon_Googlesheet_Poll_Settings extends Forminator_Addon_Poll_S
 		$buttons = array();
 		if ( $this->pick_name_is_completed( array( 'multi_id' => $multi_id ) ) ) {
 			$buttons['disconnect']['markup'] = Forminator_Addon_Abstract::get_button_markup(
-				esc_html__( 'Deactivate', Forminator::DOMAIN ),
+				esc_html__( 'Deactivate', 'forminator' ),
 				'sui-button-ghost sui-tooltip sui-tooltip-top-center forminator-addon-form-disconnect',
-				esc_html__( 'Deactivate this Google Sheets Integration from this Poll.', Forminator::DOMAIN )
+				esc_html__( 'Deactivate this Google Sheets Integration from this Poll.', 'forminator' )
 			);
 		}
 
 		$buttons['next']['markup'] = '<div class="sui-actions-right">' .
-									Forminator_Addon_Abstract::get_button_markup( esc_html__( 'Next', Forminator::DOMAIN ), 'forminator-addon-next' ) .
+									Forminator_Addon_Abstract::get_button_markup( esc_html__( 'Next', 'forminator' ), 'forminator-addon-next' ) .
 									'</div>';
 
 		return array(
@@ -142,7 +142,7 @@ class Forminator_Addon_Googlesheet_Poll_Settings extends Forminator_Addon_Poll_S
 		$template = forminator_addon_googlesheet_dir() . 'views/poll-settings/setup-sheet.php';
 
 		if ( ! isset( $submitted_data['multi_id'] ) ) {
-			return $this->get_force_closed_wizard( __( 'Please pick valid connection', Forminator::DOMAIN ) );
+			return $this->get_force_closed_wizard( __( 'Please pick valid connection', 'forminator' ) );
 		}
 
 		$multi_id = $submitted_data['multi_id'];
@@ -171,7 +171,7 @@ class Forminator_Addon_Googlesheet_Poll_Settings extends Forminator_Addon_Poll_S
 			try {
 				$input_exceptions = new Forminator_Addon_Googlesheet_Poll_Settings_Exception();
 				if ( empty( $file_name ) ) {
-					$input_exceptions->add_input_exception( __( 'Please put valid spread sheet name', Forminator::DOMAIN ), 'file_name_error' );
+					$input_exceptions->add_input_exception( __( 'Please put valid spread sheet name', 'forminator' ), 'file_name_error' );
 				}
 
 				$google_client = $this->addon->get_google_client();
@@ -185,12 +185,12 @@ class Forminator_Addon_Googlesheet_Poll_Settings extends Forminator_Addon_Poll_S
 						// its from API var
 						// phpcs:ignore WordPress.NamingConventions.ValidVariableName.NotSnakeCaseMemberVar
 						if ( Forminator_Addon_Googlesheet::MIME_TYPE_GOOGLE_DRIVE_FOLDER !== $folder->mimeType ) {
-							$input_exceptions->add_input_exception( __( 'This is not a folder, please use a valid Folder ID.', Forminator::DOMAIN ), 'folder_id_error' );
+							$input_exceptions->add_input_exception( __( 'This is not a folder, please use a valid Folder ID.', 'forminator' ), 'folder_id_error' );
 						}
 					} catch ( Forminator_Google_Exception $google_exception ) {
 						// catch 404
 						if ( false !== stripos( $google_exception->getMessage(), 'File not found' ) ) {
-							$input_exceptions->add_input_exception( __( 'Folder not found, please put Folder ID.', Forminator::DOMAIN ), 'folder_id_error' );
+							$input_exceptions->add_input_exception( __( 'Folder not found, please put Folder ID.', 'forminator' ), 'folder_id_error' );
 						} else {
 							throw $google_exception;
 						}
@@ -243,14 +243,14 @@ class Forminator_Addon_Googlesheet_Poll_Settings extends Forminator_Addon_Poll_S
 		$buttons = array();
 		if ( $this->pick_name_is_completed( array( 'multi_id' => $multi_id ) ) ) {
 			$buttons['disconnect']['markup'] = Forminator_Addon_Abstract::get_button_markup(
-				esc_html__( 'Deactivate', Forminator::DOMAIN ),
+				esc_html__( 'Deactivate', 'forminator' ),
 				'sui-button-ghost sui-tooltip sui-tooltip-top-center forminator-addon-form-disconnect',
-				esc_html__( 'Deactivate this Google Sheets Integration from this Poll.', Forminator::DOMAIN )
+				esc_html__( 'Deactivate this Google Sheets Integration from this Poll.', 'forminator' )
 			);
 		}
 
 		$buttons['next']['markup'] = '<div class="sui-actions-right">' .
-									Forminator_Addon_Abstract::get_button_markup( esc_html__( 'Create', Forminator::DOMAIN ), 'forminator-addon-next' ) .
+									Forminator_Addon_Abstract::get_button_markup( esc_html__( 'Create', 'forminator' ), 'forminator-addon-next' ) .
 									'</div>';
 
 		return array(

@@ -27,40 +27,20 @@
 <?php include('global/content/questions-legend.html') ?>
 <?php include('global/content/questions-result.html') ?>
 <?php include('global/content/answers-text.html') ?>
-<?php if ( forminator_array_value_exists( $properties, 'forminator-quiz-theme' ) ) { ?>
-	<?php if ( 'default' == $properties['forminator-quiz-theme'] ) { ?>
-		<?php include('default/answers-container.html') ?>
-		<?php include('default/answers-checkbox.html') ?>
-	<?php } else if ( 'flat' == $properties['forminator-quiz-theme'] ) { ?>
-		<?php include('flat/answers-container.html') ?>
-		<?php include('flat/answers-checkbox.html') ?>
-	<?php } else if ( 'bold' == $properties['forminator-quiz-theme'] ) { ?>
-		<?php include('bold/answers-container.html') ?>
-		<?php include('bold/answers-checkbox.html') ?>
-	<?php } else if ( 'material' == $properties['forminator-quiz-theme'] ) { ?>
-		<?php include('material/answers-container.html') ?>
-		<?php include('material/answers-checkbox.html') ?>
-	<?php } else if ( 'empty' != $properties['forminator-quiz-theme'] && ( empty( $properties['forminator-quiz-theme'] ) || '' != $properties['forminator-quiz-theme'] ) ) { ?>
-		<?php include('default/answers-container.html') ?>
-		<?php include('default/answers-checkbox.html') ?>
-	<?php } ?>
-<?php } ?>
 
 /* =============== */
 /* SECTION: Footer */
 <?php include('global/footer/quiz-footer.html') ?>
 <?php include('global/footer/submit-button.html') ?>
 <?php include('global/footer/social-share.html') ?>
-<?php if ( forminator_array_value_exists( $properties, 'forminator-quiz-theme' ) ) { ?>
-	<?php if ( 'default' == $properties['forminator-quiz-theme'] ) { ?>
-		<?php include('default/quiz-result.html') ?>
-	<?php } else if ( 'flat' == $properties['forminator-quiz-theme'] ) { ?>
-		<?php include('flat/quiz-result.html') ?>
-	<?php } else if ( 'bold' == $properties['forminator-quiz-theme'] ) { ?>
-		<?php include('bold/quiz-result.html') ?>
-	<?php } else if ( 'material' == $properties['forminator-quiz-theme'] ) { ?>
-		<?php include('material/quiz-result.html') ?>
-	<?php } else if ( 'empty' != $properties['forminator-quiz-theme'] && ( empty( $properties['forminator-quiz-theme'] ) || '' != $properties['forminator-quiz-theme'] ) ) { ?>
+
+
+<?php if ( forminator_array_value_exists( $properties, 'forminator-quiz-theme' ) && 'none' != $properties['forminator-quiz-theme'] ) { ?>
+	<?php include self::get_template( $properties['forminator-quiz-theme'], 'answers-container.html'); ?>
+	<?php include self::get_template( $properties['forminator-quiz-theme'], 'answers-checkbox.html'); ?>
+	<?php if ( in_array( $properties['forminator-quiz-theme'], array( 'flat', 'bold', 'material' ), true ) ) { ?>
+		<?php include( $properties['forminator-quiz-theme'] . '/quiz-result.html') ?>
+	<?php } else { ?>
 		<?php include('default/quiz-result.html') ?>
 	<?php } ?>
 <?php } ?>

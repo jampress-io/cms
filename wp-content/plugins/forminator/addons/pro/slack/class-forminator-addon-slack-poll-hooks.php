@@ -133,11 +133,11 @@ class Forminator_Addon_Slack_Poll_Hooks extends Forminator_Addon_Poll_Hooks_Abst
 			$args = array();
 
 			if ( ! isset( $connection_settings['target_id'] ) ) {
-				throw new Forminator_Addon_Slack_Exception( __( 'Target ID not properly setup.', Forminator::DOMAIN ) );
+				throw new Forminator_Addon_Slack_Exception( __( 'Target ID not properly setup.', 'forminator' ) );
 			}
 
 			if ( ! isset( $connection_settings['message'] ) ) {
-				throw new Forminator_Addon_Slack_Exception( __( 'Message not properly setup.', Forminator::DOMAIN ) );
+				throw new Forminator_Addon_Slack_Exception( __( 'Message not properly setup.', 'forminator' ) );
 			}
 			$text_message = $connection_settings['message'];
 			$text_message = forminator_replace_variables( $text_message );
@@ -214,7 +214,7 @@ class Forminator_Addon_Slack_Poll_Hooks extends Forminator_Addon_Poll_Hooks_Abst
 			return array(
 				'is_sent'         => true,
 				'connection_name' => $connection_settings['name'],
-				'description'     => __( 'Successfully send data to Slack', Forminator::DOMAIN ),
+				'description'     => __( 'Successfully send data to Slack', 'forminator' ),
 				'data_sent'       => $api->get_last_data_sent(),
 				'data_received'   => $api->get_last_data_received(),
 				'url_request'     => $api->get_last_url_request(),
@@ -264,21 +264,21 @@ class Forminator_Addon_Slack_Poll_Hooks extends Forminator_Addon_Poll_Hooks_Abst
 
 		$attachment_fields   = array();
 		$attachment_fields[] = array(
-			'title' => __( 'Vote', Forminator::DOMAIN ),
+			'title' => __( 'Vote', 'forminator' ),
 			'value' => esc_html( $answer ),
 			'short' => ! empty( $extra ),
 		);
 
 		if ( ! empty( $extra ) ) {
 			$attachment_fields[] = array(
-				'title' => __( 'Extra', Forminator::DOMAIN ),
+				'title' => __( 'Extra', 'forminator' ),
 				'value' => esc_html( $extra ),
 				'short' => true,
 			);
 		}
 
 		$attachments[] = array(
-			'title'  => __( 'Submitted Vote', Forminator::DOMAIN ),
+			'title'  => __( 'Submitted Vote', 'forminator' ),
 			'fields' => $attachment_fields,
 		);
 
@@ -323,7 +323,7 @@ class Forminator_Addon_Slack_Poll_Hooks extends Forminator_Addon_Poll_Hooks_Abst
 		}
 
 		$attachments[] = array(
-			'title'  => __( 'Current Poll Result', Forminator::DOMAIN ),
+			'title'  => __( 'Current Poll Result', 'forminator' ),
 			'fields' => $attachment_fields,
 		);
 
@@ -341,7 +341,7 @@ class Forminator_Addon_Slack_Poll_Hooks extends Forminator_Addon_Poll_Hooks_Abst
 	public function on_export_render_title_row() {
 
 		$export_headers = array(
-			'info' => __( 'Slack Info', Forminator::DOMAIN ),
+			'info' => __( 'Slack Info', 'forminator' ),
 		);
 
 		$poll_id                = $this->poll_id;

@@ -3,7 +3,7 @@
 Plugin Name: Ninja Forms
 Plugin URI: http://ninjaforms.com/?utm_source=Ninja+Forms+Plugin&utm_medium=readme
 Description: Ninja Forms is a webform builder with unparalleled ease of use and features.
-Version: 3.5.1
+Version: 3.5.4
 Author: Saturday Drive
 Author URI: http://ninjaforms.com/?utm_source=Ninja+Forms+Plugin&utm_medium=Plugins+WP+Dashboard
 Text Domain: ninja-forms
@@ -32,16 +32,12 @@ function ninja_forms_three_table_exists(){
 
 if( get_option( 'ninja_forms_load_deprecated', FALSE ) && ! ( isset( $_POST[ 'nf2to3' ] ) && ( defined( 'DOING_AJAX' ) && DOING_AJAX ) ) ){
 
-    include 'deprecated/ninja-forms.php';
+    require_once dirname(__FILE__).'/includes/Integrations/LoadLegacy.php';
 
-    register_activation_hook( __FILE__, 'ninja_forms_activation_deprecated' );
-
-    function ninja_forms_activation_deprecated( $network_wide ){
-        include_once 'deprecated/includes/activation.php';
-
-        ninja_forms_activation( $network_wide );
-    }
-
+    $legacyLoader = new NF_LoadLegacy();
+    
+    add_action('plugins_loaded',array($legacyLoader,'handle'));
+    
 } else {
 
     include_once 'lib/NF_Upgrade.php';
@@ -59,7 +55,7 @@ if( get_option( 'ninja_forms_load_deprecated', FALSE ) && ! ( isset( $_POST[ 'nf
          * @since 3.0
          */
 
-        const VERSION = '3.5.1';
+        const VERSION = '3.5.4';
         
         /**
          * @since 3.4.0

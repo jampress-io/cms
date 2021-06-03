@@ -14,6 +14,7 @@ use WP_Defender\Controller\HUB;
 use WP_Defender\Controller\Mask_Login;
 use WP_Defender\Controller\Notification;
 use WP_Defender\Controller\Onboard;
+use WP_Defender\Controller\Password_Protection;
 use WP_Defender\Controller\Scan;
 use WP_Defender\Controller\Security_Headers;
 use WP_Defender\Controller\Security_Tweaks;
@@ -42,6 +43,13 @@ class Bootstrap {
 	public function deactivation_hook() {
 		wp_clear_scheduled_hook( 'firewall_clean_up_logs' );
 		wp_clear_scheduled_hook( 'wdf_maybe_send_report' );
+		wp_clear_scheduled_hook( 'wp_defender_clear_logs' );
+		//Remove old legacy cron jobs if they exist
+		wp_clear_scheduled_hook( 'lockoutReportCron' );
+		wp_clear_scheduled_hook( 'auditReportCron' );
+		wp_clear_scheduled_hook( 'cleanUpOldLog' );
+		wp_clear_scheduled_hook( 'scanReportCron' );
+		wp_clear_scheduled_hook( 'tweaksSendNotification' );
 	}
 
 	/**
@@ -174,9 +182,10 @@ class Bootstrap {
 		//Init main ORM
 		Array_Cache::set( 'orm', new Mapper() );
 		/**
-		 * if this is a fresh install and there were no requests from the Hub before,
-		 * then we should display the onboarding first
-		 */
+		 * Display Onboarding if:
+		 * it's a fresh install and there were no requests from the Hub before,
+		 * after Reset Settings
+		*/
 		$hub_class = wd_di()->get( HUB::class );
 		$hub_class->set_onboarding_status( $this->maybe_show_onboarding() );
 		$hub_class->listen_to_requests();
@@ -200,6 +209,7 @@ class Bootstrap {
 		wd_di()->get( Main_Setting::class );
 		wd_di()->get( Tutorial::class );
 		wd_di()->get( Blocklist_Monitor::class );
+		wd_di()->get( Password_Protection::class );
 		$this->init_free_dashboard();
 	}
 
@@ -314,7 +324,7 @@ class Bootstrap {
 			],
 			'def-securitytweaks' => [
 				$base_url . 'assets/app/security-tweak.js',
-				$dependencies,
+				array_merge( $dependencies, [ 'clipboard', 'wpmudev-sui' ] ),
 			],
 			'def-scan'           => [
 				$base_url . 'assets/app/scan.js',
@@ -358,27 +368,6 @@ class Bootstrap {
 			]
 		);
 
-		global $wp_version;
-		$is_older_5_2 = false;
-		if ( version_compare( $wp_version, '5.2', '<' ) ) {
-			// Check clipboard.js is registered or not.
-			// Remove it when the minimum WP version will be increased.
-			if ( ! wp_script_is( 'clipboard', 'registered' ) ) {
-				$js_files['clipboard'] = [
-					$base_url . 'assets/js/clipboard.min.js',
-				];
-			}
-			$js_files['wpmudev-sui'] = [
-				$base_url . 'assets/js/shared-ui.js',
-				[ 'clipboard' ],
-			];
-			$js_files['defender'] = [
-				$base_url . 'assets/js/scripts.js',
-				[ 'wpmudev-sui' ],
-			];
-			$is_older_5_2 = true;
-		}
-
 		foreach ( $js_files as $slug => $file ) {
 			if ( isset( $file[1] ) ) {
 				wp_register_script( $slug, $file[0], $file[1], DEFENDER_VERSION, true );
@@ -387,21 +376,25 @@ class Bootstrap {
 			}
 		}
 
+		global $wp_defender_central;
 		$wpmu_dev = new WPMUDEV();
 
 		wp_localize_script( 'def-vue', 'defender', [
-			'whitelabel'    => $wpmu_dev->white_label_status(),
-			'misc'          => [
+			'whitelabel'            => $wpmu_dev->white_label_status(),
+			'misc'                  => [
 				'high_contrast' => $wpmu_dev->maybe_high_contrast(),
 			],
-			'site_url'      => network_site_url(),
-			'admin_url'     => network_admin_url(),
-			'defender_url'  => $base_url,
-			'is_free'       => $wpmu_dev->is_pro() ? 0 : 1,
-			'is_membership' => true,
-			'is_whitelabel' => $wpmu_dev->is_whitelabel_enabled() ? 'enabled' : 'disabled',
-			'is_older_5_2'  => $is_older_5_2,
+			'site_url'              => network_site_url(),
+			'admin_url'             => network_admin_url(),
+			'defender_url'          => $base_url,
+			'is_free'               => $wpmu_dev->is_pro() ? 0 : 1,
+			'is_membership'         => true,
+			'is_whitelabel'         => $wpmu_dev->is_whitelabel_enabled() ? 'enabled' : 'disabled',
+			'opcache_save_comments' => $wp_defender_central->is_opcache_save_comments_disabled() ? 'disabled' : 'enabled',
 		] );
+
+		wp_localize_script( 'defender', 'defenderGetText', $this->defender_gettext_translations() );
+
 		do_action( 'defender_enqueue_assets' );
 	}
 
@@ -440,5 +433,25 @@ class Bootstrap {
 		) {
 			$this->create_database_tables();
 		}
+	}
+
+	/**
+	 * Find all the strings from .mo file
+	 * `wpdef` is our text domain.
+	 */
+	private function defender_gettext_translations() {
+		global $l10n;
+
+		if ( ! isset( $l10n['wpdef'] ) ) {
+			return array();
+		}
+
+		$items = array();
+
+		foreach ( $l10n['wpdef']->entries as $key => $value ) {
+			$items[ $key ] = count( $value->translations ) ? $value->translations[0] : $key;
+		}
+
+		return $items;
 	}
 }

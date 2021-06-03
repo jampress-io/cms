@@ -1,6 +1,6 @@
 <?php if ( forminator_array_value_exists( $properties, 'cform-color-settings' ) ) { ?>
 
-	.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--material .forminator-error-message {
+	#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-error-message {
 		<?php if ( forminator_array_value_exists( $properties, 'label-validation-color' ) && !empty( $properties['label-validation-color'] ) ) { ?>
 			color: <?php echo $properties['label-validation-color'] ?>;
 		<?php } else { ?>
@@ -10,7 +10,7 @@
 
 <?php } else { ?>
 
-	.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--material .forminator-error-message {
+	#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-error-message {
 		color: #E04562;
 	}
 

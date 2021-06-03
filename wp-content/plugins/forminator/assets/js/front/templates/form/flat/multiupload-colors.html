@@ -8,8 +8,7 @@
 
 	/* STATE: Default */
 
-	.forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-multi-upload,
-	<?php echo $divi_overrider; ?> .forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-multi-upload {
+	.forminator-ui#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-multi-upload {
 		cursor: pointer;
 		<?php if ( forminator_array_value_exists( $properties, 'multiupload-panel-background-default' ) && !empty( $properties['multiupload-panel-background-default'] ) ) { ?>
 			background-color: <?php echo $properties['multiupload-panel-background-default'] ?>;
@@ -23,8 +22,7 @@
 		<?php } ?>
 	}
 
-	.forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-multi-upload .forminator-multi-upload-message p,
-	<?php echo $divi_overrider; ?> .forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-multi-upload .forminator-multi-upload-message p {
+	.forminator-ui#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-multi-upload .forminator-multi-upload-message p {
 		<?php if ( forminator_array_value_exists( $properties, 'multiupload-panel-text-default' ) && !empty( $properties['multiupload-panel-text-default'] ) ) { ?>
 			color: <?php echo $properties['multiupload-panel-text-default'] ?>;
 		<?php } else { ?>
@@ -32,14 +30,10 @@
 		<?php } ?>
 	}
 
-	.forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-multi-upload .forminator-multi-upload-message p a,
-	.forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-multi-upload .forminator-multi-upload-message p a:visited,
-	.forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-multi-upload .forminator-multi-upload-message p a:hover,
-	.forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-multi-upload .forminator-multi-upload-message p a:focus,
-	<?php echo $divi_overrider; ?> .forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-multi-upload .forminator-multi-upload-message p a,
-	<?php echo $divi_overrider; ?> .forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-multi-upload .forminator-multi-upload-message p a:visited,
-	<?php echo $divi_overrider; ?> .forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-multi-upload .forminator-multi-upload-message p a:hover,
-	<?php echo $divi_overrider; ?> .forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-multi-upload .forminator-multi-upload-message p a:focus {
+	.forminator-ui#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-multi-upload .forminator-multi-upload-message p a,
+	.forminator-ui#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-multi-upload .forminator-multi-upload-message p a:visited,
+	.forminator-ui#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-multi-upload .forminator-multi-upload-message p a:hover,
+	.forminator-ui#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-multi-upload .forminator-multi-upload-message p a:focus {
 		<?php if ( forminator_array_value_exists( $properties, 'multiupload-panel-link-default' ) && !empty( $properties['multiupload-panel-link-default'] ) ) { ?>
 			color: <?php echo $properties['multiupload-panel-link-default'] ?>;
 		<?php } else { ?>
@@ -49,8 +43,7 @@
 
 	/* STATE: Hover */
 
-	.forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-multi-upload:hover,
-	<?php echo $divi_overrider; ?> .forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-multi-upload:hover {
+	.forminator-ui#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-multi-upload:hover {
 		<?php if ( forminator_array_value_exists( $properties, 'multiupload-panel-background-hover' ) && !empty( $properties['multiupload-panel-background-hover'] ) ) { ?>
 			background-color: <?php echo $properties['multiupload-panel-background-hover'] ?>;
 		<?php } else { ?>
@@ -65,8 +58,7 @@
 
 	/* STATE: Drag Over */
 
-	.forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-multi-upload.forminator-dragover,
-	<?php echo $divi_overrider; ?> .forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-multi-upload.forminator-dragover {
+	.forminator-ui#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-multi-upload.forminator-dragover {
 		<?php if ( forminator_array_value_exists( $properties, 'multiupload-panel-background-drop' ) && !empty( $properties['multiupload-panel-background-drop'] ) ) { ?>
 			background-color: <?php echo $properties['multiupload-panel-background-drop'] ?>;
 		<?php } else { ?>
@@ -81,8 +73,7 @@
 
 	/* STATE: Error */
 
-	.forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-has_error .forminator-multi-upload,
-	<?php echo $divi_overrider; ?> .forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-has_error .forminator-multi-upload {
+	.forminator-ui#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-has_error .forminator-multi-upload {
 		<?php if ( forminator_array_value_exists( $properties, 'multiupload-panel-border-error' ) && !empty( $properties['multiupload-panel-border-error'] ) ) { ?>
 			box-shadow: inset 2px 0 0 0 <?php echo $properties['multiupload-panel-border-error'] ?>;
 			-moz-box-shadow: inset 2px 0 0 0 <?php echo $properties['multiupload-panel-border-error'] ?>;
@@ -112,8 +103,7 @@
 
 	/* STATE: Default */
 
-	.forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-uploaded-file .forminator-uploaded-file--preview,
-	<?php echo $divi_overrider; ?> .forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-uploaded-file .forminator-uploaded-file--preview {
+	.forminator-ui#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-uploaded-file .forminator-uploaded-file--preview {
 		<?php if ( forminator_array_value_exists( $properties, 'multiupload-file-preview-background-default' ) && !empty( $properties['multiupload-file-preview-background-default'] ) ) { ?>
 			background-color: <?php echo $properties['multiupload-file-preview-background-default'] ?>;
 		<?php } else { ?>
@@ -121,8 +111,7 @@
 		<?php } ?>
 	}
 
-	.forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-uploaded-file .forminator-uploaded-file--preview [class*="forminator-icon-"],
-	<?php echo $divi_overrider; ?> .forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-uploaded-file .forminator-uploaded-file--preview [class*="forminator-icon-"] {
+	.forminator-ui#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-uploaded-file .forminator-uploaded-file--preview [class*="forminator-icon-"] {
 		<?php if ( forminator_array_value_exists( $properties, 'multiupload-file-preview-icon-default' ) && !empty( $properties['multiupload-file-preview-icon-default'] ) ) { ?>
 			color: <?php echo $properties['multiupload-file-preview-icon-default'] ?>;
 		<?php } else { ?>
@@ -130,8 +119,7 @@
 		<?php } ?>
 	}
 
-	.forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-uploaded-file .forminator-uploaded-file--title,
-	<?php echo $divi_overrider; ?> .forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-uploaded-file .forminator-uploaded-file--title {
+	.forminator-ui#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-uploaded-file .forminator-uploaded-file--title {
 		<?php if ( forminator_array_value_exists( $properties, 'multiupload-file-name-default' ) && !empty( $properties['multiupload-file-name-default'] ) ) { ?>
 			color: <?php echo $properties['multiupload-file-name-default'] ?>;
 		<?php } else { ?>
@@ -139,8 +127,7 @@
 		<?php } ?>
 	}
 
-	.forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-uploaded-file .forminator-uploaded-file--size,
-	<?php echo $divi_overrider; ?> .forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-uploaded-file .forminator-uploaded-file--size {
+	.forminator-ui#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-uploaded-file .forminator-uploaded-file--size {
 		<?php if ( forminator_array_value_exists( $properties, 'multiupload-file-size-default' ) && !empty( $properties['multiupload-file-size-default'] ) ) { ?>
 			color: <?php echo $properties['multiupload-file-size-default'] ?>;
 		<?php } else { ?>
@@ -148,8 +135,7 @@
 		<?php } ?>
 	}
 
-	.forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-uploaded-file .forminator-uploaded-file--size [class*="forminator-icon-"],
-	<?php echo $divi_overrider; ?> .forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-uploaded-file .forminator-uploaded-file--size [class*="forminator-icon-"] {
+	.forminator-ui#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-uploaded-file .forminator-uploaded-file--size [class*="forminator-icon-"] {
 		<?php if ( forminator_array_value_exists( $properties, 'multiupload-file-loader-color' ) && !empty( $properties['multiupload-file-loader-color'] ) ) { ?>
 			color: <?php echo $properties['multiupload-file-loader-color'] ?>;
 		<?php } else { ?>
@@ -159,10 +145,8 @@
 
 	/* Error */
 
-	.forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-uploaded-file.forminator-has_error .forminator-uploaded-file--preview,
-	<?php echo $divi_overrider; ?> .forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-uploaded-file.forminator-has_error .forminator-uploaded-file--preview,
-	.forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-uploaded-file.forminator-has_error .forminator-uploaded-file--image,
-	<?php echo $divi_overrider; ?> .forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-uploaded-file.forminator-has_error .forminator-uploaded-file--image {
+	.forminator-ui#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-uploaded-file.forminator-has_error .forminator-uploaded-file--image,
+	.forminator-ui#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-uploaded-file.forminator-has_error .forminator-uploaded-file--preview {
 		<?php if ( forminator_array_value_exists( $properties, 'multiupload-file-preview-background-error' ) && !empty( $properties['multiupload-file-preview-background-error'] ) ) { ?>
 			background-color: <?php echo $properties['multiupload-file-preview-background-error'] ?>;
 		<?php } else { ?>
@@ -170,10 +154,8 @@
 		<?php } ?>
 	}
 
-	.forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-uploaded-file.forminator-has_error .forminator-uploaded-file--preview,
-	<?php echo $divi_overrider; ?> .forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-uploaded-file.forminator-has_error .forminator-uploaded-file--preview,
-	.forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-uploaded-file.forminator-has_error .forminator-uploaded-file--image .forminator-img-preview,
-	<?php echo $divi_overrider; ?> .forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-uploaded-file.forminator-has_error .forminator-uploaded-file--image .forminator-img-preview {
+	.forminator-ui#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-uploaded-file.forminator-has_error .forminator-uploaded-file--image .forminator-img-preview,
+	.forminator-ui#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-uploaded-file.forminator-has_error .forminator-uploaded-file--preview {
 		<?php if ( forminator_array_value_exists( $properties, 'multiupload-file-preview-border-error' ) && !empty( $properties['multiupload-file-preview-border-error'] ) ) { ?>
 			box-shadow: inset 2px 0 0 0 <?php echo $properties['multiupload-file-preview-border-error'] ?>;
 			-moz-box-shadow: inset 2px 0 0 0 <?php echo $properties['multiupload-file-preview-border-error'] ?>;
@@ -185,8 +167,7 @@
 		<?php } ?>
 	}
 
-	.forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-uploaded-file.forminator-has_error .forminator-uploaded-file--preview [class*="forminator-icon-"],
-	<?php echo $divi_overrider; ?> .forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-uploaded-file.forminator-has_error .forminator-uploaded-file--preview [class*="forminator-icon-"] {
+	.forminator-ui#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-uploaded-file.forminator-has_error .forminator-uploaded-file--preview [class*="forminator-icon-"] {
 		<?php if ( forminator_array_value_exists( $properties, 'multiupload-file-preview-icon-error' ) && !empty( $properties['multiupload-file-preview-icon-error'] ) ) { ?>
 			color: <?php echo $properties['multiupload-file-preview-icon-error'] ?>;
 		<?php } else { ?>
@@ -194,8 +175,7 @@
 		<?php } ?>
 	}
 
-	.forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-uploaded-file.forminator-has_error .forminator-uploaded-file--size [class*="forminator-icon-"],
-	<?php echo $divi_overrider; ?> .forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-uploaded-file.forminator-has_error .forminator-uploaded-file--size [class*="forminator-icon-"] {
+	.forminator-ui#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-uploaded-file.forminator-has_error .forminator-uploaded-file--size [class*="forminator-icon-"] {
 		<?php if ( forminator_array_value_exists( $properties, 'multiupload-file-error-color' ) && !empty( $properties['multiupload-file-error-color'] ) ) { ?>
 			color: <?php echo $properties['multiupload-file-error-color'] ?>;
 		<?php } else { ?>
@@ -213,49 +193,40 @@
 
 	/* STATE: Default */
 
-	.forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-multi-upload,
-	<?php echo $divi_overrider; ?> .forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-multi-upload {
+	.forminator-ui#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-multi-upload {
 		cursor: pointer;
 		background-color: #EDEDED;
 		color: #777771;
 	}
 
-	.forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-multi-upload .forminator-multi-upload-message p,
-	<?php echo $divi_overrider; ?> .forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-multi-upload .forminator-multi-upload-message p {
+	.forminator-ui#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-multi-upload .forminator-multi-upload-message p {
 		color: #666666;
 	}
 
-	.forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-multi-upload .forminator-multi-upload-message p a,
-	.forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-multi-upload .forminator-multi-upload-message p a:visited,
-	.forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-multi-upload .forminator-multi-upload-message p a:hover,
-	.forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-multi-upload .forminator-multi-upload-message p a:focus,
-	<?php echo $divi_overrider; ?> .forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-multi-upload .forminator-multi-upload-message p a,
-	<?php echo $divi_overrider; ?> .forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-multi-upload .forminator-multi-upload-message p a:visited,
-	<?php echo $divi_overrider; ?> .forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-multi-upload .forminator-multi-upload-message p a:hover,
-	<?php echo $divi_overrider; ?> .forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-multi-upload .forminator-multi-upload-message p a:focus {
+	.forminator-ui#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-multi-upload .forminator-multi-upload-message p a,
+	.forminator-ui#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-multi-upload .forminator-multi-upload-message p a:visited,
+	.forminator-ui#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-multi-upload .forminator-multi-upload-message p a:hover,
+	.forminator-ui#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-multi-upload .forminator-multi-upload-message p a:focus {
 		color: #17A8E3;
 	}
 
 	/* STATE: Hover */
 
-	.forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-multi-upload:hover,
-	<?php echo $divi_overrider; ?> .forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-multi-upload:hover {
+	.forminator-ui#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-multi-upload:hover {
 		background-color: #E6E6E6;
 		color: #777771;
 	}
 
 	/* STATE: Drag Over */
 
-	.forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-multi-upload.forminator-dragover,
-	<?php echo $divi_overrider; ?> .forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-multi-upload.forminator-dragover {
+	.forminator-ui#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-multi-upload.forminator-dragover {
 		background-color: #E1F6FF;
 		color: #17A8E3;
 	}
 
 	/* STATE: Error */
 
-	.forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-has_error .forminator-multi-upload,
-	<?php echo $divi_overrider; ?> .forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-has_error .forminator-multi-upload {
+	.forminator-ui#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-has_error .forminator-multi-upload {
 		background-color: #EDEDED;
 		box-shadow: inset 2px 0 0 0 #E04562;
 		-moz-box-shadow: inset 2px 0 0 0 #E04562;
@@ -271,56 +242,45 @@
 
 	/* STATE: Default */
 
-	.forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-uploaded-file .forminator-uploaded-file--preview,
-	<?php echo $divi_overrider; ?> .forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-uploaded-file .forminator-uploaded-file--preview {
+	.forminator-ui#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-uploaded-file .forminator-uploaded-file--preview {
 		background-color: #EDEDED;
 	}
 
-	.forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-uploaded-file .forminator-uploaded-file--preview [class*="forminator-icon-"],
-	<?php echo $divi_overrider; ?> .forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-uploaded-file .forminator-uploaded-file--preview [class*="forminator-icon-"] {
+	.forminator-ui#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-uploaded-file .forminator-uploaded-file--preview [class*="forminator-icon-"] {
 		color: #777771;
 	}
 
-	.forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-uploaded-file .forminator-uploaded-file--title,
-	<?php echo $divi_overrider; ?> .forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-uploaded-file .forminator-uploaded-file--title {
+	.forminator-ui#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-uploaded-file .forminator-uploaded-file--title {
 		color: #333333;
 	}
 
-	.forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-uploaded-file .forminator-uploaded-file--size,
-	<?php echo $divi_overrider; ?> .forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-uploaded-file .forminator-uploaded-file--size {
+	.forminator-ui#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-uploaded-file .forminator-uploaded-file--size {
 		color: #888888;
 	}
 
-	.forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-uploaded-file .forminator-uploaded-file--size [class*="forminator-icon-"],
-	<?php echo $divi_overrider; ?> .forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-uploaded-file .forminator-uploaded-file--size [class*="forminator-icon-"] {
+	.forminator-ui#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-uploaded-file .forminator-uploaded-file--size [class*="forminator-icon-"] {
 		color: #888888;
 	}
 
 	/* Error */
 
-	.forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-uploaded-file.forminator-has_error .forminator-uploaded-file--preview,
-	<?php echo $divi_overrider; ?> .forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-uploaded-file.forminator-has_error .forminator-uploaded-file--preview,
-	.forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-uploaded-file.forminator-has_error .forminator-uploaded-file--image,
-	<?php echo $divi_overrider; ?> .forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-uploaded-file.forminator-has_error .forminator-uploaded-file--image {
+	.forminator-ui#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-uploaded-file.forminator-has_error .forminator-uploaded-file--image,
+	.forminator-ui#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-uploaded-file.forminator-has_error .forminator-uploaded-file--preview {
 		background-color: #EDEDED;
 	}
 
-	.forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-uploaded-file.forminator-has_error .forminator-uploaded-file--preview,
-	<?php echo $divi_overrider; ?> .forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-uploaded-file.forminator-has_error .forminator-uploaded-file--preview,
-	.forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-uploaded-file.forminator-has_error .forminator-uploaded-file--image .forminator-img-preview,
-	<?php echo $divi_overrider; ?> .forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-uploaded-file.forminator-has_error .forminator-uploaded-file--image .forminator-img-preview {
+	.forminator-ui#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-uploaded-file.forminator-has_error .forminator-uploaded-file--image .forminator-img-preview,
+	.forminator-ui#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-uploaded-file.forminator-has_error .forminator-uploaded-file--preview {
 		box-shadow: inset 2px 0 0 0 #E04562;
 		-moz-box-shadow: inset 2px 0 0 0 #E04562;
 		-webkit-box-shadow: inset 2px 0 0 0 #E04562;
 	}
 
-	.forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-uploaded-file.forminator-has_error .forminator-uploaded-file--preview [class*="forminator-icon-"],
-	<?php echo $divi_overrider; ?> .forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-uploaded-file.forminator-has_error .forminator-uploaded-file--preview [class*="forminator-icon-"] {
+	.forminator-ui#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-uploaded-file.forminator-has_error .forminator-uploaded-file--preview [class*="forminator-icon-"] {
 		color: #777771;
 	}
 
-	.forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-uploaded-file.forminator-has_error .forminator-uploaded-file--size [class*="forminator-icon-"],
-	<?php echo $divi_overrider; ?> .forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-uploaded-file.forminator-has_error .forminator-uploaded-file--size [class*="forminator-icon-"] {
+	.forminator-ui#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-uploaded-file.forminator-has_error .forminator-uploaded-file--size [class*="forminator-icon-"] {
 		color: #E04562;
 	}
 

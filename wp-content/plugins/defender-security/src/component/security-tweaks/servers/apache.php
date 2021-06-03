@@ -122,7 +122,7 @@ class Apache {
 		}
 
 		if ( 'prevent-php-executed' === $this->type ) {
-			if ( 'apache' !== Server::get_current_server() ) {
+			if ( ! in_array( Server::get_current_server(), array( 'apache', 'litespeed' ), true ) ) {
 				return new WP_Error(
 					'defender_unable_to_apply_rules',
 					__( 'The rules can\'t be applied. This can be either because your host doesn\'t allow editing the file, or you\'ve selected the wrong server type.', 'wpdef' )
@@ -259,6 +259,75 @@ class Apache {
 				'</Files>' . PHP_EOL,
 				'## WP Defender - End ##'
 			];
+		}
+
+		return $rules;
+	}
+
+	/**
+	 * Get Apache rule depending on the version for instruction on browser
+	 *
+	 * @return string
+	 */
+	public function get_rules_for_instruction() {
+		$rules = '';
+
+		if ( 'prevent-php-executed' === $this->type ) {
+			$rules = '## WP Defender - Protect PHP Executed ##' . PHP_EOL;
+			$rules .= PHP_EOL;
+			$rules .= '<Files *.php>' . PHP_EOL;
+			$rules .= 'Require all denied' . PHP_EOL;
+			$rules .= '</Files>' . PHP_EOL;
+			$rules .= PHP_EOL;
+			$rules .= '## WP Defender - End ##' . PHP_EOL;
+
+			if ( version_compare( $this->get_version(), '2.4', '<' ) ) {
+				$rules = '## WP Defender - Protect PHP Executed ##' . PHP_EOL;
+				$rules .= PHP_EOL;
+				$rules .= '<Files *.php>' . PHP_EOL;
+				$rules .= 'Order allow,deny' . PHP_EOL;
+				$rules .= 'Deny from all' . PHP_EOL;
+				$rules .= '</Files>' . PHP_EOL;
+				$rules .= PHP_EOL;
+				$rules .= '## WP Defender - End ##' . PHP_EOL;
+			}
+		}
+
+		if ( 'protect-information' === $this->type ) {
+			$rules = '## WP Defender - Prevent information disclosure ##' . PHP_EOL;
+			$rules .= PHP_EOL;
+			$rules .= '<FilesMatch "\.(md|exe|sh|bak|inc|pot|po|mo|log|sql)$">' . PHP_EOL;
+			$rules .= 'Require all denied' . PHP_EOL;
+			$rules .= '</FilesMatch>' . PHP_EOL;
+			$rules .= PHP_EOL;
+			$rules .= '<Files robots.txt>' . PHP_EOL;
+			$rules .= 'Require all granted' . PHP_EOL;
+			$rules .= '</Files>' . PHP_EOL;
+			$rules .= PHP_EOL;
+			$rules .= '<Files ads.txt>' . PHP_EOL;
+			$rules .= 'Require all granted' . PHP_EOL;
+			$rules .= '</Files>' . PHP_EOL;
+			$rules .= PHP_EOL;
+			$rules .= '## WP Defender - End ##';
+
+			if ( version_compare( $this->get_version(), '2.4', '>' ) ) {
+				$rules = '## WP Defender - Prevent information disclosure ##' . PHP_EOL;
+				$rules .= PHP_EOL;
+				$rules .= '<FilesMatch "\.(md|exe|sh|bak|inc|pot|po|mo|log|sql)$">' . PHP_EOL;
+				$rules .= 'Order allow,deny' . PHP_EOL;
+				$rules .= 'Deny from all' . PHP_EOL;
+				$rules .= '</FilesMatch>' . PHP_EOL;
+				$rules .= PHP_EOL;
+				$rules .= '<Files robots.txt>' . PHP_EOL;
+				$rules .= 'Allow from all' . PHP_EOL;
+				$rules .= '</Files>' . PHP_EOL;
+				$rules .= PHP_EOL;
+				$rules .= '<Files ads.txt>' . PHP_EOL;
+				$rules .= 'Allow from all' . PHP_EOL;
+				$rules .= '</Files>' . PHP_EOL;
+				$rules .= PHP_EOL;
+				$rules .= '## WP Defender - End ##';
+			}
 		}
 
 		return $rules;

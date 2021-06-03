@@ -39,7 +39,7 @@ class Forminator_Addon_Zapier_Poll_Hooks extends Forminator_Addon_Poll_Hooks_Abs
 	 */
 	public function __construct( Forminator_Addon_Abstract $addon, $poll_id ) {
 		parent::__construct( $addon, $poll_id );
-		$this->_submit_poll_error_message = __( 'Zapier failed to process submitted data. Please check your form and try again', Forminator::DOMAIN );
+		$this->_submit_poll_error_message = __( 'Zapier failed to process submitted data. Please check your form and try again', 'forminator' );
 	}
 
 	/**
@@ -144,7 +144,7 @@ class Forminator_Addon_Zapier_Poll_Hooks extends Forminator_Addon_Poll_Hooks_Abs
 		//check required fields
 		try {
 			if ( ! isset( $connection_settings['webhook_url'] ) ) {
-				throw new Forminator_Addon_Zapier_Exception( __( 'Webhook URL is not properly setup', Forminator::DOMAIN ) );
+				throw new Forminator_Addon_Zapier_Exception( __( 'Webhook URL is not properly setup', 'forminator' ) );
 			}
 
 			$endpoint = $connection_settings['webhook_url'];
@@ -247,7 +247,7 @@ class Forminator_Addon_Zapier_Poll_Hooks extends Forminator_Addon_Poll_Hooks_Abs
 			return array(
 				'is_sent'         => true,
 				'connection_name' => $connection_settings['name'],
-				'description'     => __( 'Successfully send data to Zapier', Forminator::DOMAIN ),
+				'description'     => __( 'Successfully send data to Zapier', 'forminator' ),
 				'data_sent'       => $zapier_api->get_last_data_sent(),
 				'data_received'   => $zapier_api->get_last_data_received(),
 				'url_request'     => $zapier_api->get_last_url_request(),
@@ -277,7 +277,7 @@ class Forminator_Addon_Zapier_Poll_Hooks extends Forminator_Addon_Poll_Hooks_Abs
 	public function on_export_render_title_row() {
 
 		$export_headers = array(
-			'info' => __( 'Zapier Info', Forminator::DOMAIN ),
+			'info' => __( 'Zapier Info', 'forminator' ),
 		);
 
 		$poll_id                = $this->poll_id;

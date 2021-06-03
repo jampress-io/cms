@@ -2,11 +2,11 @@
 Contributors: RogierLankhorst, markwolters, hesseldejong
 Donate link: https://www.paypal.me/reallysimplessl
 Tags: SSL, https, force SSL, mixed content, insecure content, secure website, website security, TLS, security, secure socket layers, HSTS
-Requires at least: 4.6
+Requires at least: 4.9
 License: GPL2
 Tested up to: 5.7
 Requires PHP: 5.6
-Stable tag: 4.0.11
+Stable tag: 4.0.15
 
 No setup required! You only need an SSL certificate, and this plugin will do the rest.
 
@@ -43,6 +43,7 @@ some cool features.
 * All incoming requests are redirected to https. Default with an internal WordPress redirect, but you can also enable a .htaccess redirect.
 * The siteurl and homeurl are changed to https.
 * Your insecure content is fixed by replacing all http:// URL's with https://, except hyperlinks to other domains. Dynamically, so no database changes are made (except for the siteurl and homeurl).
+* Cookies set with PHP are set securely, by setting them with the httpOnly flag
 
 Check out other plugins developed by Really Simple Plugins as well: [Complianz](https://wordpress.org/plugins/complianz-gdpr/) and [Zip Recipes](https://wordpress.org/plugins/zip-recipes/).
 
@@ -85,6 +86,20 @@ If you are experiencing redirect loops on your site, try these [instructions](ht
 Yes. There is a dedicated network settings page where you can switch between network activated SSL and per page SSL. In the dedicated pro for multisite plugin, you can override all site settings for SSL on the network level, and can activate and deactivate SSL in the network menu for each site.
 
 == Changelog ==
+= 4.0.15 =
+* Fix: non hierarchical structured form elements in the template could cause settings not to get saved in some configurations.
+
+= 4.0.14 =
+* Improvement: when WordPress incorrectly reports that SSL is not possible, correct the resulting site health notice.
+* Improvement: don't show the secure cookies notice on subsites of a multisite installation. Show on the network dashboard instead.
+
+= 4.0.13 =
+* Fixed notice about wp config.php not writable notice even when httpOnly cookie settings already written.
+
+= 4.0.12 =
+* Added secure cookies
+* Improved Right-To-Left text support
+
 = 4.0.11 =
 * Fixed a bug where users with an older Pro version could get a fatal error call to private function
 

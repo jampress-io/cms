@@ -127,7 +127,7 @@ class NF_Admin_CPT_Submission
         $form_id = isset ( $_REQUEST['form_id'] ) ? absint( $_REQUEST['form_id'] ) : '';
 
         wp_enqueue_script( 'subs-cpt',
-            Ninja_Forms::$url . 'deprecated/assets/js/min/subs-cpt.min.js',
+            Ninja_Forms::$url . 'lib/Legacy/subs-cpt.min.js',
             array( 'jquery', 'jquery-ui-datepicker' ) );
 
         wp_localize_script( 'subs-cpt', 'nf_sub', array( 'form_id' => $form_id ) );

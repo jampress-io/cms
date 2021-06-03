@@ -1,9 +1,9 @@
 /* Social Sharing */
-.forminator-ui.forminator-quiz-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-quiz--social {
+.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-quiz--social {
 	border-top-color: rgba(0,0,0,0.12);
 }
 
-.forminator-ui.forminator-quiz-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-quiz--social .forminator-social--text {
+.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-quiz--social .forminator-social--text {
 	<?php if ( forminator_array_value_exists( $properties, 'knowledge-toggle-palette' ) ) { ?>
 		<?php if ( forminator_array_value_exists( $properties, 'knowledge-sshare-color' ) ) { ?>
 			color: <?php echo $properties['knowledge-sshare-color'] ?>;
@@ -39,7 +39,7 @@
 	<?php } ?>
 }
 
-.forminator-ui.forminator-quiz-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-quiz--social .forminator-social--icon {
+.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-quiz--social .forminator-social--icon {
 	<?php if ( forminator_array_value_exists( $properties, 'knowledge-toggle-typography' ) ) { ?>
 		<?php if ( forminator_array_value_exists( $properties, 'knowledge-social-size' ) ) { ?>
 			font-size: <?php echo $properties['knowledge-social-size'] ?>px;
@@ -51,7 +51,7 @@
 	<?php } ?>
 }
 
-.forminator-ui.forminator-quiz-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-quiz--social .forminator-social--icon .forminator-icon-social-facebook {
+.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-quiz--social .forminator-social--icon .forminator-icon-social-facebook {
 	<?php if ( forminator_array_value_exists( $properties, 'knowledge-toggle-palette' ) ) { ?>
 		<?php if ( forminator_array_value_exists( $properties, 'knowledge-social-facebook' ) ) { ?>
 			color: <?php echo $properties['knowledge-social-facebook'] ?> !important;
@@ -63,7 +63,7 @@
 	<?php } ?>
 }
 
-.forminator-ui.forminator-quiz-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-quiz--social .forminator-social--icon .forminator-icon-social-twitter {
+.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-quiz--social .forminator-social--icon .forminator-icon-social-twitter {
 	<?php if ( forminator_array_value_exists( $properties, 'knowledge-toggle-palette' ) ) { ?>
 		<?php if ( forminator_array_value_exists( $properties, 'knowledge-social-twitter' ) ) { ?>
 			color: <?php echo $properties['knowledge-social-twitter'] ?> !important;
@@ -75,7 +75,7 @@
 	<?php } ?>
 }
 
-.forminator-ui.forminator-quiz-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-quiz--social .forminator-social--icon .forminator-icon-social-linkedin {
+.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-quiz--social .forminator-social--icon .forminator-icon-social-linkedin {
 	<?php if ( forminator_array_value_exists( $properties, 'knowledge-toggle-palette' ) ) { ?>
 		<?php if ( forminator_array_value_exists( $properties, 'knowledge-social-linkedin' ) ) { ?>
 			color: <?php echo $properties['knowledge-social-linkedin'] ?> !important;

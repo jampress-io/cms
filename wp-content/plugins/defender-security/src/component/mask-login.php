@@ -245,13 +245,17 @@ class Mask_Login extends Component {
 	 * @return bool
 	 */
 	public function is_bot_request() {
+		if ( empty( $_SERVER['HTTP_USER_AGENT'] ) ) {
+			return false;
+		}
+
 		if ( preg_match(
 			'/bot|crawl|curl|dataprovider|search|get|spider|find|java|majesticsEO|google|yahoo|teoma|contaxe|yandex|libwww-perl|facebookexternalhit/i',
 			$_SERVER['HTTP_USER_AGENT']
 		) ) {
 			return true;
+		} else {
+			return false;
 		}
-
-		return false;
 	}
 }

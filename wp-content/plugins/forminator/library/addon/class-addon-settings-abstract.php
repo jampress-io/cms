@@ -19,7 +19,7 @@ abstract class Forminator_Addon_Settings_Abstract {
 	 * @return string
 	 */
 	public static function email_lists_options( $mail_lists, $selected_value = '' ) {
-		$html = '<option value="">' . __( 'None', Forminator::DOMAIN ) . '</option>';
+		$html = '<option value="">' . __( 'None', 'forminator' ) . '</option>';
 
 		foreach ( $mail_lists as $mail_list ) {
 			$html .= '<option value="' . esc_attr( $mail_list->id ) . '" ' . selected(
@@ -39,12 +39,12 @@ abstract class Forminator_Addon_Settings_Abstract {
 	 */
 	public static function refresh_button() {
 		$html = '<button class="sui-button-icon sui-tooltip forminator-refresh-email-lists" data-tooltip="'
-				. esc_html__( 'Refresh list', Forminator::DOMAIN ) . '" type="button">'
+				. esc_html__( 'Refresh list', 'forminator' ) . '" type="button">'
 				. '<span class="sui-loading-text" aria-hidden="true">'
 				. '<i class="sui-icon-refresh"></i>'
 				. '</span>'
 				. '<i class="sui-icon-loader sui-loading" aria-hidden="true"></i>'
-				. '<span class="sui-screen-reader-text">' . esc_html__( 'Refresh', Forminator::DOMAIN ) . '</span>'
+				. '<span class="sui-screen-reader-text">' . esc_html__( 'Refresh', 'forminator' ) . '</span>'
 				. '</button>';
 
 		return $html;

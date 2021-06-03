@@ -214,6 +214,82 @@ abstract class Forminator_Base_Form_Model {
 	}
 
 	/**
+	 * Load preview
+	 *
+	 * @since 1.0
+	 *
+	 * @param $id
+	 * @param $data
+	 *
+	 * @return bool|Forminator_Base_Form_Model
+	 */
+	public function load_preview( $id, $data ) {
+		$form_model = $this->load( $id, true );
+
+		// If bool, abort.
+		if ( is_bool( $form_model ) ) {
+			return false;
+		}
+
+		$form_model->clear_fields();
+		$form_model->set_var_in_array( 'name', 'formName', $data );
+
+		// build the settings.
+		if ( isset( $data['settings'] ) ) {
+			$settings             = $data['settings'];
+			$form_model->settings = $settings;
+		}
+
+		$form_model = static::prepare_data_for_preview( $form_model, $data );
+
+		return $form_model;
+	}
+
+	/**
+	 * Get relevant module object based on its ID.
+	 *
+	 * @param int $id Module ID.
+	 * @return boolean|object
+	 */
+	public static function get_model( $id ) {
+		$class = self::get_model_class( $id );
+		if ( $class ) {
+			$model = $class::model()->load( $id );
+			return $model;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Get module class by module ID
+	 *
+	 * @param int $id Module ID.
+	 * @return boolean|string
+	 */
+	public static function get_model_class( $id ) {
+		$post = get_post( $id );
+		if ( empty( $post->post_type ) ) {
+			return false;
+		}
+		switch ( $post->post_type ) {
+			case 'forminator_forms':
+				$class = 'Forminator_Form_Model';
+				break;
+			case 'forminator_polls':
+				$class = 'Forminator_Poll_Model';
+				break;
+			case 'forminator_quizzes':
+				$class = 'Forminator_Quiz_Model';
+				break;
+			default:
+				return false;
+		}
+
+		return $class;
+	}
+
+	/**
 	 * Return latest id for the post_type
 	 *
 	 * @since 1.0
@@ -254,6 +330,10 @@ abstract class Forminator_Base_Form_Model {
 				return $count_posts[ $status ];
 			} else {
 				return 0;
+			}
+		} else {
+			if ( 'forminator_forms' === $this->post_type ) {
+				unset( $count_posts['leads'] );
 			}
 		}
 
@@ -539,6 +619,7 @@ abstract class Forminator_Base_Form_Model {
 
 	/**
 	 * Validate registration fields mapping for Registration forms
+	 * If the field is removed - replace it to the first field in the list
 	 *
 	 * @param array $form_settings Form settings.
 	 * @param array $fields Form fields.
@@ -553,14 +634,22 @@ abstract class Forminator_Base_Form_Model {
 				$first_id = isset( $field_ids[ $i ] ) ? $field_ids[ $i ] : null;
 				$i++;
 				$is_password = false !== strpos( $first_id, 'password' );
-			} while ( $is_password );
+				$go_next     = empty( $first_id ) || $is_password;
+			} while ( $go_next );
 
 			foreach ( $form_settings as $key => $value ) {
+				if ( ! is_string( $value ) ) {
+					continue;
+				}
+				$value_parts = explode( '-', $value );
 				if ( ! $first_id
 						|| 'registration-' !== substr( $key, 0, 13 )
 						|| '-field' !== substr( $key, -6 )
 						|| 'registration-role-field' === $key
-						|| in_array( $value, $field_ids, true ) ) {
+						|| in_array( $value, $field_ids, true )
+						// for multiple fields like name, address.
+						|| 2 < count( $value_parts ) && in_array( $value_parts[0] . '-' . $value_parts[1], $field_ids, true )
+					) {
 					continue;
 				}
 				if ( 'registration-password-field' === $key ) {
@@ -754,7 +843,10 @@ abstract class Forminator_Base_Form_Model {
 	 *
 	 * @return self
 	 */
-	public static function model( $class_name = __CLASS__ ) {
+	public static function model( $class_name = null ) {
+		if ( is_null( $class_name ) ) {
+			$class_name = static::class;
+		}
 		$class = new $class_name();
 
 		return $class;
@@ -784,19 +876,13 @@ abstract class Forminator_Base_Form_Model {
 			return array();
 		}
 
-		$model_id = $this->id;
-
-		switch ( $this->post_type ) {
-			case 'forminator_quizzes':
-				$module_type = 'quiz';
-				break;
-			case 'forminator_polls':
-				$module_type = 'poll';
-				break;
-			default:
-				$module_type = 'form';
-				break;
+		$hook = 'forminator_' . static::$module_slug . '_model_to_exportable_data';
+		if ( Forminator::is_export_integrations_feature_enabled() ) {
+			add_filter( $hook, array( $this, 'export_integrations_data' ), 1, 1 );
 		}
+
+		$model_id    = $this->id;
+		$module_type = static::$module_slug;
 
 		// cleanup form id
 		$post_meta = get_post_meta( $this->id, self::META_KEY, true );
@@ -820,6 +906,50 @@ abstract class Forminator_Base_Form_Model {
 
 		$exportable_data = apply_filters( "forminator_{$module_type}_model_to_exportable_data", $exportable_data, $module_type, $model_id );
 
+		// avoid filter executed on next cycle
+		remove_filter( $hook, array( $this, 'export_integrations_data' ), 1 );
+
+		return $exportable_data;
+	}
+
+	/**
+	 * Export integrations setting
+	 *
+	 * @since 1.4
+	 *
+	 * @param $exportable_data
+	 *
+	 * @return array
+	 */
+	public function export_integrations_data( $exportable_data ) {
+		$model_id                = $this->id;
+		$exportable_integrations = array();
+
+		$function         = 'forminator_get_addons_instance_connected_with_' . static::$module_slug;
+		$connected_addons = function_exists( $function ) ? $function( $model_id ) : array();
+
+		foreach ( $connected_addons as $connected_addon ) {
+			try {
+				$settings = $connected_addon->get_addon_form_settings( $model_id );
+				if ( $settings instanceof Forminator_Addon_Settings_Abstract ) {
+					$exportable_integrations[ $connected_addon->get_slug() ] = $settings->to_exportable_data();
+				}
+			} catch ( Exception $e ) {
+				forminator_addon_maybe_log( $connected_addon->get_slug(), 'failed to get to_exportable_data', $e->getMessage() );
+			}
+		}
+
+		/**
+		 * Filter integrations data to export
+		 *
+		 * @since 1.4
+		 *
+		 * @param array $exportable_integrations
+		 * @param array $exportable_data all exportable data from model, useful
+		 */
+		$exportable_integrations         = apply_filters( 'forminator_' . static::$module_slug . '_model_export_integrations_data', $exportable_integrations, $model_id );
+		$exportable_data['integrations'] = $exportable_integrations;
+
 		return $exportable_data;
 	}
 
@@ -829,22 +959,27 @@ abstract class Forminator_Base_Form_Model {
 	 * @since 1.4
 	 *
 	 * @param        $import_data
-	 * @param string $module
 	 *
-	 * @return self|Forminator_Custom_Form_Model|Forminator_Poll_Form_Model|Forminator_Quiz_Form_Model|WP_Error
+	 * @return self|Forminator_Form_Model|Forminator_Poll_Model|Forminator_Quiz_Model|WP_Error
 	 */
-	public static function create_from_import_data( $import_data, $module = __CLASS__ ) {
+	public static function create_from_import_data( $import_data ) {
+		$class = static::class;
+
+		if ( Forminator::is_import_integrations_feature_enabled() ) {
+			add_filter( 'forminator_import_model', array( $class, 'import_integrations_data' ), 1, 3 );
+		}
+
 		try {
 			if ( ! Forminator::is_import_export_feature_enabled() ) {
-				throw new Exception( __( 'Export Import feature disabled', Forminator::DOMAIN ) );
+				throw new Exception( __( 'Export Import feature disabled', 'forminator' ) );
 			}
 
-			if ( ! is_callable( array( $module, 'model' ) ) ) {
-				throw new Exception( __( 'Model loader for importer does not exist.', Forminator::DOMAIN ) );
+			if ( ! is_callable( array( $class, 'model' ) ) ) {
+				throw new Exception( __( 'Model loader for importer does not exist.', 'forminator' ) );
 			}
 
 			// call static method ::model
-			$model = call_user_func( array( $module, 'model' ) );
+			$model = call_user_func( array( $class, 'model' ) );
 
 			/**
 			 * Executes before create model from import data
@@ -854,24 +989,24 @@ abstract class Forminator_Base_Form_Model {
 			 * @param array  $import_data
 			 * @param string $module
 			 */
-			do_action( 'forminator_before_create_model_from_import_data', $import_data, $module );
+			do_action( 'forminator_before_create_model_from_import_data', $import_data, $class );
 
 			if ( ! isset( $import_data['type'] ) || empty( $import_data['type'] ) ) {
-				throw new Exception( __( 'Invalid format of import data type', Forminator::DOMAIN ) );
+				throw new Exception( __( 'Invalid format of import data type', 'forminator' ) );
 			}
 
 			$meta = ( isset( $import_data['data'] ) ? $import_data['data'] : array() );
 
 			if ( empty( $meta ) ) {
-				throw new Exception( __( 'Invalid format of import data', Forminator::DOMAIN ) );
+				throw new Exception( __( 'Invalid format of import data', 'forminator' ) );
 			}
 
 			if ( ! isset( $meta['settings'] ) || empty( $meta['settings'] ) ) {
-				throw new Exception( __( 'Invalid format of import data settings', Forminator::DOMAIN ) );
+				throw new Exception( __( 'Invalid format of import data settings', 'forminator' ) );
 			}
 
 			if ( ! isset( $meta['settings']['formName'] ) || empty( $meta['settings']['formName'] ) ) {
-				throw new Exception( __( 'Invalid format of import data name', Forminator::DOMAIN ) );
+				throw new Exception( __( 'Invalid format of import data name', 'forminator' ) );
 			}
 
 			$form_name = $meta['settings']['formName'];
@@ -914,11 +1049,11 @@ abstract class Forminator_Base_Form_Model {
 
 			update_post_meta( $post_id, self::META_KEY, $meta );
 
-			/** @var Forminator_Base_Form_Model|Forminator_Poll_Form_Model|Forminator_Quiz_Form_Model|Forminator_Custom_Form_Model $model */
+			/** @var Forminator_Base_Form_Model|Forminator_Poll_Model|Forminator_Quiz_Model|Forminator_Form_Model $model */
 			$model = $model->load( $post_id );
 
-			if ( ! $model instanceof $module ) {
-				throw new Exception( __( 'Failed to load imported Forminator model', Forminator::DOMAIN ) );
+			if ( ! $model instanceof $class ) {
+				throw new Exception( __( 'Failed to load imported Forminator model', 'forminator' ) );
 			}
 
 
@@ -950,10 +1085,92 @@ abstract class Forminator_Base_Form_Model {
 		 * @param array                               $import_data
 		 * @param string                              $module
 		 */
-		$model = apply_filters( 'forminator_import_model', $model, $import_data, $module );
+		$model = apply_filters( 'forminator_import_model', $model, $import_data, $class );
+
+		// avoid filter executed on next cycle.
+		remove_filter( 'forminator_import_model', array( $class, 'import_integrations_data' ), 1 );
 
 		return $model;
+	}
 
+	/**
+	 * Import Integrations data model
+	 *
+	 * @since 1.4
+	 *
+	 * @param $model
+	 * @param $import_data
+	 * @param $module
+	 *
+	 * @return Forminator_Base_Form_Model
+	 */
+	public static function import_integrations_data( $model, $import_data, $module ) {
+		// return what it is.
+		if ( is_wp_error( $model ) ) {
+			return $model;
+		}
+
+		if ( static::class !== $module ) {
+			return $model;
+		}
+
+		if ( ! isset( $import_data['integrations'] ) || empty( $import_data['integrations'] ) || ! is_array( $import_data['integrations'] ) ) {
+			return $model;
+		}
+
+		$integrations_data = $import_data['integrations'];
+		foreach ( $integrations_data as $slug => $integrations_datum ) {
+			try {
+				$addon = forminator_get_addon( $slug );
+				if ( $addon instanceof Forminator_Addon_Abstract ) {
+					$method = 'get_addon_' . static::$module_slug . '_settings';
+					if ( method_exists( $addon, $method ) ) {
+						$settings = $addon->$method( $model->id );
+					}
+					if ( ! empty( $settings ) && $settings instanceof Forminator_Addon_Form_Settings_Abstract ) {
+						$settings->import_data( $integrations_datum );
+					}
+				}
+			} catch ( Exception $e ) {
+				forminator_addon_maybe_log( $slug, 'failed to get import module settings', $e->getMessage() );
+			}
+		}
+
+		return $model;
+	}
+
+	/**
+	 * Get status of prevent_store
+	 *
+	 * @since 1.5
+	 *
+	 * @param int $id
+	 * @param array $settings
+	 *
+	 * @return boolean
+	 */
+	public function is_prevent_store( $id = null, $settings = array() ) {
+		$module_id = ! empty( $id ) ? $id : (int) $this->id;
+		$settings  = ! empty( $settings ) ? $settings : $this->settings;
+
+		// default is always store.
+		$is_prevent_store = false;
+
+		$is_prevent_store = isset( $settings['store'] ) ? $settings['store'] : $is_prevent_store;
+		$is_prevent_store = filter_var( $is_prevent_store, FILTER_VALIDATE_BOOLEAN );
+
+		/**
+		 * Filter is_prevent_store flag of the module
+		 *
+		 * @since 1.5
+		 *
+		 * @param bool  $is_prevent_store
+		 * @param int   $module_id
+		 * @param array $settings
+		 */
+		$is_prevent_store = apply_filters( 'forminator_' . static::$module_slug . '_is_prevent_store', $is_prevent_store, $module_id, $settings );
+
+		return $is_prevent_store;
 	}
 
 	/**
@@ -966,6 +1183,42 @@ abstract class Forminator_Base_Form_Model {
 	 * @return bool
 	 */
 	public function is_ajax_load( $force = false ) {
+		$module_id      = (int) $this->id;
+		$settings       = $this->settings;
+		$global_enabled = self::is_global_ajax_load( $force );
+
+		$enabled = isset( $settings['use_ajax_load'] ) ? $settings['use_ajax_load'] : false;
+		$enabled = filter_var( $enabled, FILTER_VALIDATE_BOOLEAN );
+
+		$enabled = $global_enabled || $enabled;
+
+		/**
+		 * Filter is ajax load for module
+		 *
+		 * @since 1.6.1
+		 *
+		 * @param bool  $enabled
+		 * @param bool  $global_enabled
+		 * @param int   $form_id
+		 * @param array $form_settings
+		 *
+		 * @return bool
+		 */
+		$enabled = apply_filters( 'forminator_' . static::$module_slug . '_is_ajax_load', $enabled, $global_enabled, $module_id, $settings );
+
+		return $enabled;
+	}
+
+	/**
+	 * Flag if module should be loaded via ajax (Global settings)
+	 *
+	 * @since 1.6.1
+	 *
+	 * @param bool $force
+	 *
+	 * @return bool
+	 */
+	private static function is_global_ajax_load( $force = false ) {
 		//default disabled
 
 		// from settings
@@ -1000,6 +1253,39 @@ abstract class Forminator_Base_Form_Model {
 	 * @return bool
 	 */
 	public function is_use_donotcachepage_constant() {
+		$module_id      = (int) $this->id;
+		$settings       = $this->settings;
+		$global_enabled = self::is_global_use_donotcachepage_constant();
+
+		$enabled = isset( $settings['use_donotcachepage'] ) ? $settings['use_donotcachepage'] : false;
+		$enabled = filter_var( $enabled, FILTER_VALIDATE_BOOLEAN );
+
+		$enabled = $global_enabled || $enabled;
+
+		/**
+		 * Filter use `DONOTCACHEPAGE` Module
+		 *
+		 * @since 1.6.1
+		 *
+		 * @param bool  $enabled
+		 * @param bool  $global_enabled
+		 * @param int   $module_id
+		 * @param array $settings
+		 *
+		 * @return bool
+		 */
+		$enabled = apply_filters( 'forminator_custom_form_is_use_donotcachepage_constant', $enabled, $global_enabled, $module_id, $settings );
+
+		return $enabled;
+	}
+
+	/**
+	 * Flag to use `DONOTCACHEPAGE`
+	 *
+	 * @since 1.6.1
+	 * @return bool
+	 */
+	private static function is_global_use_donotcachepage_constant() {
 		//default disabled
 
 		// from settings

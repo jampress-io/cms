@@ -18,9 +18,9 @@ class Forminator_CForm_New_Page extends Forminator_Admin_Page {
 	 */
 	public function getWizardTitle() {
 		if ( isset( $_REQUEST['id'] ) ) { // WPCS: CSRF OK
-			return __( "Edit Form", Forminator::DOMAIN );
+			return __( "Edit Form", 'forminator' );
 		} else {
-			return __( "New Form", Forminator::DOMAIN );
+			return __( "New Form", 'forminator' );
 		}
 	}
 
@@ -31,31 +31,20 @@ class Forminator_CForm_New_Page extends Forminator_Admin_Page {
 	 * @param $hook
 	 */
 	public function enqueue_scripts( $hook ) {
-		// Load jquery ui
-		forminator_admin_jquery_ui();
-
-		// Load shared-ui scripts
-		forminator_sui_scripts();
-
-		// Load admin fonts
-		forminator_admin_enqueue_fonts( FORMINATOR_VERSION );
-
-		// Load admin styles
-		forminator_admin_enqueue_styles( FORMINATOR_VERSION );
-
-		$forminator_data = new Forminator_Admin_Data();
-		$forminator_l10n = new Forminator_Admin_L10n();
-
 		// Load admin scripts
-		forminator_admin_enqueue_scripts_forms(
+		wp_register_script(
+			'forminator-admin',
+			forminator_plugin_url() . 'assets/js/form-scripts.js',
+			array(
+				'jquery',
+				'wp-color-picker',
+				'react',
+				'react-dom',
+			),
 			FORMINATOR_VERSION,
-			$forminator_data->get_options_data(),
-			$forminator_l10n->get_l10n_strings()
+			true
 		);
-
-		// Load front scripts for preview_form
-		forminator_print_forms_admin_styles( FORMINATOR_VERSION );
-		forminator_print_front_scripts( FORMINATOR_VERSION );
+		forminator_common_admin_enqueue_scripts( true );
 
 		// for preview
 		$style_src     = forminator_plugin_url() . 'assets/css/intlTelInput.min.css';
@@ -77,21 +66,5 @@ class Forminator_CForm_New_Page extends Forminator_Admin_Page {
 			array('forminator-field-moment'),
 			'3.0.3',
 			true );
-	}
-
-	/**
-	 * Render page header
-	 *
-	 * @since 1.0
-	 */
-	protected function render_header() { ?>
-		<?php
-		if ( $this->template_exists( $this->folder . '/header' ) ) {
-			$this->template( $this->folder . '/header' );
-		} else {
-			?>
-			<h1 class="sui-header-title"><?php echo esc_html( get_admin_page_title() ); ?></h1>
-		<?php } ?>
-		<?php
 	}
 }

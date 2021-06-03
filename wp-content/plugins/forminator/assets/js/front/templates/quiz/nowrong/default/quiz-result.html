@@ -1,5 +1,5 @@
 /* ELEMENT: Quiz Result */
-.forminator-ui.forminator-quiz-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-result {
+.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-result {
 	<?php if ( forminator_array_value_exists( $properties, 'nowrong-toggle-palette' ) ) { ?>
 		<?php if ( forminator_array_value_exists( $properties, 'nowrong-result-border-color' ) ) { ?>
 			border-color: <?php echo $properties['nowrong-result-border-color'] ?>;
@@ -17,7 +17,7 @@
 	<?php } ?>
 }
 
-.forminator-ui.forminator-quiz-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-result .forminator-result--quiz-name {
+.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-result .forminator-result--quiz-name {
 	<?php if ( forminator_array_value_exists( $properties, 'nowrong-toggle-palette' ) ) { ?>
 		<?php if ( forminator_array_value_exists( $properties, 'nowrong-result-quiz-color' ) ) { ?>
 			color: <?php echo $properties['nowrong-result-quiz-color'] ?>;
@@ -53,7 +53,7 @@
 	<?php } ?>
 }
 
-.forminator-ui.forminator-quiz-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-result .forminator-result--content .forminator-result--text {
+.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-result .forminator-result--content .forminator-result--text {
 	<?php if ( forminator_array_value_exists( $properties, 'nowrong-toggle-palette' ) ) { ?>
 		<?php if ( forminator_array_value_exists( $properties, 'nowrong-result-background-body' ) ) { ?>
 			background-color: <?php echo $properties['nowrong-result-background-body'] ?>;
@@ -65,7 +65,7 @@
 	<?php } ?>
 }
 
-.forminator-ui.forminator-quiz-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-result .forminator-result--content .forminator-result--title {
+.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-result .forminator-result--content .forminator-result--title {
 	<?php if ( forminator_array_value_exists( $properties, 'nowrong-toggle-palette' ) ) { ?>
 		<?php if ( forminator_array_value_exists( $properties, 'nowrong-result-title-color' ) ) { ?>
 			color: <?php echo $properties['nowrong-result-title-color'] ?>;
@@ -101,8 +101,8 @@
 	<?php } ?>
 }
 
-.forminator-ui.forminator-quiz-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-result .forminator-result--content .forminator-result--description,
-.forminator-ui.forminator-quiz-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-result .forminator-result--content .forminator-result--description p {
+.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-result .forminator-result--content .forminator-result--description,
+.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-result .forminator-result--content .forminator-result--description p {
 	<?php if ( forminator_array_value_exists( $properties, 'nowrong-toggle-palette' ) ) { ?>
 		<?php if ( forminator_array_value_exists( $properties, 'nowrong-result-description-color' ) ) { ?>
 			color: <?php echo $properties['nowrong-result-description-color'] ?>;
@@ -138,7 +138,7 @@
 	<?php } ?>
 }
 
-.forminator-ui.forminator-quiz-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-result .forminator-result--retake {
+.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-result .forminator-result--retake {
 	<?php if ( forminator_array_value_exists( $properties, 'nowrong-toggle-palette' ) ) { ?>
 		<?php if ( forminator_array_value_exists( $properties, 'nowrong-result-retake-background-static' ) ) { ?>
 			background-color: <?php echo $properties['nowrong-result-retake-background-static'] ?>;
@@ -180,7 +180,7 @@
 	<?php } ?>
 }
 
-.forminator-ui.forminator-quiz-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-result .forminator-result--retake:hover {
+.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-result .forminator-result--retake:hover {
 	<?php if ( forminator_array_value_exists( $properties, 'nowrong-toggle-palette' ) ) { ?>
 		<?php if ( forminator_array_value_exists( $properties, 'nowrong-result-retake-background-hover' ) ) { ?>
 			background-color: <?php echo $properties['nowrong-result-retake-background-hover'] ?>;
@@ -198,8 +198,8 @@
 	<?php } ?>
 }
 
-.forminator-ui.forminator-quiz-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-result .forminator-result--retake:focus,
-.forminator-ui.forminator-quiz-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-result .forminator-result--retake:active {
+.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-result .forminator-result--retake:focus,
+.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-result .forminator-result--retake:active {
 	<?php if ( forminator_array_value_exists( $properties, 'nowrong-toggle-palette' ) ) { ?>
 		<?php if ( forminator_array_value_exists( $properties, 'nowrong-result-retake-background-active' ) ) { ?>
 			background-color: <?php echo $properties['nowrong-result-retake-background-active'] ?>;
@@ -217,7 +217,7 @@
 	<?php } ?>
 }
 
-.forminator-ui.forminator-quiz-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-quiz--social .forminator-social--text {
+.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-quiz--social .forminator-social--text {
 	<?php if ( forminator_array_value_exists( $properties, 'nowrong-toggle-palette' ) ) { ?>
 		<?php if ( forminator_array_value_exists( $properties, 'nowrong-sshare-color' ) ) { ?>
 			color: <?php echo $properties['nowrong-sshare-color'] ?>;
@@ -229,7 +229,7 @@
 	<?php } ?>
 }
 
-.forminator-ui.forminator-quiz-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-quiz--social .forminator-social--icons li a .forminator-icon-social-facebook {
+.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-quiz--social .forminator-social--icons li a .forminator-icon-social-facebook {
 	<?php if ( forminator_array_value_exists( $properties, 'nowrong-toggle-palette' ) ) { ?>
 		<?php if ( forminator_array_value_exists( $properties, 'nowrong-social-facebook' ) ) { ?>
 			color: <?php echo $properties['nowrong-social-facebook'] ?>;
@@ -241,7 +241,7 @@
 	<?php } ?>
 }
 
-.forminator-ui.forminator-quiz-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-quiz--social .forminator-social--icons li a .forminator-icon-social-twitter {
+.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-quiz--social .forminator-social--icons li a .forminator-icon-social-twitter {
 	<?php if ( forminator_array_value_exists( $properties, 'nowrong-toggle-palette' ) ) { ?>
 		<?php if ( forminator_array_value_exists( $properties, 'nowrong-social-twitter' ) ) { ?>
 			color: <?php echo $properties['nowrong-social-twitter'] ?>;
@@ -253,7 +253,7 @@
 	<?php } ?>
 }
 
-.forminator-ui.forminator-quiz-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-quiz--social .forminator-social--icons li a .forminator-icon-social-linkedin {
+.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-quiz--social .forminator-social--icons li a .forminator-icon-social-linkedin {
 	<?php if ( forminator_array_value_exists( $properties, 'nowrong-toggle-palette' ) ) { ?>
 		<?php if ( forminator_array_value_exists( $properties, 'nowrong-social-linkedin' ) ) { ?>
 			color: <?php echo $properties['nowrong-social-linkedin'] ?>;

@@ -100,8 +100,8 @@ class Forminator_GFBlock_Quizzes extends Forminator_GFBlock_Abstract {
 			)
 		);
 
-		forminator_print_front_styles( FORMINATOR_VERSION );
-		forminator_print_front_scripts( FORMINATOR_VERSION );
+		forminator_print_front_styles();
+		forminator_print_front_scripts();
 	}
 
 	/**
@@ -121,7 +121,7 @@ class Forminator_GFBlock_Quizzes extends Forminator_GFBlock_Abstract {
 		$markup = $this->preview_block( $properties );
 
 		// Get quiz
-		$quiz = Forminator_API::get_quiz( $id );
+		$quiz = Forminator_API::get_module( $id );
 
 		if ( $markup ) {
 			wp_send_json_success(
@@ -142,12 +142,12 @@ class Forminator_GFBlock_Quizzes extends Forminator_GFBlock_Abstract {
 	 * @return array
 	 */
 	public function get_forms() {
-		$forms = Forminator_API::get_quizzes( null, 1, 100, Forminator_Custom_Form_Model::STATUS_PUBLISH );
+		$forms = Forminator_API::get_quizzes( null, 1, 100, Forminator_Form_Model::STATUS_PUBLISH );
 
 		$form_list = array(
 			array(
 				'value' => '',
-				'label' => esc_html__( 'Select a quiz', Forminator::DOMAIN ),
+				'label' => esc_html__( 'Select a quiz', 'forminator' ),
 			),
 		);
 
@@ -171,11 +171,11 @@ class Forminator_GFBlock_Quizzes extends Forminator_GFBlock_Abstract {
 
 	public function localize() {
 		return array(
-			'choose_quiz'      => esc_html__( 'Choose Quiz', Forminator::DOMAIN ),
-			'customize_quiz'   => esc_html__( 'Customize quiz', Forminator::DOMAIN ),
-			'rendering'        => esc_html__( 'Rendering...', Forminator::DOMAIN ),
-			'quiz'             => esc_html__( 'Quiz', Forminator::DOMAIN ),
-			'quiz_description' => esc_html__( 'Embed and display your Forminator quiz in this block', Forminator::DOMAIN ),
+			'choose_quiz'      => esc_html__( 'Choose Quiz', 'forminator' ),
+			'customize_quiz'   => esc_html__( 'Customize quiz', 'forminator' ),
+			'rendering'        => esc_html__( 'Rendering...', 'forminator' ),
+			'quiz'             => esc_html__( 'Quiz', 'forminator' ),
+			'quiz_description' => esc_html__( 'Embed and display your Forminator quiz in this block', 'forminator' ),
 		);
 	}
 }

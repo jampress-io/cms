@@ -4,7 +4,7 @@
  * Version: 1
  * Description: Simple Addon Autofill Provider.
  * Author: WPMU DEV
- * Author URI: http://premium.wpmudev.org
+ * Author URI: http://wpmudev.com
  * Text Domain: forminator
  * Domain Path: /languages/
  */

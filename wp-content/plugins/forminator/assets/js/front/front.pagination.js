@@ -413,12 +413,6 @@
 						.find('.forminator-button--text')
 						.html('')
 						.html(submit_button_text);
-					if( this.custom_label['has-paypal'] === true ) {
-						this.$el.find('.forminator-button-submit').addClass('forminator-hidden');
-						this.$el.find('.forminator-payment')
-							.attr('id', 'forminator-paypal-submit')
-							.removeClass('forminator-hidden');
-					}
 				} else {
 					this.$el.find('.forminator-button-back').html( last_button_txt );
 					this.$el.find( '.forminator-button-next' )
@@ -426,11 +420,15 @@
 						.attr( 'id', 'forminator-submit' )
 						.addClass( 'forminator-button-submit' )
 						.html( submit_button_text );
-					if( this.custom_label['has-paypal'] === true ) {
-						this.$el.find('.forminator-button-submit').addClass('forminator-hidden');
-						this.$el.find('.forminator-payment')
-							.attr('id', 'forminator-paypal-submit')
-							.removeClass('forminator-hidden');
+				}
+				
+				if( this.custom_label['has-paypal'] === true ) {
+					this.$el.find('.forminator-button-submit').addClass('forminator-hidden');
+					this.$el.find('.forminator-payment')
+						.attr('id', 'forminator-paypal-submit');
+
+					if ( false === window.paypalHasCondition ) {
+						this.$el.find( '.forminator-payment' ).removeClass( 'forminator-hidden' );
 					}
 				}
 
@@ -450,7 +448,7 @@
 				if ( this.$el.hasClass('forminator-design--material') ) {
 					this.$el.find( '#forminator-submit' )
 						.removeAttr( 'id' )
-						.removeClass( 'forminator-button-submit' )
+						.removeClass( 'forminator-button-submit forminator-hidden' )
 						.addClass( 'forminator-button-next' );
 					if( this.custom_label['has-paypal'] === true ) {
 						this.$el.find( '#forminator-paypal-submit' ).removeAttr( 'id' ).addClass('forminator-hidden');
@@ -463,7 +461,7 @@
 				} else {
 					this.$el.find( '#forminator-submit' )
 						.removeAttr( 'id' )
-						.removeClass( 'forminator-button-submit' )
+						.removeClass( 'forminator-button-submit forminator-hidden' )
 						.addClass( 'forminator-button-next' );
 					if( this.custom_label['has-paypal'] === true ) {
 						this.$el.find( '#forminator-paypal-submit' ).removeAttr( 'id' ).addClass('forminator-hidden');
@@ -474,6 +472,8 @@
 
 				}
 			}
+			// Reset the conditions to check if submit/paypal buttons should be visible
+			this.$el.trigger( 'forminator.front.condition.restart' );
 		},
 
 		go_to: function (step, scrollToTop) {

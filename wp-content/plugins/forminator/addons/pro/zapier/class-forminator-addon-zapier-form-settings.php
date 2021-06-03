@@ -39,7 +39,7 @@ class Forminator_Addon_Zapier_Form_Settings extends Forminator_Addon_Form_Settin
 
 		$this->_update_form_settings_error_message = __(
 			'The update to your settings for this form failed, check the form input and try again.',
-			Forminator::DOMAIN
+			'forminator'
 		);
 	}
 
@@ -108,7 +108,7 @@ class Forminator_Addon_Zapier_Form_Settings extends Forminator_Addon_Form_Settin
 			if ( $is_submit ) {
 				$input_exceptions = new Forminator_Addon_Zapier_Form_Settings_Exception();
 				if ( empty( $current_data['name'] ) ) {
-					$input_exceptions->add_input_exception( __( 'Please create a name for this Zapier integration', Forminator::DOMAIN ), 'name' );
+					$input_exceptions->add_input_exception( __( 'Please create a name for this Zapier integration', 'forminator' ), 'name' );
 				}
 
 				$this->validate_and_send_sample( $submitted_data, $input_exceptions );
@@ -138,37 +138,37 @@ class Forminator_Addon_Zapier_Form_Settings extends Forminator_Addon_Form_Settin
 		$buttons = array();
 		if ( $this->setup_webhook_url_is_completed( $current_data ) ) {
 			$buttons['disconnect']['markup'] = Forminator_Addon_Zapier::get_button_markup(
-				esc_html__( 'Deactivate', Forminator::DOMAIN ),
+				esc_html__( 'Deactivate', 'forminator' ),
 				'sui-button-ghost sui-tooltip sui-tooltip-top-center forminator-addon-form-disconnect',
-				esc_html__( 'Deactivate Zapier from this Form.', Forminator::DOMAIN )
+				esc_html__( 'Deactivate Zapier from this Form.', 'forminator' )
 			);
 		}
 
 		$buttons['next']['markup'] = '<div class="sui-actions-right">' .
-									Forminator_Addon_Zapier::get_button_markup( esc_html__( 'Save', Forminator::DOMAIN ), 'sui-button-primary forminator-addon-finish' ) .
+									Forminator_Addon_Zapier::get_button_markup( esc_html__( 'Save', 'forminator' ), 'sui-button-primary forminator-addon-finish' ) .
 									'</div>';
 
-		$help_message = esc_html__( 'Put your ZAP Webhook URL below.', Forminator::DOMAIN );
+		$help_message = esc_html__( 'Put your ZAP Webhook URL below.', 'forminator' );
 
 		$notice_message = sprintf(
 			/* translators: ... */
-			__( 'Please go %1$shere%2$s if you do not have any ZAP created. Remember to choose %3$s as Trigger App.', Forminator::DOMAIN ),
+			__( 'Please go %1$shere%2$s if you do not have any ZAP created. Remember to choose %3$s as Trigger App.', 'forminator' ),
 			'<a href="' . $this->new_zap_url . '" target="_blank">',
 			'</a>',
 			'<strong>Webhooks by Zapier</strong>'
 		);
 
 		return array(
-			'html'         => '<div class="integration-header"><h3 class="sui-box-title" id="dialogTitle2">' . __( 'Setup Webhook', Forminator::DOMAIN ) . '</h3>
+			'html'         => '<div class="integration-header"><h3 class="sui-box-title" id="dialogTitle2">' . __( 'Setup Webhook', 'forminator' ) . '</h3>
 							<span class="sui-description" style="margin-top: 20px;">' . $help_message . '</span>
 							' . $error_message . '</div>
 							<form enctype="multipart/form-data">
 								<div class="sui-form-field ' . ( isset( $input_error_messages['name'] ) ? 'sui-form-field-error' : '' ) . '">
-									<label class="sui-label">' . esc_html__( 'Zapier Integration Name', Forminator::DOMAIN ) . '</label>
+									<label class="sui-label">' . esc_html__( 'Zapier Integration Name', 'forminator' ) . '</label>
 									<div class="sui-control-with-icon">
 										<input type="text"
 											name="name"
-											placeholder="' . esc_attr__( 'Friendly Name', Forminator::DOMAIN ) . '"
+											placeholder="' . esc_attr__( 'Friendly Name', 'forminator' ) . '"
 											value="' . esc_attr( $current_data['name'] ) . '"
 											class="sui-form-control"
 										/>
@@ -177,12 +177,12 @@ class Forminator_Addon_Zapier_Form_Settings extends Forminator_Addon_Form_Settin
 									' . ( isset( $input_error_messages['name'] ) ? '<span class="sui-error-message">' . esc_html( $input_error_messages['name'] ) . '</span>' : '' ) . '
 								</div>
 								<div class="sui-form-field ' . ( isset( $input_error_messages['webhook_url'] ) ? 'sui-form-field-error' : '' ) . '">
-									<label class="sui-label">' . esc_html__( 'Webhook URL', Forminator::DOMAIN ) . '</label>
+									<label class="sui-label">' . esc_html__( 'Webhook URL', 'forminator' ) . '</label>
 									<div class="sui-control-with-icon">
 										<input
 										type="text"
 										name="webhook_url"
-										placeholder="' . esc_attr__( 'Webhook URL', Forminator::DOMAIN ) . '"
+										placeholder="' . esc_attr__( 'Webhook URL', 'forminator' ) . '"
 										value="' . esc_attr( $current_data['webhook_url'] ) . '"
 										class="sui-form-control" />
 										<i class="sui-icon-link" aria-hidden="true"></i>
@@ -220,25 +220,25 @@ class Forminator_Addon_Zapier_Form_Settings extends Forminator_Addon_Form_Settin
 	private function validate_and_send_sample( $submitted_data, Forminator_Addon_Zapier_Form_Settings_Exception $current_input_exception ) {
 		$form_id = $this->form_id;
 		if ( ! isset( $submitted_data['webhook_url'] ) ) {
-			$current_input_exception->add_input_exception( __( 'Please put a valid Webhook URL.', Forminator::DOMAIN ), 'webhook_url' );
+			$current_input_exception->add_input_exception( __( 'Please put a valid Webhook URL.', 'forminator' ), 'webhook_url' );
 			throw $current_input_exception;
 		}
 
 		// must be this prefix
 		if ( stripos( $submitted_data['webhook_url'], 'https://hooks.zapier.com/' ) !== 0 ) {
-			$current_input_exception->add_input_exception( __( 'Please put a valid Webhook URL.', Forminator::DOMAIN ), 'webhook_url' );
+			$current_input_exception->add_input_exception( __( 'Please put a valid Webhook URL.', 'forminator' ), 'webhook_url' );
 			throw $current_input_exception;
 		}
 
 		// must not be in silent mode
 		if ( stripos( $submitted_data['webhook_url'], 'silent' ) !== false ) {
-			$current_input_exception->add_input_exception( __( 'Please disable Silent Mode on Webhook URL.', Forminator::DOMAIN ), 'webhook_url' );
+			$current_input_exception->add_input_exception( __( 'Please disable Silent Mode on Webhook URL.', 'forminator' ), 'webhook_url' );
 			throw $current_input_exception;
 		}
 
 		$endpoint = wp_http_validate_url( $submitted_data['webhook_url'] );
 		if ( false === $endpoint ) {
-			$current_input_exception->add_input_exception( __( 'Please put a valid Webhook URL.', Forminator::DOMAIN ), 'webhook_url' );
+			$current_input_exception->add_input_exception( __( 'Please put a valid Webhook URL.', 'forminator' ), 'webhook_url' );
 			throw $current_input_exception;
 		}
 

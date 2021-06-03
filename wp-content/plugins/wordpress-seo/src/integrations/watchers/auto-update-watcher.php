@@ -4,7 +4,6 @@ namespace Yoast\WP\SEO\Integrations\Watchers;
 
 use Yoast\WP\SEO\Conditionals\No_Conditionals;
 use Yoast\WP\SEO\Helpers\Notification_Helper;
-use Yoast\WP\SEO\Helpers\Product_Helper;
 use Yoast\WP\SEO\Integrations\Integration_Interface;
 use Yoast\WP\SEO\Presenters\Admin\Auto_Update_Notification_Presenter;
 use Yoast_Notification;
@@ -37,27 +36,17 @@ class Auto_Update_Watcher implements Integration_Interface {
 	protected $notification_helper;
 
 	/**
-	 * The product helper.
-	 *
-	 * @var Product_Helper
-	 */
-	protected $product_helper;
-
-	/**
 	 * Auto_Update constructor.
 	 *
 	 * @param Yoast_Notification_Center $notification_center The notification center.
 	 * @param Notification_Helper       $notification_helper The notification helper.
-	 * @param Product_Helper            $product_helper      The product helper.
 	 */
 	public function __construct(
 		Yoast_Notification_Center $notification_center,
-		Notification_Helper $notification_helper,
-		Product_Helper $product_helper
+		Notification_Helper $notification_helper
 	) {
 		$this->notification_center = $notification_center;
 		$this->notification_helper = $notification_helper;
-		$this->product_helper      = $product_helper;
 	}
 
 	/**
@@ -71,8 +60,8 @@ class Auto_Update_Watcher implements Integration_Interface {
 	 */
 	public function register_hooks() {
 		\add_action( 'admin_init', [ $this, 'auto_update_notification_not_if_dismissed' ] );
-		\add_action( 'update_option_auto_update_core_major', [ $this, 'auto_update_notification_even_if_dismissed' ] );
-		\add_action( 'update_option_auto_update_plugins', [ $this, 'auto_update_notification_not_if_dismissed' ] );
+		\add_action( 'update_site_option_auto_update_core_major', [ $this, 'auto_update_notification_even_if_dismissed' ] );
+		\add_action( 'update_site_option_auto_update_plugins', [ $this, 'auto_update_notification_not_if_dismissed' ] );
 	}
 
 	/**
@@ -118,7 +107,7 @@ class Auto_Update_Watcher implements Integration_Interface {
 	 * @return bool Whether the notification should be shown.
 	 */
 	protected function should_show_notification() {
-		$core_updates_enabled  = \get_option( 'auto_update_core_major' ) === 'enabled';
+		$core_updates_enabled  = \get_site_option( 'auto_update_core_major' ) === 'enabled';
 		$yoast_updates_enabled = $this->yoast_auto_updates_enabled();
 
 		return $core_updates_enabled && ! $yoast_updates_enabled;
@@ -183,7 +172,7 @@ class Auto_Update_Watcher implements Integration_Interface {
 	 * @return bool True if they are enabled, false if not.
 	 */
 	protected function yoast_auto_updates_enabled() {
-		$plugins_to_auto_update = \get_option( 'auto_update_plugins' );
+		$plugins_to_auto_update = \get_site_option( 'auto_update_plugins' );
 
 		// If no plugins are set to be automatically updated, it means that Yoast SEO isn't either.
 		if ( ! $plugins_to_auto_update ) {
@@ -191,19 +180,7 @@ class Auto_Update_Watcher implements Integration_Interface {
 		}
 
 		// Check if the Yoast SEO plugin file is in the array of plugins for which auto-updates are enabled.
-		return \in_array( $this->get_plugin_id(), $plugins_to_auto_update, true );
-	}
-
-	/**
-	 * Get the ID of the currently installed Yoast SEO (Premium) plugin.
-	 *
-	 * @return string The plugin ID.
-	 */
-	protected function get_plugin_id() {
-		if ( $this->product_helper->is_premium() ) {
-			return Addon_Update_Watcher::WPSEO_PREMIUM_PLUGIN_ID;
-		}
-		return Addon_Update_Watcher::WPSEO_FREE_PLUGIN_ID;
+		return \in_array( 'wordpress-seo/wp-seo.php', $plugins_to_auto_update, true );
 	}
 
 	/**
@@ -212,10 +189,10 @@ class Auto_Update_Watcher implements Integration_Interface {
 	 * @return Yoast_Notification The notification to show.
 	 */
 	protected function notification() {
-		$presenter = new Auto_Update_Notification_Presenter( $this->product_helper );
+		$presenter = new Auto_Update_Notification_Presenter();
 
 		return new Yoast_Notification(
-			$presenter,
+			$presenter->present(),
 			[
 				'type'         => Yoast_Notification::WARNING,
 				'id'           => self::NOTIFICATION_ID,

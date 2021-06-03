@@ -15,9 +15,9 @@ foreach ( $template_vars as $key => $val ) {
 ?>
 <div class="integration-header">
 
-	<h3 class="sui-box-title" id="dialogTitle2"><?php echo esc_html( __( 'Choose List', Forminator::DOMAIN ) ); ?></h3>
+	<h3 class="sui-box-title" id="dialogTitle2"><?php echo esc_html( __( 'Choose List', 'forminator' ) ); ?></h3>
 
-	<span class="sui-description" style="margin-top: 20px;"><?php esc_html_e( 'Pick AWeber List for new subscriber to be added to.', Forminator::DOMAIN ); ?></span>
+	<span class="sui-description" style="margin-top: 20px;"><?php esc_html_e( 'Pick AWeber List for new subscriber to be added to.', 'forminator' ); ?></span>
 
 	<?php if ( ! empty( $vars['error_message'] ) ) : ?>
 		<div class="sui-notice sui-notice-error">
@@ -31,10 +31,10 @@ foreach ( $template_vars as $key => $val ) {
 
 	<div class="sui-form-field<?php echo esc_attr( ! empty( $vars['list_id_error'] ) ? ' sui-form-field-error' : '' ); ?>">
 
-		<label class="sui-label" for="aweber-list-id"><?php esc_html_e( 'List', Forminator::DOMAIN ); ?></label>
+		<label class="sui-label" for="aweber-list-id"><?php esc_html_e( 'List', 'forminator' ); ?></label>
 
 		<select name="list_id" class="sui-select sui-form-control" id="aweber-list-id">
-			<option value=""><?php esc_html_e( 'Please select a list', Forminator::DOMAIN ); ?></option>
+			<option value=""><?php esc_html_e( 'Please select a list', 'forminator' ); ?></option>
 			<?php foreach ( $vars['lists'] as $list_id => $list_name ) : ?>
 				<option value="<?php echo esc_attr( $list_id ); ?>"
 					<?php selected( $vars['list_id'], $list_id ); ?>>

@@ -36,7 +36,7 @@
 		<?php } ?>
 	}
 <?php } else { ?>
-	.forminator-ui.forminator-quiz-<?php echo $properties['form_id'] ?> .forminator-quiz--title {
+	.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-quiz--title {
 		<?php if ( forminator_array_value_exists( $properties, 'knowledge-toggle-palette' ) ) { ?>
 			<?php if ( forminator_array_value_exists( $properties, 'knowledge-title-color' ) ) { ?>
 				color: <?php echo $properties['knowledge-title-color'] ?>;

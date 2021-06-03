@@ -19,8 +19,8 @@ class Forminator_Template_Post extends Forminator_Template {
 	public function defaults() {
 		return array(
 			'id'          => 'post',
-			'name'        => __( 'Create Post', Forminator::DOMAIN ),
-			'description' => __( "A simple contact form for your users to contact you", Forminator::DOMAIN ),
+			'name'        => __( 'Create Post', 'forminator' ),
+			'description' => __( "A simple contact form for your users to contact you", 'forminator' ),
 			'icon'        => 'plus',
 			'priortiy'    => 7,
 		);
@@ -58,7 +58,7 @@ class Forminator_Template_Post extends Forminator_Template {
 						"post_image"         => true,
 						'options'     => array(
 							array(
-								'label' => __( '', Forminator::DOMAIN ),
+								'label' => __( '', 'forminator' ),
 								'value' => '',
 							),
 						),
@@ -78,10 +78,10 @@ class Forminator_Template_Post extends Forminator_Template {
 		return array(
 			"form-type"                     => "default",
 			"submission-behaviour"          => "behaviour-thankyou",
-			"thankyou-message"              => __( "Thank you for contacting us, we will be in touch shortly.", Forminator::DOMAIN ),
+			"thankyou-message"              => __( "Thank you for contacting us, we will be in touch shortly.", 'forminator' ),
 			'submitData'                    => array(
-				"custom-submit-text"          => __( "Create Post", Forminator::DOMAIN ),
-				"custom-invalid-form-message" => __( "Error: Your form is not valid, please fix the errors!", Forminator::DOMAIN ),
+				"custom-submit-text"          => __( "Create Post", 'forminator' ),
+				"custom-invalid-form-message" => __( "Error: Your form is not valid, please fix the errors!", 'forminator' ),
 			),
 			'enable-ajax'                   => 'true',
 			'validation-inline'             => true,

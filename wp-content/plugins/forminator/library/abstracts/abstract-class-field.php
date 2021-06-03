@@ -422,18 +422,19 @@ abstract class Forminator_Field {
 		}
 		unset( $attr['content'] );
 
+		$editor_id = 'forminator-wp-editor-' . ( isset( $attr['id'] ) ? $attr['id'] : '' );
 		if ( $label ) {
 
 			if ( $required ) {
 
 				$html .= '<div class="forminator-field--label">';
-				$html .= sprintf( '<label id="forminator-label-%s" class="forminator-label">%s %s</label>', $attr['id'], esc_html( $label ), forminator_get_required_icon() );
+				$html .= sprintf( '<label for="%s" id="forminator-label-%s" class="forminator-label">%s %s</label>', $editor_id, $attr['id'], esc_html( $label ), forminator_get_required_icon() );
 				$html .= '</div>';
 
 			} else {
 
 				$html .= '<div class="forminator-field--label">';
-				$html .= sprintf( '<label id="forminator-label-%s" class="forminator-label">%s</label>', $attr['id'], esc_html( $label ) );
+				$html .= sprintf( '<label for="%s" id="forminator-label-%s" class="forminator-label">%s</label>', $editor_id, $attr['id'], esc_html( $label ) );
 				$html .= '</div>';
 
 			}
@@ -444,7 +445,7 @@ abstract class Forminator_Field {
 			add_action( 'the_editor', array( __CLASS__, 'add_required_wp_editor' ) );
 			$wp_editor_class .= ' do-validate forminator-wp-editor-required';
 		}
-		$editor_id = 'forminator-wp-editor-' . ( isset( $attr['id'] ) ? $attr['id'] : '' );
+
 		ob_start();
 		wp_editor(
 			$content,
@@ -610,7 +611,9 @@ abstract class Forminator_Field {
 				$populated_optgroup_options = self::populate_options_for_select( $option['value'], $selected_value );
 				$html                      .= sprintf( '<optgroup label="%s">%s</optgroup>', $option['label'], $populated_optgroup_options );
 			} else {
-				if ( ( $option['value'] == $selected_value ) || ( isset( $option['selected'] ) && $option['selected'] ) ) { // phpcs:ignore -- loose comparison ok : possible compare '1' and 1.
+				if ( '' === $selected_value && '' === $option['value']
+						|| '' !== $selected_value && $option['value'] == $selected_value // phpcs:ignore -- loose comparison ok : possible compare '01' and '1'.
+						|| ! empty( $option['selected'] ) ) {
 					$selected = 'selected="selected"';
 				}
 				$html .= sprintf( '<option value="%s" %s>%s</option>', esc_html( $option['value'] ), $selected, esc_html( $option['label'] ) );
@@ -662,9 +665,9 @@ abstract class Forminator_Field {
 
 			$html .= sprintf( '<input type="file" name="%s" id="%s" class="%s" %s>', $name, $id, $class, $upload_data );
 
-			if ( 'clean' === $design ) {
+			if ( 'none' === $design ) {
 
-				$html .= sprintf( '<button class="forminator-upload--remove" style="display: none;">%s</button>', __( 'Remove', Forminator::DOMAIN ) );
+				$html .= sprintf( '<button class="forminator-upload--remove" style="display: none;">%s</button>', __( 'Remove', 'forminator' ) );
 
 			} else {
 
@@ -675,7 +678,7 @@ abstract class Forminator_Field {
 						$html .= '<span class="forminator-icon-upload" aria-hidden="true"></span>';
 
 						$html .= '<p>';
-							$html .= sprintf( esc_html__( 'Drag and Drop (or) %1$sChoose Files%2$s', Forminator::DOMAIN ), '<a class="forminator-upload-file--' . $id . '" href="javascript:void(0)">', '</a>' );
+							$html .= sprintf( esc_html__( 'Drag and Drop (or) %1$sChoose Files%2$s', 'forminator' ), '<a class="forminator-upload-file--' . $id . '" href="javascript:void(0)">', '</a>' );
 						$html .= '</p>';
 
 					$html .= '</div>';
@@ -688,21 +691,21 @@ abstract class Forminator_Field {
 
 							$html .= sprintf(
 								'<span>%s</span>',
-								__( 'Choose File', Forminator::DOMAIN )
+								__( 'Choose File', 'forminator' )
 							);
 
 							$html .= '<span aria-hidden="true"></span>';
 
 						} else {
-							$html .= __( 'Choose File', Forminator::DOMAIN );
+							$html .= __( 'Choose File', 'forminator' );
 						}
 
 					$html .= '</button>';
 
 					$html .= sprintf(
 						'<span data-empty-text="%s">%s</span>',
-						__( 'No file chosen', Forminator::DOMAIN ),
-						__( 'No file chosen', Forminator::DOMAIN )
+						__( 'No file chosen', 'forminator' ),
+						__( 'No file chosen', 'forminator' )
 					);
 
 					$html .= '<button class="forminator-button-delete" style="display: none;">';
@@ -711,7 +714,7 @@ abstract class Forminator_Field {
 
 						$html .= sprintf(
 							'<span class="forminator-screen-reader-only">%s</span>',
-							__( 'Delete uploaded file', Forminator::DOMAIN )
+							__( 'Delete uploaded file', 'forminator' )
 						);
 
 					$html .= '</button>';
@@ -815,7 +818,7 @@ abstract class Forminator_Field {
 	 *
 	 * @return bool
 	 */
-	public function is_hidden( $field, $form_data, $pseudo_submitted_data, $form_object = false ) {
+	public function is_hidden( $field, $form_data, $pseudo_submitted_data, $form_object = false, $hidden_fields = array() ) {
 		$conditions = self::get_property( 'conditions', $field, array() );
 
 		// empty conditions
@@ -831,7 +834,8 @@ abstract class Forminator_Field {
 
 		foreach ( $conditions as $condition ) {
 
-			$element_id = $condition['element_id'];
+			$element_id  = $condition['element_id'];
+			$field_value = isset( $form_data[ $element_id ] ) ? $form_data[ $element_id ] : '';
 
 			if ( stripos( $element_id, 'signature-' ) !== false ) {
 				// We have signature field
@@ -855,12 +859,14 @@ abstract class Forminator_Field {
 					//Condition's value is saved as a string value
 					$is_condition_fulfilled = self::is_condition_fulfilled( (string) $pseudo_submitted_data[ $element_id ], $condition );
 				}
-			} elseif ( ! isset( $form_data[ $element_id ] ) ) {
-				$is_condition_fulfilled = false;
 			} elseif ( stripos( $element_id, 'checkbox-' ) !== false || stripos( $element_id, 'radio-' ) !== false ) {
-				$is_condition_fulfilled = self::is_condition_fulfilled( $form_data[ $element_id ], $condition );
+				$is_condition_fulfilled = self::is_condition_fulfilled( $field_value, $condition );
 			} else {
-				$is_condition_fulfilled = self::is_condition_fulfilled( $form_data[ $element_id ], $condition, $form_data['form_id'] );
+				$is_condition_fulfilled = self::is_condition_fulfilled( $field_value, $condition, $form_data['form_id'] );
+			}
+
+			if ( in_array( $element_id, $hidden_fields ) ) {
+				$is_condition_fulfilled = false;
 			}
 
 			if ( $is_condition_fulfilled ) {
@@ -878,7 +884,7 @@ abstract class Forminator_Field {
 				if ( ! empty( $parent_conditions ) && 'any' !== $condition_rule ) {
 					// Increase conditions count
 					$conditions_count ++;
-					$parent_hidden = self::is_hidden( $parent_field, $form_data, $pseudo_submitted_data, $form_object );
+					$parent_hidden = self::is_hidden( $parent_field, $form_data, $pseudo_submitted_data, $form_object, $hidden_fields );
 
 					// If parent not hidden increase fulfilled conditions
 					if ( ! $parent_hidden && 'show' === $condition_action ) {
@@ -962,82 +968,83 @@ abstract class Forminator_Field {
 				return ( stripos( $form_field_value, $condition['value'] ) === 0 ? true : false );
 			case 'ends':
 				return ( stripos( $form_field_value, $condition['value'] ) === ( strlen( $form_field_value ) - 1 ) ? true : false );
-				case 'day_is':
-                if ( NULL !== $form_id ) {
+
+			case 'day_is':
+                if ( NULL !== $form_id && ! empty( $form_field_value ) ) {
                     $day = self::get_day_or_month( $form_field_value, $condition['element_id'], $form_id, 'D' );
 				    return $day === $condition['value'];
                 }
 
                 return false;
 			case 'day_is_not':
-             if ( NULL !== $form_id ) {
-                 $day = self::get_day_or_month( $form_field_value, $condition['element_id'], $form_id, 'D' );
-			    	  return $day !== $condition['value'];
-             }
+                if ( NULL !== $form_id && ! empty( $form_field_value ) ) {
+                    $day = self::get_day_or_month( $form_field_value, $condition['element_id'], $form_id, 'D' );
+				    return $day !== $condition['value'];
+                }
 
-             return false;
+                return false;
 			case 'month_is':
-             if ( NULL !== $form_id ) {
-                 $month = self::get_day_or_month( $form_field_value, $condition['element_id'], $form_id, 'M' );
-			    	  return $month === $condition['value'];
-             }
+                if ( NULL !== $form_id && ! empty( $form_field_value ) ) {
+                    $month = self::get_day_or_month( $form_field_value, $condition['element_id'], $form_id, 'M' );
+				    return $month === $condition['value'];
+                }
 
-             return false;
+                return false;
 			case 'month_is_not':
-             if ( NULL !== $form_id ) {
-                 $month = self::get_day_or_month( $form_field_value, $condition['element_id'], $form_id, 'M' );
-			    	  return $month !== $condition['value'];
-             }
+                if ( NULL !== $form_id && ! empty( $form_field_value ) ) {
+                    $month = self::get_day_or_month( $form_field_value, $condition['element_id'], $form_id, 'M' );
+				    return $month !== $condition['value'];
+                }
 
-             return false;
+                return false;
 			case 'is_before':
-             if ( NULL !== $form_id ) {
-                 $date = self::get_day_or_month( $form_field_value, $condition['element_id'], $form_id, 'j F Y' );
-                 return strtotime( $date ) < strtotime( $condition['value'] );
-             }
+                if ( NULL !== $form_id && ! empty( $form_field_value ) ) {
+                    $date = self::get_day_or_month( $form_field_value, $condition['element_id'], $form_id, 'j F Y' );
+                    return strtotime( $date ) < strtotime( $condition['value'] );
+                }
 
-             return false;
+                return false;
 			case 'is_after':
-             if ( NULL !== $form_id ) {
-                 $date = self::get_day_or_month( $form_field_value, $condition['element_id'], $form_id, 'j F Y' );
-                 return strtotime( $date ) > strtotime( $condition['value'] );
-             }
+                if ( NULL !== $form_id && ! empty( $form_field_value ) ) {
+                    $date = self::get_day_or_month( $form_field_value, $condition['element_id'], $form_id, 'j F Y' );
+                    return strtotime( $date ) > strtotime( $condition['value'] );
+                }
 
-             return false;
+                return false;
 			case 'is_before_n_or_more_days':
-             if ( NULL !== $form_id ) {
-                 $date = self::get_day_or_month( $form_field_value, $condition['element_id'], $form_id, 'Y-m-d' );
-                 return strtotime( $date ) <= strtotime( '-' . $condition['value'] . ' days' );
-             }
+                if ( NULL !== $form_id && ! empty( $form_field_value ) ) {
+                    $date = self::get_day_or_month( $form_field_value, $condition['element_id'], $form_id, 'Y-m-d' );
+                    return strtotime( $date ) <= strtotime( '-' . $condition['value'] . ' days' );
+                }
 
-             return false;
+                return false;
             // date_is_less_than_n_days_before_current_date
 			case 'is_before_less_than_n_days':
-             if ( NULL !== $form_id ) {
-                 $date         = self::get_day_or_month( $form_field_value, $condition['element_id'], $form_id, 'Y-m-d' );
-                 $rule_date    = strtotime( '-' . $condition['value'] . ' days' );
-                 $current_date = strtotime( 'today' );
-                 return $rule_date < strtotime( $date ) && strtotime( $date ) < $current_date;
-             }
+                if ( NULL !== $form_id && ! empty( $form_field_value ) ) {
+                    $date         = self::get_day_or_month( $form_field_value, $condition['element_id'], $form_id, 'Y-m-d' );
+                    $rule_date    = strtotime( '-' . $condition['value'] . ' days' );
+                    $current_date = strtotime( 'today' );
+                    return $rule_date < strtotime( $date ) && strtotime( $date ) < $current_date;
+                }
 
-             return false;
+                return false;
 			case 'is_after_n_or_more_days':
-             if ( NULL !== $form_id ) {
-                 $date = self::get_day_or_month( $form_field_value, $condition['element_id'], $form_id, 'Y-m-d' );
-                 return strtotime( $date ) >= strtotime( '+' . $condition['value'] . ' days' );
-             }
+                if ( NULL !== $form_id && ! empty( $form_field_value ) ) {
+                    $date = self::get_day_or_month( $form_field_value, $condition['element_id'], $form_id, 'Y-m-d' );
+                    return strtotime( $date ) >= strtotime( '+' . $condition['value'] . ' days' );
+                }
 
-             return false;
+                return false;
             // date_is_less_than_n_days_after_current_date
 			case 'is_after_less_than_n_days':
-             if ( NULL !== $form_id ) {
-                 $date         = self::get_day_or_month( $form_field_value, $condition['element_id'], $form_id, 'Y-m-d' );
-                 $rule_date    = strtotime( '+' . $condition['value'] . ' days' );
-                 $current_date = strtotime( 'today' );
-                 return $rule_date > strtotime( $date ) && strtotime( $date ) > $current_date;
-             }
+                if ( NULL !== $form_id && ! empty( $form_field_value ) ) {
+                    $date         = self::get_day_or_month( $form_field_value, $condition['element_id'], $form_id, 'Y-m-d' );
+                    $rule_date    = strtotime( '+' . $condition['value'] . ' days' );
+                    $current_date = strtotime( 'today' );
+                    return $rule_date > strtotime( $date ) && strtotime( $date ) > $current_date;
+                }
 
-             return false;
+                return false;
 			default:
 				return false;
 		}
@@ -1055,11 +1062,15 @@ abstract class Forminator_Field {
 	 *
 	 * @return string|bool
 	 */
-	 public static function get_day_or_month( $form_field_value, $element_id, $form_id, $format ) {
-	     $date_format        = Forminator_API::get_form_field( $form_id, $element_id, false )->date_format;
-	     $normalized_format  = new Forminator_Date();
-	     $normalized_format  = $normalized_format->normalize_date_format( $date_format );
-	     $date               = date_create_from_format( $normalized_format, $form_field_value );
+    public static function get_day_or_month( $form_field_value, $element_id, $form_id, $format ) {
+
+        if ( empty( $form_field_value ) ) {
+            return false;
+        }
+        $date_format        = Forminator_API::get_form_field( $form_id, $element_id, false )->date_format;
+        $normalized_format  = new Forminator_Date();
+        $normalized_format  = $normalized_format->normalize_date_format( $date_format );
+        $date               = date_create_from_format( $normalized_format, $form_field_value );
 
 	     if ( 'D' === $format ) {
 	         // Day format is based on fields' visibility day format.

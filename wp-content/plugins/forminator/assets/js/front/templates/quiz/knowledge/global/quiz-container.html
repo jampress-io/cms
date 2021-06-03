@@ -121,7 +121,7 @@
 		<?php } ?>
 	}
 <?php } else { ?>
-	.forminator-ui.forminator-quiz-<?php echo $properties['form_id'] ?> {
+	.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> {
 		width: 100%;
 		<?php if ( forminator_array_value_exists( $properties, 'quiz-size' ) ) { ?>
 			<?php if ( 'custom' == $properties['quiz-size'] ) { ?>

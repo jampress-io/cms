@@ -40,6 +40,10 @@ class Main_Setting extends Controller2 {
 		$this->register_routes();
 
 		Config_Hub_Helper::clear_config_transient();
+
+		// Add cron schedule to clean out outdated logs.
+		add_action( 'wp_defender_clear_logs', array( $this, 'clear_logs' ) );
+		add_action( 'admin_init', array( $this, 'check_cron_schedule' ) );
 	}
 
 	/**
@@ -54,9 +58,6 @@ class Main_Setting extends Controller2 {
 		return wd_di()->get( \WP_Defender\Model\Setting\Main_Setting::class );
 	}
 
-	/**
-	 *
-	 */
 	public function enqueue_assets() {
 		if ( ! $this->is_page_active() ) {
 			return;
@@ -124,7 +125,6 @@ class Main_Setting extends Controller2 {
 		wd_di()->get( \WP_Defender\Controller\Blocklist_Monitor::class )->remove_settings();
 		$this->remove_settings();
 
-		//Todo: submit stats to dev
 		return new Response(
 			true,
 			array(
@@ -151,11 +151,13 @@ class Main_Setting extends Controller2 {
 
 		foreach ( $configs as &$config ) {
 			//unset the data as we dont need it
-			unset( $config['configs'] );
+			if ( isset( $config['configs'] ) ) {
+				unset( $config['configs'] );
+			}
 		}
 
 		$link = ( new \WP_Defender\Behavior\WPMUDEV() )->is_member()
-			? 'https://premium.wpmudev.org/translate/projects/wpdef/'
+			? 'https://wpmudev.com/translate/projects/wpdef/'
 			: 'https://translate.wordpress.org/projects/wp-plugins/defender-security/';
 
 		return array_merge(
@@ -317,7 +319,6 @@ class Main_Setting extends Controller2 {
 			),
 			$settings
 		);
-		unset( $data['labels'] );
 
 		// Add config to HUB.
 		$hub_id = Config_Hub_Helper::add_configs_to_hub( $data );
@@ -325,6 +326,8 @@ class Main_Setting extends Controller2 {
 		if ( $hub_id ) {
 			$data['hub_id'] = $hub_id;
 		}
+
+		unset( $data['labels'] );
 
 		if ( update_site_option( $key, $data ) ) {
 			$this->service->index_key( $key );
@@ -590,11 +593,20 @@ class Main_Setting extends Controller2 {
 	 * @return array
 	 */
 	private function get_configs_and_update_status() {
-		$configs = Config_Hub_Helper::get_configs( $this->service );
+		$configs   = Config_Hub_Helper::get_configs( $this->service );
+		$is_remove = Config_Hub_Helper::check_remove_active_flag();
 
 		// Loop to update strings of configs.
 		foreach ( $configs as $key => &$config ) {
+			if ( ! is_array( $config ) ) {
+				continue;
+			}
+
 			$config['strings'] = $this->service->import_module_strings( $config );
+
+			if ( $is_remove ) {
+				$config['is_active'] = false;
+			}
 
 			// Update config data.
 			update_site_option( $key, $config );
@@ -613,7 +625,7 @@ class Main_Setting extends Controller2 {
 	private function apply_config_recommendations_error_message() {
 		$message = sprintf(
 			__( 'There was an issue with applying some of the tweaks from the <strong>Recommendations</strong> tab because we cannot make changes to your <strong>wp-config.php</strong> file. Please see our %s to apply the changes manually.', 'wpdef' ),
-			'<a href="https://premium.wpmudev.org/docs/wpmu-dev-plugins/defender/#manually-applying-recommendations">documentation</a>'
+			'<a href="https://wpmudev.com/docs/wpmu-dev-plugins/defender/#manually-applying-recommendations">documentation</a>'
 		);
 
 		return new Response(
@@ -623,6 +635,76 @@ class Main_Setting extends Controller2 {
 				'configs' => Config_Hub_Helper::get_fresh_frontend_configs( $this->service ),
 			)
 		);
+	}
+
+	/**
+	 * Check if the logger cron is scheduled to run.
+	 */
+	public function check_cron_schedule() {
+		if ( ! wp_next_scheduled( 'wp_defender_clear_logs' ) ) {
+			wp_schedule_event( time() + HOUR_IN_SECONDS, 'daily', 'wp_defender_clear_logs' );
+		}
+	}
+
+	/**
+	 * Clear out lines that are older than 30 days.
+	 */
+	public function clear_logs() {
+		$now   = date( 'c' );
+		$files = array( 'defender.log' );
+
+		foreach ( $files as $file_name ) {
+			$file_path = $this->get_log_path( $file_name );
+
+			if ( ! file_exists( $file_path ) ) {
+				continue;
+			}
+
+			$content         = file( $file_path );
+			$size_of_content = count( $content );
+
+			foreach ( $content as $index => $line ) {
+				// If the line does not start with '[' (it's probably not a new entry).
+				$first_char = substr( $line, 0, 1 );
+
+				if ( '[' !== $first_char ) {
+					// Delete.
+					unset( $content[ $index ] );
+				}
+
+				/**
+				 * Get the date from entry. Items can be an array it two cases - if there's a valid date, or if the line
+				 * contained something like [header] in the start. Cannot make assumptions just on the fact it's an array.
+				 */
+				preg_match( '/\[(.*)\]/', $line, $items );
+
+				// If, for some reason, can't get the date, or it's not the size of an ISO 8601 date.
+				if ( ! isset( $items[1] ) || 25 !== strlen( $items[1] ) ) {
+					// Delete.
+					unset( $content[ $index ] );
+				} else {
+					// It looks like it's a valid date string, compare with today.
+					$time_diff = strtotime( $now ) - strtotime( $items[1] );
+
+					// We don't need to continue on, because if this entry is not older than 30 days, the next one will not be as well.
+					if ( $time_diff < MONTH_IN_SECONDS ) {
+						break;
+					}
+
+					unset( $content[ $index ] );
+				}
+			}
+
+			// Nothing changed - do nothing.
+			if ( count( $content ) === $size_of_content ) {
+				continue;
+			}
+
+			// Glue back together and write back to file.
+			$content = implode( '', $content );
+
+			file_put_contents( $file_path, $content );
+		}
 	}
 
 }

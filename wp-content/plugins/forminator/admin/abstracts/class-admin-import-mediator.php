@@ -231,24 +231,24 @@ abstract class Forminator_Import_Mediator {
 	public function try_form_import( $import_data ) {
 		try {
 			if ( empty( $import_data ) || ! is_array( $import_data ) ) {
-				throw new Exception( __( 'Oops, looks like we found an issue. Import text can not include whitespace or special characters.', Forminator::DOMAIN ) );
+				throw new Exception( __( 'Oops, looks like we found an issue. Import text can not include whitespace or special characters.', 'forminator' ) );
 			}
 
 			if ( ! isset( $import_data['type'] ) || 'form' !== $import_data['type'] ) {
-				throw new Exception( __( 'Oops, looks like we found an issue. Import text can not include whitespace or special characters.', Forminator::DOMAIN ) );
+				throw new Exception( __( 'Oops, looks like we found an issue. Import text can not include whitespace or special characters.', 'forminator' ) );
 			}
 
 			$import_data = $this->parse_import_data( $import_data );
 
-			$model = Forminator_Custom_Form_Model::create_from_import_data( $import_data, 'Forminator_Custom_Form_Model' );
+			$model = Forminator_Form_Model::create_from_import_data( $import_data );
 
 
 			if ( is_wp_error( $model ) ) {
 				throw new Exception( $model->get_error_message() );
 			}
 
-			if ( ! $model instanceof Forminator_Custom_Form_Model ) {
-				throw new Exception( __( 'Failed to import form, please make sure import text is valid, and try again.', Forminator::DOMAIN ) );
+			if ( ! $model instanceof Forminator_Form_Model ) {
+				throw new Exception( __( 'Failed to import form, please make sure import text is valid, and try again.', 'forminator' ) );
 			}
 
 			$return_url = admin_url( 'admin.php?page=forminator-cform' );

@@ -17,13 +17,13 @@ foreach ( $template_vars as $key => $val ) {
 
 $vars['step_description'] = sprintf(
 	/* translators: ... */
-	esc_html__( 'Which list from %1$s do you want auto-generated cards to be added to?', Forminator::DOMAIN ),
+	esc_html__( 'Which list from %1$s do you want auto-generated cards to be added to?', 'forminator' ),
 	'<b>' . $vars['board_name'] . '</b>'
 );
 
 ?>
 <div class="integration-header">
-	<h3 class="sui-box-title" id="dialogTitle2"><?php echo esc_html( __( 'Assign List', Forminator::DOMAIN ) ); ?></h3>
+	<h3 class="sui-box-title" id="dialogTitle2"><?php echo esc_html( __( 'Assign List', 'forminator' ) ); ?></h3>
 	<p><?php echo $vars['step_description']; // phpcs:ignore ?></p>
 	<?php if ( ! empty( $vars['error_message'] ) ) : ?>
 		<span class="sui-notice sui-notice-error"><p><?php echo esc_html( $vars['error_message'] ); ?></p></span>
@@ -31,9 +31,9 @@ $vars['step_description'] = sprintf(
 </div>
 <form>
 	<div class="sui-form-field <?php echo esc_attr( ! empty( $vars['list_id_error'] ) ? 'sui-form-field-error' : '' ); ?>">
-		<label class="sui-label"><?php esc_html_e( 'List', Forminator::DOMAIN ); ?>
+		<label class="sui-label"><?php esc_html_e( 'List', 'forminator' ); ?>
 			<select name="list_id" class="sui-select sui-form-control">
-				<option><?php esc_html_e( 'Please select a list', Forminator::DOMAIN ); ?></option>
+				<option><?php esc_html_e( 'Please select a list', 'forminator' ); ?></option>
 				<?php foreach ( $vars['lists'] as $list_id => $list_name ) : ?>
 					<option value="<?php echo esc_attr( $list_id ); ?>" <?php selected( $vars['list_id'], $list_id ); ?>><?php echo esc_html( $list_name ); ?></option>
 				<?php endforeach; ?>

@@ -194,7 +194,7 @@ class Forminator_CForm_Front_User_Login extends Forminator_User {
 	 * Get element ID for "Remember Me". There may be several checkboxes in the form.
 	 * "Remember Me" is the last form field. Before the submit button.
 	 *
-	 * @param Forminator_Custom_Form_Model $custom_form
+	 * @param Forminator_Form_Model $custom_form
 	 *
 	 * @return int
 	 */
@@ -226,7 +226,7 @@ class Forminator_CForm_Front_User_Login extends Forminator_User {
 	 * @return array
 	 */
 	public static function render_fields( $wrappers, $id ) {
-		$custom_form = Forminator_Custom_Form_Model::model()->load( $id );
+		$custom_form = Forminator_Form_Model::model()->load( $id );
 
 		if ( isset( $custom_form->settings['form-type'] )
 		     && 'login' === $custom_form->settings['form-type']
@@ -239,7 +239,7 @@ class Forminator_CForm_Front_User_Login extends Forminator_User {
 			if ( isset( $custom_form->settings['remember-me-label'] ) && ! empty( $custom_form->settings['remember-me-label'] ) ) {
 				$label = trim( $custom_form->settings['remember-me-label'] );
 			} else {
-				$label = __( 'Remember Me', Forminator::DOMAIN );
+				$label = __( 'Remember Me', 'forminator' );
 			}
 
 			$new_wrappers = array(

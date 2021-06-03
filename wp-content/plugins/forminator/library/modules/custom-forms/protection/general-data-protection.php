@@ -13,6 +13,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Forminator_CForm_General_Data_Protection extends Forminator_General_Data_Protection {
 
 	/**
+	 * Module slug
+	 *
+	 * @var string
+	 */
+	protected static $module_slug = 'form';
+
+	/**
 	 * Instances of custom form model
 	 *
 	 * avoid overhead on multiple entries in the same form
@@ -22,17 +29,17 @@ class Forminator_CForm_General_Data_Protection extends Forminator_General_Data_P
 	private static $custom_form_model_instances = array();
 
 	public function __construct() {
-		parent::__construct( __( 'Forminator Forms', Forminator::DOMAIN ) );
+		parent::__construct( __( 'Forminator Forms', 'forminator' ) );
 
 		$this->add_exporter(
 			'forminator-form-submissions',
-			__( 'Forminator Form Submissions', Forminator::DOMAIN ),
+			__( 'Forminator Form Submissions', 'forminator' ),
 			array( 'Forminator_CForm_General_Data_Protection', 'form_submissions_exporter' )
 		);
 
 		$this->add_eraser(
 			'forminator-form-submissions',
-			__( 'Forminator Form Submissions', Forminator::DOMAIN ),
+			__( 'Forminator Form Submissions', 'forminator' ),
 			array( 'Forminator_CForm_General_Data_Protection', 'form_submissions_eraser' )
 		);
 
@@ -73,7 +80,7 @@ class Forminator_CForm_General_Data_Protection extends Forminator_General_Data_P
 
 				// avoid overhead
 				if ( ! isset( self::$custom_form_model_instances[ $entry_model->form_id ] ) ) {
-					$model                                                      = Forminator_Custom_Form_Model::model()->load( $entry_model->form_id );
+					$model                                                      = Forminator_Form_Model::model()->load( $entry_model->form_id );
 					self::$custom_form_model_instances[ $entry_model->form_id ] = $model;
 				} else {
 					$model = self::$custom_form_model_instances[ $entry_model->form_id ];
@@ -147,11 +154,11 @@ class Forminator_CForm_General_Data_Protection extends Forminator_General_Data_P
 				} else {
 					// fallback to dump the rows
 					$data [] = array(
-						'name'  => __( 'Entry ID', Forminator::DOMAIN ),
+						'name'  => __( 'Entry ID', 'forminator' ),
 						'value' => '#' . $entry_model->entry_id,
 					);
 					$data [] = array(
-						'name'  => __( 'Submission Date', Forminator::DOMAIN ),
+						'name'  => __( 'Submission Date', 'forminator' ),
 						'value' => $entry_model->date_created_sql,
 					);
 
@@ -177,7 +184,7 @@ class Forminator_CForm_General_Data_Protection extends Forminator_General_Data_P
 
 				$data_to_export[] = array(
 					'group_id'    => 'forminator_form_submissions',
-					'group_label' => __( 'Forminator Form Submissions', Forminator::DOMAIN ),
+					'group_label' => __( 'Forminator Form Submissions', 'forminator' ),
 					'item_id'     => 'entry-' . $entry_id,
 					'data'        => $data,
 				);
@@ -220,12 +227,12 @@ class Forminator_CForm_General_Data_Protection extends Forminator_General_Data_P
 	 *
 	 * @since   1.0.6
 	 *
-	 * @param Forminator_Custom_Form_Model|Forminator_Base_Form_Model $model
+	 * @param Forminator_Form_Model|Forminator_Base_Form_Model $model
 	 *
 	 * @return array
 	 */
 	public static function get_custom_form_export_mappers( $model ) {
-		/** @var  Forminator_Custom_Form_Model $model */
+		/** @var  Forminator_Form_Model $model */
 		$fields              = $model->get_fields();
 		$ignored_field_types = Forminator_Form_Entry_Model::ignored_fields();
 
@@ -234,19 +241,19 @@ class Forminator_CForm_General_Data_Protection extends Forminator_General_Data_P
 			array(
 				// read form model's meta property
 				'property' => 'entry_id', // must be on export
-				'label'    => __( 'Entry ID', Forminator::DOMAIN ),
+				'label'    => __( 'Entry ID', 'forminator' ),
 				'type'     => 'entry_id',
 			),
 			array(
 				// read form model's property
 				'property' => 'date_created_sql', // must be on export
-				'label'    => __( 'Submission Date', Forminator::DOMAIN ),
+				'label'    => __( 'Submission Date', 'forminator' ),
 				'type'     => 'entry_date_created',
 			),
 			array(
 				// read form model's meta property
 				'meta_property' => '_forminator_user_ip', // must be on export
-				'label'         => __( 'IP Address', Forminator::DOMAIN ),
+				'label'         => __( 'IP Address', 'forminator' ),
 				'type'          => '_forminator_user_ip',
 			),
 		);
@@ -415,8 +422,8 @@ class Forminator_CForm_General_Data_Protection extends Forminator_General_Data_P
 			$entry_model = new Forminator_Form_Entry_Model( $entry_id );
 
 			if ( ! empty( $entry_model->form_id ) ) {
-				$custom_form = Forminator_Custom_Form_Model::model()->load( $entry_model->form_id );
-				if ( $custom_form instanceof Forminator_Custom_Form_Model ) {
+				$custom_form = Forminator_Form_Model::model()->load( $entry_model->form_id );
+				if ( $custom_form instanceof Forminator_Form_Model ) {
 					$settings = $custom_form->settings;
 					if ( isset( $settings['enable-submissions-erasure'] ) ) {
 						$custom_erasure = filter_var( $settings['enable-submissions-erasure'], FILTER_VALIDATE_BOOLEAN );
@@ -435,12 +442,12 @@ class Forminator_CForm_General_Data_Protection extends Forminator_General_Data_P
 
 			if ( $remove_form_submission ) {
 				if ( ! empty( $entry_model->form_id ) ) {
-					Forminator_Form_Entry_Model::delete_by_entry( $entry_model->form_id, $entry_id );
-					$response['messages'][]    = sprintf( __( 'Removed form #%1$s submission #%2$s.', Forminator::DOMAIN ), $entry_model->form_id, $entry_id );
+					Forminator_Form_Entry_Model::delete_by_entry( $entry_id );
+					$response['messages'][]    = sprintf( __( 'Removed form #%1$s submission #%2$s.', 'forminator' ), $entry_model->form_id, $entry_id );
 					$response['items_removed'] = true;
 				}
 			} else {
-				$response['messages'][]     = sprintf( __( 'Form #%1$s submission #%2$s has been retained.', Forminator::DOMAIN ), $entry_model->form_id, $entry_id );
+				$response['messages'][]     = sprintf( __( 'Form #%1$s submission #%2$s has been retained.', 'forminator' ), $entry_model->form_id, $entry_id );
 				$response['items_retained'] = true;
 			}
 
@@ -463,31 +470,13 @@ class Forminator_CForm_General_Data_Protection extends Forminator_General_Data_P
 		foreach ( $overridden_forms_privacy as $form_id => $retentions ) {
 			$retain_number = (int) $retentions['submissions_retention_number'];
 			$retain_unit   = $retentions['submissions_retention_unit'];
-			if ( empty( $retain_number ) ) {
-				// forever
-				continue;
-			}
-			$possible_units = array(
-				'days',
-				'weeks',
-				'months',
-				'years',
-			);
 
-			if ( ! in_array( $retain_unit, $possible_units, true ) ) {
+			$retain_time = $this->get_retain_time( $retain_number, $retain_unit );
+			if ( ! $retain_time ) {
 				continue;
 			}
 
-			$retain_time = strtotime( '-' . $retain_number . ' ' . $retain_unit, current_time( 'timestamp' ) );
-			$retain_time = date_i18n( 'Y-m-d H:i:s', $retain_time );
-
-			$entry_ids = Forminator_Form_Entry_Model::get_older_entry_ids_of_form_id( $form_id, $retain_time );
-
-			foreach ( $entry_ids as $entry_id ) {
-				$entry_model = new Forminator_Form_Entry_Model( $entry_id );
-				Forminator_Form_Entry_Model::delete_by_entry( $entry_model->form_id, $entry_id );
-			}
-
+			$this->delete_older_entries( $form_id, $retain_time );
 		}
 
 		$this->cleanup_ip_address();
@@ -495,25 +484,12 @@ class Forminator_CForm_General_Data_Protection extends Forminator_General_Data_P
 		$retain_number = get_option( 'forminator_retain_submissions_interval_number', 0 );
 		$retain_unit   = get_option( 'forminator_retain_submissions_interval_unit', 'days' );
 
-		if ( empty( $retain_number ) ) {
+		$retain_time = $this->get_retain_time( $retain_number, $retain_unit );
+		if ( ! $retain_time ) {
 			return false;
 		}
 
-		$possible_units = array(
-			'days',
-			'weeks',
-			'months',
-			'years',
-		);
-
-		if ( ! in_array( $retain_unit, $possible_units, true ) ) {
-			return false;
-		}
-
-		$retain_time = strtotime( '-' . $retain_number . ' ' . $retain_unit, current_time( 'timestamp' ) );
-		$retain_time = date_i18n( 'Y-m-d H:i:s', $retain_time );
-
-		$entry_ids = Forminator_Form_Entry_Model::get_older_entry_ids( 'custom-forms', $retain_time );
+		$entry_ids = Forminator_Form_Entry_Model::get_older_entry_ids( $retain_time, 'custom-forms' );
 
 		foreach ( $entry_ids as $entry_id ) {
 			$entry_model = new Forminator_Form_Entry_Model( $entry_id );
@@ -521,7 +497,7 @@ class Forminator_CForm_General_Data_Protection extends Forminator_General_Data_P
 				// use overridden settings
 				continue;
 			}
-			Forminator_Form_Entry_Model::delete_by_entry( $entry_model->form_id, $entry_id );
+			Forminator_Form_Entry_Model::delete_by_entry( $entry_id );
 		}
 
 		return true;
@@ -536,26 +512,13 @@ class Forminator_CForm_General_Data_Protection extends Forminator_General_Data_P
 		$retain_number = get_option( 'forminator_retain_ip_interval_number', 0 );
 		$retain_unit   = get_option( 'forminator_retain_ip_interval_unit', 'days' );
 
-		if ( empty( $retain_number ) ) {
+		$retain_time = $this->get_retain_time( $retain_number, $retain_unit );
+		if ( ! $retain_time ) {
 			return false;
 		}
-
-		$possible_units = array(
-			'days',
-			'weeks',
-			'months',
-			'years',
-		);
-
-		if ( ! in_array( $retain_unit, $possible_units, true ) ) {
-			return false;
-		}
-
-		$retain_time = strtotime( '-' . $retain_number . ' ' . $retain_unit, current_time( 'timestamp' ) );
-		$retain_time = date_i18n( 'Y-m-d H:i:s', $retain_time );
 
 		// todo : select only un-anonymized
-		$entry_ids = Forminator_Form_Entry_Model::get_older_entry_ids( 'custom-forms', $retain_time );
+		$entry_ids = Forminator_Form_Entry_Model::get_older_entry_ids( $retain_time, 'custom-forms' );
 
 		foreach ( $entry_ids as $entry_id ) {
 			$entry_model = new Forminator_Form_Entry_Model( $entry_id );
@@ -565,28 +528,4 @@ class Forminator_CForm_General_Data_Protection extends Forminator_General_Data_P
 		return true;
 	}
 
-	/**
-	 * Anon Entry model IP
-	 *
-	 * @since 1.5.4
-	 *
-	 * @param Forminator_Form_Entry_Model $entry_model
-	 */
-	private function anonymize_entry_model( Forminator_Form_Entry_Model $entry_model ) {
-		if ( isset( $entry_model->meta_data['_forminator_user_ip'] ) ) {
-			$meta_id    = $entry_model->meta_data['_forminator_user_ip']['id'];
-			$meta_value = $entry_model->meta_data['_forminator_user_ip']['value'];
-
-			if ( function_exists( 'wp_privacy_anonymize_data' ) ) {
-				$anon_value = wp_privacy_anonymize_data( 'ip', $meta_value );
-			} else {
-				$anon_value = '';
-			}
-
-			if ( $anon_value !== $meta_value ) {
-				$entry_model->update_meta( $meta_id, '_forminator_user_ip', $anon_value );
-			}
-
-		}
-	}
 }

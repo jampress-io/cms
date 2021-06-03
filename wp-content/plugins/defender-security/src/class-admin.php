@@ -47,7 +47,7 @@ class Admin {
 	 * @return string
 	 */
 	public function get_link( $link_for, $campaign = '', $adv_path = '' ) {
-		$domain  = 'https://premium.wpmudev.org';
+		$domain  = 'https://wpmudev.com';
 		$wp_org   = 'https://wordpress.org';
 		$utm_tags = "?utm_source=defender&utm_medium=plugin&utm_campaign={$campaign}";
 		switch ( $link_for ) {
@@ -85,10 +85,10 @@ class Admin {
 	 *
 	 * @return array
 	 */
-	public function settings_link( $links ) {
+	public function settings_link( $links ) { 
 		$wpmu_dev = new WPMUDEV();
 		// Settings link.
-		$action_links['dashboard']   = '<a href="' . network_admin_url( 'admin.php?page=wp-defender' ) . '" aria-label="' . esc_attr( __( 'Go to Defender Settings', 'wpdef' ) ) . '">' . esc_html__( 'Settings', 'wpdef' ) . '</a>';
+		$action_links['dashboard']   = '<a href="' . network_admin_url( 'admin.php?page=wdf-setting' ) . '" aria-label="' . esc_attr( __( 'Go to Defender Settings', 'wpdef' ) ) . '">' . esc_html__( 'Settings', 'wpdef' ) . '</a>';
 		// Documentation link.
 		$action_links['docs']        = '<a target="_blank" href="' . $this->get_link('docs', 'defender_pluginlist_docs') . '" aria-label="' . esc_attr(__('Docs', 'wpdef')) . '">' . esc_html__('Docs', 'wpdef') . '</a>';
 		if ( ! $wpmu_dev->is_member() ) {
@@ -118,7 +118,7 @@ class Admin {
 
 		// Change AuthorURI link.
 		if ( isset( $links[1] ) ) {
-			$author_uri = $this->is_pro ? 'https://premium.wpmudev.org/' : 'https://profiles.wordpress.org/wpmudev/';
+			$author_uri = $this->is_pro ? 'https://wpmudev.com/' : 'https://profiles.wordpress.org/wpmudev/';
 			$author_uri = sprintf(
 				'<a href="%s" target="_blank">%s</a>',
 				$author_uri,

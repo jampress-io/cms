@@ -59,7 +59,7 @@
 			var self = this;
 
 			this.$el.find(
-				'input.forminator-input, .forminator-select, .forminator-checkbox, .forminator-radio, .forminator-input-file, .forminator-select2'
+				'input.forminator-input, .forminator-checkbox, .forminator-radio, .forminator-input-file, select.forminator-select2'
 			).each(function () {
 				$(this).on('change', function () {
 					// Give jquery sometime to apply changes
@@ -166,7 +166,7 @@
 				checked = $element.filter(":checked");
 
 				if (checked.length) {
-					value = checked.val();
+					value = checked.siblings('span:last-child').text();
 				}
 			} else if (this.field_is_checkbox($element)) {
 				$element.each(function () {
@@ -175,14 +175,14 @@
 							value += ', ';
 						}
 
-						value += $(this).val();
+						value += $(this).siblings('span:last-child').text();
 					}
 				});
 
 			} else if (this.field_is_select($element)) {
 				checked = $element.find("option").filter(':selected');
 				if (checked.length) {
-					value = checked.val();
+					value = checked.text();
 				}
 			} else if (this.field_is_upload($element)) {
 				value = $element.val().split('\\').pop();

@@ -1,13 +1,13 @@
 === Forminator - Contact Form, Payment Form & Custom Form Builder ===
 Plugin Name: Forminator - Contact Form, Payment Form & Custom Form Builder
-Version: 1.14.9
+Version: 1.14.11
 Author: WPMU DEV
 Author URI: https://wpmudev.com/
 Contributors: WPMUDEV
 Tags: forms, contact form, wordpress form plugin, payment form, custom form, form builder, paypal form wordpress, form maker, quiz, quiz builder, order form, stripe payments, paypal payments, stripe form, paypal form
 Requires at least: 5.2
-Tested up to: 5.6
-Stable tag: 1.14.9
+Tested up to: 5.7
+Stable tag: 1.14.11
 Requires PHP: 5.2.4
 License: GPL v2 - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 
@@ -210,6 +210,102 @@ Find out all you need to know by checking out our API documentation [here](https
 9. Allow simple drag and drop multi-file uploads for users.
 
 == Changelog ==
+
+- 1.14.11 =
+
+- Improvement: Front-end code refactoring and optimisation
+- Improvement: Remove the inline CSS Forminator adds on the page source
+- Fix: E-Signature is not saved for some forms when rendering is set to Ajax
+- Fix: Conflict between Forminator and Hummingbird AssetOptimization
+- Fix: Phone field with Material Design style not aligned properly
+- Fix: Classic Editor embed form button not working
+- Fix: Shortcode Embed button not working inside Hustle’s wizards
+- Fix: Upload field not working correctly with pagination
+- Fix: Text fields content duplicated if validation fails
+- Fix: Quiz Preview not showing description HTML
+- Fix: Conflict with Divi Builder CSS styles
+- Fix: iPhone multiple upload field uploads files with same names
+- Fix: PayPal button doesn’t show up when there is Pagination field
+- Fix: Usermeta mapping on Registration form doesn’t work correctly
+- Fix: Select field throws errors when Multiple options option enabled
+- Fix: Several instances of the same form break Gutenberg editor
+- Fix: Modules search field not reset when search field is empty
+- Fix: Personality quiz redirects to the wrong wizard page
+- Fix: Wrong result count in modules Search
+- Fix: Form cannot be submitted when PayPal visibility rule is set
+- Fix: “Unpublish” feature from “Bulk Action” dropdown shows fatal error
+- Fix: Create a new form > Choose a template pop-up layout is broken.
+- Fix: PHP Deprecated notice: Required parameter $count
+- Fix: The default label of Poll’s button is not displaying
+- Fix: Buttons on delete Poll popup are not properly aligned
+- Fix: Duplicate and Create buttons are not working on Edit Poll Page
+- Fix: Bulk Publish and Unpublish shows PHP Fatal error
+- Fix: File Upload field doesn’t work on Type > Single
+
+= 1.14.10.1 =
+
+- Fix: "Invalid payment amount!" error when PayPal used with decimal amount
+- Fix: GDPR field not saving in submissions
+- Fix: ReCaptcha not loading when form has Select field
+- Fix: PHP8 Fatal error on Knowledge quiz submission
+
+= 1.14.10 =
+
+- Improvement: Add search option to listing pages for forms, polls and quizzes
+- Improvement: Mailchimp integration markup and content
+- Improvement: Load Select2 and Moment JS files conditionally
+- Improvement: Markup for some of the fields is incorrect
+- Improvement: Notify users of popups when forminator form is submitted
+- Fix: Select field throws JS errors
+- Fix: Calculations not updated when visibility condition is triggered
+- Fix: ReCaptcha 3 not displayed on Divi theme
+- Fix: Submitting form with no date chosen in date picker field returns an error
+- Fix: Select fields are broken when NONE style is selected
+- Fix: Conflict with Neira theme causes double select field drop downs
+- Fix: Stripe and Date picker icons are using wrong custom colors
+- Fix: Form’s status displays as usual even with high contrast mode enabled
+- Fix: Wrong selectors in Custom Css option
+- Fix: Issues when Time Picker field when Default time set to 0
+- Fix: Poll Answer text color settings are not applied on front-end
+- Fix: Retake Quiz Button is missing on Knowledge quiz
+- Fix: Visibility issues with Name field with multiple fields enabled
+- Fix: Merge tag {all_fields} doesn’t include all fields
+- Fix: Response message on form submit gets cut off due to wrong auto scroll
+- Fix: Issue with the Calendar position at the Limits tab of Date-picker field
+- Fix: Poll’s container border not displayed on front-end
+- Fix: Poll’s Email notifications merge tags missing curly brackets
+- Fix: Poll’s Email notification CC and BCC auto complete doesn’t show any results
+- Fix: On multi site, when you connect and install FortressDB, it doesn’t auto-search plugin for easy install.
+- Fix: Custom font is not applying on Upload file button text and upload file text through appearance tab
+- Fix: Remove submission doesn’t work in Global Account Erasure Requests
+- Fix: From name and From address doesn’t override default ones
+- Fix: Validation not working for “Sitename” in register form for Multisite
+- Fix: Amp character getting url_encoded in redirect URL
+- Fix: ADA compliance/accessibility issue
+- Fix: Forminator multiple type + Specific filetypes dont accept uppercase file extensions
+- Fix: IP Retention doesn’t work properly
+- Fix: Conflict with Hustle select
+- Fix: Conflicts with WP User Front-end and VikBooking plugin
+- Fix: Second visibility rule is not being applied
+- Fix: Address field printed incorrectly in submission email
+- Fix: Issues with decimal places
+- Fix: If there are Name and IP Address in GDPR content text, then it’s not showing the details on front-end and email
+- Fix: Collected leads count not showing correct number
+- Fix: Inline message after submission not breaking lines on P element
+- Fix: Wrong form displayed on View Stats on Dashboard
+- Fix: Reset tracking data not working after edit any module
+- Fix: Additional CSS class not added for Hidden field
+- Fix: ReCapcha is not returning invalid if you try to submit empty required fields first
+- Fix: Signature link overflows outside the container
+- Fix: Different calculation results in front-end and submission entry from hidden select field
+- Fix: Payments processed even for spam entries
+- Fix: “0” is not a valid select drop down value
+- Fix: Wrong years in Date picker drop down
+- Fix: Signature issues on Windows PC Touch Screen
+- Fix: Radio field shows value instead of label in submission
+- Fix: JS errors in console from Post Data field
+- Fix: Security vulnerabilities
+- Other minor enhancements/fixes
 
 = 1.14.9 =
 

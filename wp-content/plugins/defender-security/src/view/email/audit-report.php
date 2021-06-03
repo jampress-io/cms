@@ -421,7 +421,7 @@
                                                 </td>
                                                 <td class="hero-image"
                                                     style="-moz-hyphens: auto; -webkit-hyphens: auto; Margin: 0; border-collapse: collapse !important; color: #555555; font-family: Helvetica, Arial, sans-serif; font-size: 15px; font-weight: normal; hyphens: auto; line-height: 26px; margin: 0; padding: 0; text-align: left; vertical-align: top; word-wrap: break-word;">
-                                                    <a href="https://premium.wpmudev.org/"
+                                                    <a href="https://wpmudev.com/"
                                                        style="Margin: 0; color: #555555; font-family: Helvetica, Arial, sans-serif; font-weight: normal; line-height: 1.3; margin: 0; padding: 0; text-align: left; text-decoration: none;"><img
                                                                 src="<?php echo defender_asset_url( '/assets/email-images/hero-defender.png' ) ?>"
                                                                 alt="Defender"
@@ -465,7 +465,7 @@
                                                                 valign="top"
                                                                 style="Margin: 0 auto; color: #555555; font-family: Helvetica, Arial, sans-serif; font-size: 15px; font-weight: normal; line-height: 26px; margin: 0 auto; padding: 0; padding-bottom: 0; padding-left: 0; padding-right: 0; text-align: left; width: 298px;">
                                                                 <a class="related-item plugin-link"
-                                                                   href="https://premium.wpmudev.org/project/wp-hummingbird/"
+                                                                   href="https://wpmudev.com/project/wp-hummingbird/"
                                                                    style="Margin: 0; color: #555555; display: table; font-family: Helvetica, Arial, sans-serif; font-size: 14px; font-weight: normal; line-height: 20px; margin: 0; padding: 0; text-align: left; text-decoration: none;">
                                                                     <img
                                                                             src="<?php echo defender_asset_url( '/assets/email-images/plugin-hummingbird.png' ) ?>"
@@ -484,7 +484,7 @@
                                                                 valign="top"
                                                                 style="Margin: 0 auto; color: #555555; font-family: Helvetica, Arial, sans-serif; font-size: 15px; font-weight: normal; line-height: 26px; margin: 0 auto; padding: 0; padding-bottom: 0; padding-left: 0; padding-right: 0; text-align: left; width: 298px;">
                                                                 <a class="related-item plugin-link"
-                                                                   href="https://premium.wpmudev.org/project/snapshot/"
+                                                                   href="https://wpmudev.com/project/snapshot/"
                                                                    style="Margin: 0; color: #555555; display: table; font-family: Helvetica, Arial, sans-serif; font-size: 14px; font-weight: normal; line-height: 20px; margin: 0; padding: 0; text-align: left; text-decoration: none;">
                                                                     <img
                                                                             src="<?php echo defender_asset_url( '/assets/email-images/plugin-snapshot.png' ) ?>"
@@ -565,7 +565,7 @@
                                                 </th>
                                                 <th class="small-12 large-4 columns last logo" align="right"
                                                     style="Margin: 0 auto; color: #555555; font-family: Helvetica, Arial, sans-serif; font-size: 15px; font-weight: normal; line-height: 26px; margin: 0 auto; padding: 0; padding-bottom: 0; padding-left: 0; padding-right: 0; text-align: right; width: 201.33333px;">
-                                                    <a href="https://premium.wpmudev.org" class="logo-link"
+                                                    <a href="https://wpmudev.com" class="logo-link"
                                                        style="Margin: 0; color: #555555; display: inline-block; font-family: Helvetica, Arial, sans-serif; font-weight: normal; line-height: 1.3; margin: 0; padding: 0; text-align: right; text-decoration: none;">
                                                         <img
                                                                 src="<?php echo defender_asset_url( '/assets/email-images/wpmudev-logo.png' ) ?>"

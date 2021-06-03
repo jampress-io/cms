@@ -13,7 +13,7 @@
  *
  * @since 1.6.2
  */
-abstract class Forminator_Addon_Quiz_Hooks_Abstract {
+abstract class Forminator_Addon_Quiz_Hooks_Abstract extends Forminator_Addon_Hooks_Abstract {
 
 	/**
 	 * Addon Instance
@@ -52,7 +52,7 @@ abstract class Forminator_Addon_Quiz_Hooks_Abstract {
 	 * Quiz Model
 	 *
 	 * @since 1.6.2
-	 * @var Forminator_Quiz_Form_Model
+	 * @var Forminator_Quiz_Model
 	 */
 	protected $quiz;
 
@@ -69,7 +69,7 @@ abstract class Forminator_Addon_Quiz_Hooks_Abstract {
 	 * Lead Model
 	 *
 	 * @since 1.6.2
-	 * @var Forminator_Custom_Form_Model
+	 * @var Forminator_Form_Model
 	 */
 	protected $lead_model;
 
@@ -99,10 +99,10 @@ abstract class Forminator_Addon_Quiz_Hooks_Abstract {
 	public function __construct( Forminator_Addon_Abstract $addon, $quiz_id ) {
 		$this->addon   = $addon;
 		$this->quiz_id = $quiz_id;
-		$this->quiz    = Forminator_Quiz_Form_Model::model()->load( $this->quiz_id );
+		$this->quiz    = Forminator_Quiz_Model::model()->load( $this->quiz_id );
 		if ( ! $this->quiz ) {
 			/* translators: ... */
-			throw new Forminator_Addon_Exception( sprintf( __( 'Quiz with id %d could not be found', Forminator::DOMAIN ), $this->quiz_id ) );
+			throw new Forminator_Addon_Exception( sprintf( __( 'Quiz with id %d could not be found', 'forminator' ), $this->quiz_id ) );
 		}
 
 		$this->_submit_quiz_error_message = __( 'Failed to submit quiz because of an addon, please check your quiz and try again' );
@@ -111,7 +111,7 @@ abstract class Forminator_Addon_Quiz_Hooks_Abstract {
 		$this->quiz_settings_instance = $this->addon->get_addon_quiz_settings( $this->quiz_id );
 
 		if ( isset( $this->quiz->settings['hasLeads'] ) && $this->quiz->settings['hasLeads'] ) {
-			$this->lead_model             = Forminator_Custom_Form_Model::model()->load( $this->quiz->settings['leadsId'] );
+			$this->lead_model             = Forminator_Form_Model::model()->load( $this->quiz->settings['leadsId'] );
 			$this->lead_settings_instance = $this->addon->get_addon_form_settings( $this->quiz->settings['leadsId'] );
 		}
 	}

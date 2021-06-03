@@ -282,12 +282,14 @@ final class NF_Display_Render
                     if ($default_value) {
                         $settings['value'] = $default_value;
 
-                        ob_start();
-                        do_shortcode( $settings['value'] );
-                        $ob = ob_get_clean();
+                        if( ! is_array( $default_value ) ) {
+                            ob_start();
+                            do_shortcode( $settings['value'] );
+                            $ob = ob_get_clean();
 
-                        if( ! $ob ) {
-                            $settings['value'] = do_shortcode( $settings['value'] );
+                            if( ! $ob ) {
+                                $settings['value'] = do_shortcode( $settings['value'] );
+                            }
                         }
                     }
                 }
@@ -501,12 +503,14 @@ final class NF_Display_Render
                     if ($default_value) {
                         $field['settings']['value'] = $default_value;
 
-                        ob_start();
-                        do_shortcode( $field['settings']['value'] );
-                        $ob = ob_get_clean();
+                        if( ! is_array( $default_value ) ) {
+                            ob_start();
+                            do_shortcode( $field['settings']['value'] );
+                            $ob = ob_get_clean();
 
-                        if( ! $ob ) {
-                            $field['settings']['value'] = do_shortcode( $field['settings']['value'] );
+                            if( ! $ob ) {
+                                $field['settings']['value'] = do_shortcode( $field['settings']['value'] );
+                            }
                         }
                     }
                 }

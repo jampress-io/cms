@@ -31,6 +31,11 @@ abstract class Forminator_Admin_Module {
 	public $page_entries = '';
 
 	/**
+	 * @var string
+	 */
+	public $dir = '';
+
+	/**
 	 * Forminator_Admin_Module constructor.
 	 *
 	 * @since 1.0
@@ -77,14 +82,22 @@ abstract class Forminator_Admin_Module {
 	 *
 	 * @since 1.0
 	 */
-	public function hide_menu_pages() {}
+	public function hide_menu_pages() {
+		remove_submenu_page( 'forminator', $this->page_edit );
+		remove_submenu_page( 'forminator', $this->page_entries );
+	}
 
 	/**
 	 * Used to include files
 	 *
 	 * @since 1.0
 	 */
-	public function includes() {}
+	public function includes() {
+		include_once $this->dir . '/admin-page-new.php';
+		include_once $this->dir . '/admin-page-view.php';
+		include_once $this->dir . '/admin-page-entries.php';
+		include_once $this->dir . '/admin-renderer-entries.php';
+	}
 
 	/**
 	 * Inject module options to JS

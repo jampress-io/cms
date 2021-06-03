@@ -1,7 +1,6 @@
 <?php if ( forminator_array_value_exists( $properties, 'cform-color-settings' ) ) { ?>
 
-	.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-response-message.forminator-error,
-	<?php echo $divi_overrider; ?> .forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-response-message.forminator-error {
+	#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-response-message.forminator-error {
 		<?php if ( forminator_array_value_exists( $properties, 'response-error-background' ) && !empty( $properties['response-error-background'] ) ) { ?>
 			background-color: <?php echo $properties['response-error-background'] ?>;
 		<?php } else { ?>
@@ -9,10 +8,8 @@
 		<?php } ?>
 	}
 
-	.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-response-message.forminator-error,
-	.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-response-message.forminator-error p,
-	<?php echo $divi_overrider; ?> .forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-response-message.forminator-error,
-	<?php echo $divi_overrider; ?> .forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-response-message.forminator-error p {
+	#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-response-message.forminator-error,
+	#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-response-message.forminator-error p {
 		<?php if ( forminator_array_value_exists( $properties, 'response-error-color' ) && !empty( $properties['response-error-color'] ) ) { ?>
 			color: <?php echo $properties['response-error-color'] ?>;
 		<?php } else { ?>
@@ -22,15 +19,12 @@
 
 <?php } else { ?>
 
-	.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-response-message.forminator-error,
-	<?php echo $divi_overrider; ?> .forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-response-message.forminator-error {
+	#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-response-message.forminator-error {
 		background-color: #F9E4E8;
 	}
 
-	.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-response-message.forminator-error,
-	.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-response-message.forminator-error p,
-	<?php echo $divi_overrider; ?> .forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-response-message.forminator-error,
-	<?php echo $divi_overrider; ?> .forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--flat .forminator-response-message.forminator-error p {
+	#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-response-message.forminator-error,
+	#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-response-message.forminator-error p {
 		color: #333333;
 	}
 

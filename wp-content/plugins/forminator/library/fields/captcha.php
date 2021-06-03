@@ -58,7 +58,7 @@ class Forminator_Captcha extends Forminator_Field {
 	public function __construct() {
 		parent::__construct();
 
-		$this->name = __( 'reCaptcha', Forminator::DOMAIN );
+		$this->name = __( 'reCaptcha', 'forminator' );
 	}
 
 	/**
@@ -70,9 +70,9 @@ class Forminator_Captcha extends Forminator_Field {
 	public function defaults() {
 
 		return array(
-			'captcha_type'            => __( 'v2_checkbox', Forminator::DOMAIN ),
-			'score_threshold'         => __( '0.5', Forminator::DOMAIN ),
-			'recaptcha_error_message' => __( 'reCAPTCHA verification failed. Please try again.', Forminator::DOMAIN ),
+			'captcha_type'            => __( 'v2_checkbox', 'forminator' ),
+			'score_threshold'         => __( '0.5', 'forminator' ),
+			'recaptcha_error_message' => __( 'reCAPTCHA verification failed. Please try again.', 'forminator' ),
 		);
 	}
 
@@ -203,7 +203,7 @@ class Forminator_Captcha extends Forminator_Field {
 		$recaptcha = new Forminator_Recaptcha( $secret );
 		$verify    = $recaptcha->verify( $data, null, $score );
 		if ( is_wp_error( $verify ) ) {
-			$invalid_captcha_message = ( ! empty( $error_message ) ? $error_message : __( 'reCAPTCHA verification failed. Please try again.', Forminator::DOMAIN ) );
+			$invalid_captcha_message = ( ! empty( $error_message ) ? $error_message : __( 'reCAPTCHA verification failed. Please try again.', 'forminator' ) );
 
 			/**
 			 * Filter message displayed for invalid captcha

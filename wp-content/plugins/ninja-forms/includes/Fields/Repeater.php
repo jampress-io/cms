@@ -117,12 +117,14 @@ class NF_Fields_Repeater extends NF_Abstracts_Field
                 if ($default_value) {
                     $settings['value'] = $default_value;
 
-                    ob_start();
-                    do_shortcode( $settings['value'] );
-                    $ob = ob_get_clean();
+                    if( ! is_array( $default_value ) ) {
+                        ob_start();
+                        do_shortcode( $settings['value'] );
+                        $ob = ob_get_clean();
 
-                    if( ! $ob ) {
-                        $settings['value'] = do_shortcode( $settings['value'] );
+                        if( ! $ob ) {
+                            $settings['value'] = do_shortcode( $settings['value'] );
+                        }
                     }
                 }
             }

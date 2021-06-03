@@ -7,6 +7,7 @@ use Calotes\Helper\Array_Cache;
 use Calotes\Helper\HTTP;
 use Calotes\Helper\Route;
 use WP_Defender\Behavior\WPMUDEV;
+use WP_Defender\Component\Config\Config_Hub_Helper;
 use WP_Defender\Controller2;
 use WP_Defender\Model\Setting\Two_Fa;
 use Calotes\Component\Response;
@@ -472,6 +473,7 @@ class Two_Factor extends Controller2 {
 		$model->import( $data );
 		if ( $model->validate() ) {
 			$model->save();
+			Config_Hub_Helper::set_clear_active_flag();
 
 			return new Response(
 				true,

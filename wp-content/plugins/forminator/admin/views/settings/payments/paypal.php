@@ -32,11 +32,11 @@ foreach ( $template_vars as $key => $val ) {
 
 	<div class="sui-form-field <?php echo esc_attr( ! empty( $vars['sandbox_id_error'] ) ? 'sui-form-field-error' : '' ); ?>">
 
-		<label class="sui-label"><?php esc_html_e( 'Sandbox Client ID', Forminator::DOMAIN ); ?></label>
+		<label class="sui-label"><?php esc_html_e( 'Sandbox Client ID', 'forminator' ); ?></label>
 
 		<input
 			class="sui-form-control"
-			name="sandbox_id" placeholder="<?php echo esc_attr( __( 'Enter your sandbox client id', Forminator::DOMAIN ) ); ?>"
+			name="sandbox_id" placeholder="<?php echo esc_attr( __( 'Enter your sandbox client id', 'forminator' ) ); ?>"
 			value="<?php echo esc_attr( $vars['sandbox_id'] ); ?>"
 		/>
 		<?php if ( ! empty( $vars['sandbox_id_error'] ) ) : ?>
@@ -47,11 +47,11 @@ foreach ( $template_vars as $key => $val ) {
 
 	<div class="sui-form-field <?php echo esc_attr( ! empty( $vars['sandbox_secret_error'] ) ? 'sui-form-field-error' : '' ); ?>">
 
-		<label class="sui-label"><?php esc_html_e( 'Sandbox Secret', Forminator::DOMAIN ); ?></label>
+		<label class="sui-label"><?php esc_html_e( 'Sandbox Secret', 'forminator' ); ?></label>
 
 		<input
 			class="sui-form-control"
-			name="sandbox_secret" placeholder="<?php echo esc_attr( __( 'Enter your sandbox secret', Forminator::DOMAIN ) ); ?>"
+			name="sandbox_secret" placeholder="<?php echo esc_attr( __( 'Enter your sandbox secret', 'forminator' ) ); ?>"
 			value="<?php echo esc_attr( $vars['sandbox_secret'] ); ?>"
 		/>
 
@@ -63,11 +63,11 @@ foreach ( $template_vars as $key => $val ) {
 
 	<div class="sui-form-field <?php echo esc_attr( ! empty( $vars['live_id_error'] ) ? 'sui-form-field-error' : '' ); ?>">
 
-		<label class="sui-label"><?php esc_html_e( 'Live Client ID', Forminator::DOMAIN ); ?></label>
+		<label class="sui-label"><?php esc_html_e( 'Live Client ID', 'forminator' ); ?></label>
 
 		<input
 			class="sui-form-control"
-			name="live_id" placeholder="<?php echo esc_attr( __( 'Enter your live client id', Forminator::DOMAIN ) ); ?>"
+			name="live_id" placeholder="<?php echo esc_attr( __( 'Enter your live client id', 'forminator' ) ); ?>"
 			value="<?php echo esc_attr( $vars['live_id'] ); ?>"
 		/>
 
@@ -79,11 +79,11 @@ foreach ( $template_vars as $key => $val ) {
 
 	<div class="sui-form-field <?php echo esc_attr( ! empty( $vars['live_secret_error'] ) ? 'sui-form-field-error' : '' ); ?>">
 
-		<label class="sui-label"><?php esc_html_e( 'Live Secret Key', Forminator::DOMAIN ); ?></label>
+		<label class="sui-label"><?php esc_html_e( 'Live Secret Key', 'forminator' ); ?></label>
 
 		<input
 			class="sui-form-control"
-			name="live_secret" placeholder="<?php echo esc_attr( __( 'Enter your live secret id', Forminator::DOMAIN ) ); ?>"
+			name="live_secret" placeholder="<?php echo esc_attr( __( 'Enter your live secret id', 'forminator' ) ); ?>"
 			value="<?php echo esc_attr( $vars['live_secret'] ); ?>"
 		/>
 

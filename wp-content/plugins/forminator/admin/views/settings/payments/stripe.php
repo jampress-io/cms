@@ -32,11 +32,11 @@ foreach ( $template_vars as $key => $val ) {
 
 	<div class="sui-form-field <?php echo esc_attr( ! empty( $vars['test_key_error'] ) ? 'sui-form-field-error' : '' ); ?>">
 
-		<label class="sui-label"><?php esc_html_e( 'Test Publishable Key', Forminator::DOMAIN ); ?></label>
+		<label class="sui-label"><?php esc_html_e( 'Test Publishable Key', 'forminator' ); ?></label>
 
 		<input
 			class="sui-form-control"
-			name="test_key" placeholder="<?php echo esc_attr( __( 'Enter your test publishable key', Forminator::DOMAIN ) ); ?>"
+			name="test_key" placeholder="<?php echo esc_attr( __( 'Enter your test publishable key', 'forminator' ) ); ?>"
 			value="<?php echo esc_attr( $vars['test_key'] ); ?>"
 		/>
 		<?php if ( ! empty( $vars['test_key_error'] ) ) : ?>
@@ -47,11 +47,11 @@ foreach ( $template_vars as $key => $val ) {
 
 	<div class="sui-form-field <?php echo esc_attr( ! empty( $vars['test_secret_error'] ) ? 'sui-form-field-error' : '' ); ?>">
 
-		<label class="sui-label"><?php esc_html_e( 'Test Secret Key', Forminator::DOMAIN ); ?></label>
+		<label class="sui-label"><?php esc_html_e( 'Test Secret Key', 'forminator' ); ?></label>
 
 		<input
 			class="sui-form-control"
-			name="test_secret" placeholder="<?php echo esc_attr( __( 'Enter your test secret key', Forminator::DOMAIN ) ); ?>"
+			name="test_secret" placeholder="<?php echo esc_attr( __( 'Enter your test secret key', 'forminator' ) ); ?>"
 			value="<?php echo esc_attr( $vars['test_secret'] ); ?>"
 		/>
 
@@ -63,11 +63,11 @@ foreach ( $template_vars as $key => $val ) {
 
 	<div class="sui-form-field <?php echo esc_attr( ! empty( $vars['live_key_error'] ) ? 'sui-form-field-error' : '' ); ?>">
 
-		<label class="sui-label"><?php esc_html_e( 'Live Publishable Key', Forminator::DOMAIN ); ?></label>
+		<label class="sui-label"><?php esc_html_e( 'Live Publishable Key', 'forminator' ); ?></label>
 
 		<input
 			class="sui-form-control"
-			name="live_key" placeholder="<?php echo esc_attr( __( 'Enter your live publishable key', Forminator::DOMAIN ) ); ?>"
+			name="live_key" placeholder="<?php echo esc_attr( __( 'Enter your live publishable key', 'forminator' ) ); ?>"
 			value="<?php echo esc_attr( $vars['live_key'] ); ?>"
 		/>
 
@@ -79,11 +79,11 @@ foreach ( $template_vars as $key => $val ) {
 
 	<div class="sui-form-field <?php echo esc_attr( ! empty( $vars['live_secret_error'] ) ? 'sui-form-field-error' : '' ); ?>">
 
-		<label class="sui-label"><?php esc_html_e( 'Live Secret Key', Forminator::DOMAIN ); ?></label>
+		<label class="sui-label"><?php esc_html_e( 'Live Secret Key', 'forminator' ); ?></label>
 
 		<input
 			class="sui-form-control"
-			name="live_secret" placeholder="<?php echo esc_attr( __( 'Enter your live secret key', Forminator::DOMAIN ) ); ?>"
+			name="live_secret" placeholder="<?php echo esc_attr( __( 'Enter your live secret key', 'forminator' ) ); ?>"
 			value="<?php echo esc_attr( $vars['live_secret'] ); ?>"
 		/>
 

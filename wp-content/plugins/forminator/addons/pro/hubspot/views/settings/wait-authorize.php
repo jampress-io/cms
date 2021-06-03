@@ -14,7 +14,7 @@ foreach ( $template_vars as $key => $val ) {
 	<h3 id="dialogTitle2" class="sui-box-title">
 		<?php
 			/* translators: ... */
-			echo esc_html( sprintf( __( 'Connect %1$s', Forminator::DOMAIN ), 'HubSpot' ) );
+			echo esc_html( sprintf( __( 'Connect %1$s', 'forminator' ), 'HubSpot' ) );
 		?>
 	</h3>
 
@@ -23,12 +23,12 @@ foreach ( $template_vars as $key => $val ) {
 			<p>
 				<?php
 					/* translators: ... */
-					echo esc_html( sprintf( __( 'Your %1$s account is already authorized.', Forminator::DOMAIN ), 'HubSpot' ) );
+					echo esc_html( sprintf( __( 'Your %1$s account is already authorized.', 'forminator' ), 'HubSpot' ) );
 				?>
 			</p>
 		</div>
 	<?php else : ?>
-		<span class="sui-description" style="color: #666666; margin-top: 20px; line-height: 22px;"><?php esc_html_e( "Authenticate your HubSpot account using the button below. Note that you'll be taken to the HubSpot website to grant access to Forminator and then redirected back.", Forminator::DOMAIN ); ?></span>
+		<span class="sui-description" style="color: #666666; margin-top: 20px; line-height: 22px;"><?php esc_html_e( "Authenticate your HubSpot account using the button below. Note that you'll be taken to the HubSpot website to grant access to Forminator and then redirected back.", 'forminator' ); ?></span>
 	<?php endif; ?>
 
 </div>
@@ -38,7 +38,7 @@ foreach ( $template_vars as $key => $val ) {
 	<div class="sui-block-content-center" style="margin-top: -10px; margin-bottom: -20px;">
 
 		<button type="button" class="sui-button">
-			<span class="sui-loading-text"><?php esc_html_e( 'Authenticating', Forminator::DOMAIN ); ?></span>
+			<span class="sui-loading-text"><?php esc_html_e( 'Authenticating', 'forminator' ); ?></span>
 			<i class="sui-icon-loader sui-loading" aria-hidden="true"></i>
 		</button>
 

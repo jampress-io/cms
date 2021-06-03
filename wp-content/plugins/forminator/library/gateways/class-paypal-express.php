@@ -286,12 +286,12 @@ class Forminator_PayPal_Express extends Forminator_Payment_Gateway {
 			$result = $this->api_request( 'v1/oauth2/token', $mode, $args, 'POST' );
 
 			if ( ! isset( $result->access_token ) || empty( $result->access_token ) ) {
-				throw new Forminator_Gateway_Exception( __( 'Failed to configure PayPal payment', Forminator::DOMAIN ) );
+				throw new Forminator_Gateway_Exception( __( 'Failed to configure PayPal payment', 'forminator' ) );
 			}
 		} catch ( Exception $e ) {
 			forminator_maybe_log( __METHOD__, $e->getMessage() );
 			throw new Forminator_Gateway_Exception(
-				__( 'Some error has occurred while connecting to your PayPal account. Please resolve the following errors and try to connect again.', Forminator::DOMAIN ),
+				__( 'Some error has occurred while connecting to your PayPal account. Please resolve the following errors and try to connect again.', 'forminator' ),
 				$error,
 				$e
 			);

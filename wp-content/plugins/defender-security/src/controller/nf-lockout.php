@@ -5,6 +5,7 @@ namespace WP_Defender\Controller;
 use Calotes\Component\Request;
 use Calotes\Component\Response;
 use WP_Defender\Component\Blacklist_Lockout;
+use WP_Defender\Component\Config\Config_Hub_Helper;
 use WP_Defender\Controller2;
 use WP_Defender\Model\Setting\Notfound_Lockout;
 use WP_Defender\Traits\IP;
@@ -62,6 +63,7 @@ class Nf_Lockout extends Controller2 {
 		$this->model->import( $data );
 		if ( $this->model->validate() ) {
 			$this->model->save();
+			Config_Hub_Helper::set_clear_active_flag();
 
 			return new Response( true, array_merge( [
 				'message' => $this->get_update_message( $data, $old_enabled ),
@@ -111,9 +113,7 @@ class Nf_Lockout extends Controller2 {
 			$adapted_data['duration_unit'] = $data['detect_404_lockout_duration_unit'];
 		}
 		if ( isset( $data['detect_404_lockout_ban'] ) ) {
-			$adapted_data['lockout_type'] = $data['detect_404_lockout_ban'] || 'permanent' === $data['detect_404_lockout_ban']
-				? 'permanent'
-				: 'timeframe';
+			$adapted_data['lockout_type'] = 'permanent' === $data['detect_404_lockout_ban'] ? 'permanent' : 'timeframe';
 		}
 		if ( isset( $data['detect_404_blacklist'] ) ) {
 			$adapted_data['blacklist'] = $data['detect_404_blacklist'];

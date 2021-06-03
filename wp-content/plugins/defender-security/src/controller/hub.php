@@ -3,6 +3,7 @@
 namespace WP_Defender\Controller;
 
 use WP_Defender\Behavior\WPMUDEV;
+use WP_Defender\Component\Config\Config_Hub_Helper;
 use WP_Defender\Controller2;
 use WP_Defender\Model\Lockout_Log;
 use WP_Defender\Model\Notification\Audit_Report;
@@ -290,12 +291,16 @@ class HUB extends Controller2 {
 			);
 		}
 		$this->maybe_change_onboarding_status();
+
+		// Active config.
+		Config_Hub_Helper::active_config_from_hub_id( $params->hub_config_id );
+
 		wp_send_json_success();
 	}
 
 	public function defender_get_stats_v2() {
 		global $wp_version;
-		$audit = wd_di()->get( Audit_Logging::class )->summary_data();
+		$audit = wd_di()->get( Audit_Logging::class )->summary_data( true );
 		$scan  = \WP_Defender\Model\Scan::get_last();
 		$total = 0;
 		if ( is_object( $scan ) ) {
@@ -319,7 +324,7 @@ class HUB extends Controller2 {
 		$ret               = array(
 			'summary'         => array(
 				'count'     => $total,
-				'next_scan' => $scan_report->get_next_run_as_string(),
+				'next_scan' => $scan_report->get_next_run_for_hub(),
 			),
 			'report'          => array(
 				'malware_scan'  => $scan_report->get_next_run_as_string( true ),
@@ -338,7 +343,7 @@ class HUB extends Controller2 {
 				'notification' => wd_di()->get( Malware_Notification::class )->status === $status_active,
 			),
 			'firewall'        => array(
-				'last_lockout'        => Lockout_Log::get_last_lockout_date(),
+				'last_lockout'        => Lockout_Log::get_last_lockout_date( true ),
 				'24_hours'            => array(
 					'login_lockout' => Lockout_Log::count(
 						strtotime( '-24 hours' ),
@@ -449,8 +454,8 @@ class HUB extends Controller2 {
 	}
 
 	/**
-	 * @param bool $is_show
 	 * Display Onboard if the bool value 'true' and vice versa
+	 * @param bool $is_show
 	*/
 	public function set_onboarding_status( $is_show ) {
 		$this->view_onboard = $is_show;
@@ -467,18 +472,22 @@ class HUB extends Controller2 {
 	 * Only requests from Hub and for separate pages
 	*/
 	public function listen_to_requests() {
-		if ( $this->view_onboard && is_admin() && $this->is_pro() && isset( $_GET['page'] ) && !empty( $_GET['page'] ) ) {
-			//no 'wp-defender' because it's a default slug for Def Dashboard
-			$pages = array(
-				'wdf-hardener',
-				'wdf-scan',
-				'wdf-logging',
-				'wdf-ip-lockout',
-				'wdf-2fa',
-				'wdf-advanced-tools',
-			);
-			$page  = $_GET['page'];
-			if ( in_array( $page, $pages, true ) ) {
+		if ( $this->view_onboard && is_admin() && isset( $_GET['page'] ) && ! empty( $_GET['page'] ) ) {
+			//redirect from the Plugins page after clicking on the Settings link
+			$pages = array( 'wdf-setting' );
+			if ( $this->is_pro() ) {
+				//no 'wp-defender' because it's a default slug for Def Dashboard
+				array_push(
+					$pages,
+					'wdf-hardener',
+					'wdf-scan',
+					'wdf-logging',
+					'wdf-ip-lockout',
+					'wdf-2fa',
+					'wdf-advanced-tools'
+				);
+			}
+			if ( in_array( sanitize_text_field( $_GET['page'] ), $pages, true ) ) {
 				update_site_option( 'wp_defender_shown_activator', true );
 				$this->view_onboard = false;
 			}

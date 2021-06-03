@@ -58,7 +58,7 @@ class Forminator_Website extends Forminator_Field {
 	public function __construct() {
 		parent::__construct();
 
-		$this->name = __( 'Website', Forminator::DOMAIN );
+		$this->name = __( 'Website', 'forminator' );
 	}
 
 	/**
@@ -69,8 +69,8 @@ class Forminator_Website extends Forminator_Field {
 	 */
 	public function defaults() {
 		return array(
-			'field_label' => __( 'Website', Forminator::DOMAIN ),
-			'placeholder' => __( 'E.g., http://www.example.com', Forminator::DOMAIN ),
+			'field_label' => __( 'Website', 'forminator' ),
+			'placeholder' => __( 'E.g. http://www.example.com', 'forminator' ),
 		);
 	}
 
@@ -218,7 +218,7 @@ class Forminator_Website extends Forminator_Field {
 		$id                 = $this->get_id( $field );
 		$validation_enabled = self::get_property( 'validation', $field, false, 'bool' );
 		$validation_message = self::get_property( 'validation_message', $field, self::FIELD_PROPERTY_VALUE_NOT_EXIST );
-		$required_message   = self::get_property( 'required_message', $field, __( 'This field is required. Please input a valid URL', Forminator::DOMAIN ) );
+		$required_message   = self::get_property( 'required_message', $field, __( 'This field is required. Please input a valid URL', 'forminator' ) );
 		if ( self::FIELD_PROPERTY_VALUE_NOT_EXIST === $validation_message ) {
 			$validation_message = self::get_property( 'validation_text', $field, '' );
 		}
@@ -238,7 +238,7 @@ class Forminator_Website extends Forminator_Field {
 			$messages        .= '"required": "' . forminator_addcslashes( $required_message ) . '",' . "\n";
 		}
 
-		$validation_message = ! empty( $validation_message ) ? $validation_message : __( 'Please enter a valid Website URL (e.g. https://premium.wpmudev.org/).', Forminator::DOMAIN );
+		$validation_message = ! empty( $validation_message ) ? $validation_message : __( 'Please enter a valid Website URL (e.g. https://wpmudev.com/).', 'forminator' );
 		if ( $validation_enabled ) {
 
 			$validation_message = apply_filters(
@@ -276,7 +276,7 @@ class Forminator_Website extends Forminator_Field {
 		$id                 = self::get_property( 'element_id', $field );
 		$validation_enabled = self::get_property( 'validation', $field, false, 'bool' );
 		$validation_message = self::get_property( 'validation_message', $field, self::FIELD_PROPERTY_VALUE_NOT_EXIST );
-		$required_message   = self::get_property( 'required_message', $field, __( 'This field is required. Please input a valid URL.', Forminator::DOMAIN ) );
+		$required_message   = self::get_property( 'required_message', $field, __( 'This field is required. Please input a valid URL.', 'forminator' ) );
 		if ( self::FIELD_PROPERTY_VALUE_NOT_EXIST === $validation_message ) {
 			$validation_message = self::get_property( 'validation_text', $field, '' );
 		}

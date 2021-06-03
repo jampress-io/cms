@@ -13,7 +13,7 @@ function login_header_otp( $title = 'Log In', $message = '', $wp_error = '' ) {
 global $error, $interim_login, $action;
 
 if ( empty( $wp_error ) ) {
-	$wp_error = new WP_Error();
+	$wp_error = new \WP_Error();
 }
 
 // Shake it!

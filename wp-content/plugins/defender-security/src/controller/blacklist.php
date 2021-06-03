@@ -4,6 +4,7 @@ namespace WP_Defender\Controller;
 
 use Calotes\Component\Request;
 use Calotes\Component\Response;
+use WP_Defender\Component\Config\Config_Hub_Helper;
 use WP_Defender\Controller2;
 use WP_Defender\Model\Lockout_Ip;
 use WP_Defender\Model\Setting\Blacklist_Lockout;
@@ -114,6 +115,7 @@ class Blacklist extends Controller2 {
 		$this->model->import( $data );
 		if ( $this->model->validate() ) {
 			$this->model->save();
+			Config_Hub_Helper::set_clear_active_flag();
 
 			return new Response(
 				true,
@@ -175,9 +177,27 @@ class Blacklist extends Controller2 {
 				'current_country'     => $country['iso']
 			] );
 		} else {
-			return new Response( false, [
-				'message' => $tmp->get_error_message()
-			] );
+			$this->log( 'Error from MaxMind: ' . $tmp->get_error_message() );
+			$string = sprintf(
+			/* translators: ... */
+				__(
+					'The license key you entered is not valid. You can find your license key on the <a target="_blank" href="%s">Services / My License Key page</a>.',
+					'wpdef'
+				),
+				'https://www.maxmind.com/en/accounts/current/license-key'
+			);
+			//If Whitelabel is disabled add link to support
+			if ( ! ( new \WP_Defender\Behavior\WPMUDEV() )->is_whitelabel_enabled() ) {
+				$string .= sprintf(
+				/* translators: ... */
+					__(
+						' If you continue having connection issues, our <a target="_blank" href="%s">support team</a> is ready to help.',
+						'wpdef'
+					),
+					'https://wpmudev.com/hub/support/#get-support'
+				);
+			}
+			return new Response( false, array( 'invalid_text' => $string ) );
 		}
 	}
 
@@ -231,11 +251,12 @@ class Blacklist extends Controller2 {
 				'sanitize' => 'sanitize_text_field'
 			],
 		] );
+
 		$ip     = $data['ip'];
 		$action = $data['behavior'];
-		$model  = Lockout_Ip::get( $ip );
-
-		if ( is_object( $model ) ) {
+		$models  = Lockout_Ip::get( $ip, $action, true );
+		
+		foreach( $models as $model )  {
 			if ( 'unban' === $action ) {
 				$model->status = Lockout_Ip::STATUS_NORMAL;
 				$model->save();
@@ -243,8 +264,68 @@ class Blacklist extends Controller2 {
 				$model->status = Lockout_Ip::STATUS_BLOCKED;
 				$model->save();
 			}
-			$this->query_locked_ips( $request );
 		}
+
+		$this->query_locked_ips( $request );
+	}
+	
+	/**
+	 * Bulk ban or unban IPs
+	 * @param Request $request
+	 *
+	 * @return Response
+	 * @throws \Exception
+	 * @defender_route
+	 */
+	public function bulk_ip_action( Request $request ) {
+		$data   = $request->get_data( [
+			'behavior' => [
+				'type'     => 'string',
+				'sanitize' => 'sanitize_text_field'
+			],
+			'ips' => [
+				'type'     => 'string',
+				'sanitize' => 'sanitize_text_field'
+			],
+		] );
+
+		$status   = 'unban' === $data['behavior'] ? Lockout_Ip::STATUS_BLOCKED : Lockout_Ip::STATUS_NORMAL;
+		$ips      = null;
+		$bulk_ips = null;
+		$limit	  = 50;
+
+		if ( ! empty( $data['ips'] ) ) {
+			$ips           = json_decode( $data['ips'] );
+			$first_nth_ips = array_slice( $ips, 0, $limit );
+			$bulk_ips      = wp_list_pluck( $first_nth_ips, 'ip' );
+		}
+
+		try {
+			$models  = Lockout_Ip::get_bulk( $status, $bulk_ips, $limit );
+			foreach( $models as $model )  {
+				$model->status = ( 'unban' === $data['behavior'] ) ? Lockout_Ip::STATUS_NORMAL : Lockout_Ip::STATUS_BLOCKED;
+				$model->save();
+			}
+			// While bulk banning the IPs, needs to slice the IPs array for next iteration
+			if ( 'ban' === $data['behavior'] ) {
+				$ips = array_slice( $ips, $limit );
+			}
+			// If the queried models are less than the limit it means we are on the last set of IPs
+			if ( count( $models ) < $limit ) {
+				return new Response( true, [
+					'status' => 'done'
+				] );
+			}
+		} catch( \Exception $e ) {
+			return new Response( true, [
+				'status' => 'error'
+			] );
+		}
+
+		return new Response( true, [
+			'status' => 'continue',
+			'ips' 	 => $ips
+		] );
 	}
 
 	/**

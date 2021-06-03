@@ -3,10 +3,10 @@
 /**
  * Addon Name: Zapier
  * Version: 1.0
- * Plugin URI:  https://premium.wpmudev.org/
+ * Plugin URI:  https://wpmudev.com/
  * Description: Integrate Forminator Custom Forms with Zapier to execute various action you like
  * Author: WPMU DEV
- * Author URI: http://premium.wpmudev.org
+ * Author URI: http://wpmudev.com
  */
 
 define( 'FORMINATOR_ADDON_ZAPIER_VERSION', '1.2' );

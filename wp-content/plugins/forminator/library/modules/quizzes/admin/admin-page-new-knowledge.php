@@ -4,11 +4,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Class Forminator_Quizz_New_Knowledge
+ * Class Forminator_Quiz_New_Knowledge
  *
  * @since 1.0
  */
-class Forminator_Quizz_New_Knowledge extends Forminator_Admin_Page {
+class Forminator_Quiz_New_Knowledge extends Forminator_Admin_Page {
 
 	/**
 	 * Return wizard title
@@ -18,9 +18,9 @@ class Forminator_Quizz_New_Knowledge extends Forminator_Admin_Page {
 	 */
 	public function getWizardTitle() {
 		if ( isset( $_REQUEST['id'] ) ) { // WPCS: CSRF OK
-			return __( "Edit Quiz", Forminator::DOMAIN );
+			return __( "Edit Quiz", 'forminator' );
 		} else {
-			return __( "New Quiz", Forminator::DOMAIN );
+			return __( "New Quiz", 'forminator' );
 		}
 	}
 
@@ -31,46 +31,21 @@ class Forminator_Quizz_New_Knowledge extends Forminator_Admin_Page {
 	 * @param $hook
 	 */
 	public function enqueue_scripts( $hook ) {
-		// Load jquery ui
-		forminator_admin_jquery_ui();
-
-		// Load shared-ui scripts
-		forminator_sui_scripts();
-
-		// Load admin fonts
-		forminator_admin_enqueue_fonts( FORMINATOR_VERSION );
-
-		// Load admin styles
-		forminator_admin_enqueue_styles( FORMINATOR_VERSION );
-
-		$forminator_data = new Forminator_Admin_Data();
-		$forminator_l10n = new Forminator_Admin_L10n();
-
 		// Load admin scripts
-		forminator_admin_enqueue_scripts_knowledge(
+		wp_register_script(
+			'forminator-admin',
+			forminator_plugin_url() . 'assets/js/knowledge-scripts.js',
+			array(
+				'jquery',
+				'wp-color-picker',
+				'react',
+				'react-dom',
+			),
 			FORMINATOR_VERSION,
-			$forminator_data->get_options_data(),
-			$forminator_l10n->get_l10n_strings()
+			true
 		);
 
-		// Load front scripts for preview_form
-		forminator_print_front_styles( FORMINATOR_VERSION );
-		forminator_print_front_scripts( FORMINATOR_VERSION );
-	}
-
-	/**
-	 * Render page header
-	 *
-	 * @since 1.6.2
-	 */
-	protected function render_header() { ?>
-		<?php
-		if ( $this->template_exists( $this->folder . '/header' ) ) {
-			$this->template( $this->folder . '/header' );
-		} else {
-			?>
-			<h1 class="sui-header-title"><?php echo esc_html( get_admin_page_title() ); ?></h1>
-		<?php } ?>
-		<?php
+		wp_enqueue_script( 'forminator-jquery-ui-touch', forminator_plugin_url() . 'assets/js/library/jquery.ui.touch-punch.min.js', array( 'jquery' ), FORMINATOR_VERSION, true );
+		forminator_common_admin_enqueue_scripts( true );
 	}
 }

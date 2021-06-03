@@ -7,7 +7,7 @@ $nonce      = wp_create_nonce( 'forminator_save_payments_settings' );
 <div class="sui-box" data-nav="payments" style="<?php echo esc_attr( 'payments' !== $section ? 'display: none;' : '' ); ?>">
 
 	<div class="sui-box-header">
-		<h2 class="sui-box-title"><?php esc_html_e( 'Payments', Forminator::DOMAIN ); ?></h2>
+		<h2 class="sui-box-title"><?php esc_html_e( 'Payments', 'forminator' ); ?></h2>
 	</div>
 
 	<form class="forminator-settings-save" action="">
@@ -32,11 +32,11 @@ $nonce      = wp_create_nonce( 'forminator_save_payments_settings' );
 
 				<button
 					class="sui-button sui-button-blue wpmudev-action-done"
-					data-title="<?php esc_attr_e( 'Payments settings', Forminator::DOMAIN ); ?>"
+					data-title="<?php esc_attr_e( 'Payments settings', 'forminator' ); ?>"
 					data-action="payments_settings"
 					data-nonce="<?php echo esc_attr( $nonce ); ?>"
 				>
-					<span class="sui-loading-text"><?php esc_html_e( 'Save Settings', Forminator::DOMAIN ); ?></span>
+					<span class="sui-loading-text"><?php esc_html_e( 'Save Settings', 'forminator' ); ?></span>
 					<i class="sui-icon-loader sui-loading" aria-hidden="true"></i>
 				</button>
 

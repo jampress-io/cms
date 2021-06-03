@@ -52,7 +52,7 @@ class Forminator_Name extends Forminator_Field {
 	 */
 	public function __construct() {
 		parent::__construct();
-		$this->name = __( 'Name', Forminator::DOMAIN );
+		$this->name = __( 'Name', 'forminator' );
 	}
 
 	/**
@@ -63,24 +63,24 @@ class Forminator_Name extends Forminator_Field {
 	 */
 	public function defaults() {
 		return array(
-			'field_label'             => __( 'Name', Forminator::DOMAIN ),
-			'placeholder'             => __( 'E.g., John Doe', Forminator::DOMAIN ),
-			'prefix_label'            => __( 'Prefix', Forminator::DOMAIN ),
-			'fname_label'             => __( 'First Name', Forminator::DOMAIN ),
-			'fname_placeholder'       => __( 'E.g., John', Forminator::DOMAIN ),
-			'mname_label'             => __( 'Middle Name', Forminator::DOMAIN ),
-			'mname_placeholder'       => __( 'E.g., Smith', Forminator::DOMAIN ),
-			'lname_label'             => __( 'Last Name', Forminator::DOMAIN ),
-			'lname_placeholder'       => __( 'E.g., Doe', Forminator::DOMAIN ),
+			'field_label'             => __( 'Name', 'forminator' ),
+			'placeholder'             => __( 'E.g. John Doe', 'forminator' ),
+			'prefix_label'            => __( 'Prefix', 'forminator' ),
+			'fname_label'             => __( 'First Name', 'forminator' ),
+			'fname_placeholder'       => __( 'E.g. John', 'forminator' ),
+			'mname_label'             => __( 'Middle Name', 'forminator' ),
+			'mname_placeholder'       => __( 'E.g. Smith', 'forminator' ),
+			'lname_label'             => __( 'Last Name', 'forminator' ),
+			'lname_placeholder'       => __( 'E.g. Doe', 'forminator' ),
 			'prefix'                  => 'true',
 			'fname'                   => 'true',
 			'mname'                   => 'true',
 			'lname'                   => 'true',
-			'required_message'        => __( 'Name is required.', Forminator::DOMAIN ),
-			'prefix_required_message' => __( 'Prefix is required.', Forminator::DOMAIN ),
-			'fname_required_message'  => __( 'First Name is required.', Forminator::DOMAIN ),
-			'mname_required_message'  => __( 'Middle Name is required.', Forminator::DOMAIN ),
-			'lname_required_message'  => __( 'Last Name is required.', Forminator::DOMAIN ),
+			'required_message'        => __( 'Name is required.', 'forminator' ),
+			'prefix_required_message' => __( 'Prefix is required.', 'forminator' ),
+			'fname_required_message'  => __( 'First Name is required.', 'forminator' ),
+			'mname_required_message'  => __( 'Middle Name is required.', 'forminator' ),
+			'lname_required_message'  => __( 'Last Name is required.', 'forminator' ),
 		);
 	}
 
@@ -225,9 +225,10 @@ class Forminator_Name extends Forminator_Field {
 		if ( $prefix ) {
 
 			$prefix_data = array(
-				'name'  => $id . '-prefix',
-				'id'    => 'forminator-field-prefix-' . $id,
-				'class' => 'forminator-select2',
+				'name'       => $id . '-prefix',
+				'id'         => 'forminator-field-prefix-' . $id,
+				'class'      => 'forminator-select2',
+				'data-multi' => true,
 			);
 
 			$options        = array();
@@ -280,6 +281,7 @@ class Forminator_Name extends Forminator_Field {
 				'id'            => 'forminator-field-first-' . $id,
 				'class'         => 'forminator-input',
 				'aria-required' => $fname_ariareq,
+				'data-multi'    => true,
 			);
 
 			$autofill_markup = $this->get_element_autofill_markup_attr( $id . '-first-name', $this->form_settings );
@@ -366,6 +368,7 @@ class Forminator_Name extends Forminator_Field {
 				'id'            => 'forminator-field-middle-' . $id,
 				'class'         => 'forminator-input',
 				'aria-required' => $mname_ariareq,
+				'data-multi'    => true,
 			);
 
 			$middle_name = $this->replace_from_prefill( $field, $middle_name, 'mname' );
@@ -397,6 +400,7 @@ class Forminator_Name extends Forminator_Field {
 				'id'            => 'forminator-field-last-' . $id,
 				'class'         => 'forminator-input',
 				'aria-required' => $lname_ariareq,
+				'data-multi'    => true,
 			);
 
 			$autofill_markup = $this->get_element_autofill_markup_attr( $id . '-last-name', $this->form_settings );
@@ -551,7 +555,7 @@ class Forminator_Name extends Forminator_Field {
 					$field,
 					'prefix_required_message',
 					'prefix',
-					__( 'Prefix is required.', Forminator::DOMAIN )
+					__( 'Prefix is required.', 'forminator' )
 				);
 				$messages        .= '"' . $this->get_id( $field ) . '-prefix": "' . forminator_addcslashes( $required_message ) . '",' . "\n";
 			}
@@ -562,7 +566,7 @@ class Forminator_Name extends Forminator_Field {
 					$field,
 					'fname_required_message',
 					'first',
-					__( 'This field is required. Please input your first name.', Forminator::DOMAIN )
+					__( 'This field is required. Please input your first name.', 'forminator' )
 				);
 				$messages        .= '"' . $this->get_id( $field ) . '-first-name": "' . forminator_addcslashes( $required_message ) . '",' . "\n";
 			}
@@ -573,7 +577,7 @@ class Forminator_Name extends Forminator_Field {
 					$field,
 					'mname_required_message',
 					'middle',
-					__( 'This field is required. Please input your middle name.', Forminator::DOMAIN )
+					__( 'This field is required. Please input your middle name.', 'forminator' )
 				);
 				$messages        .= '"' . $this->get_id( $field ) . '-middle-name": "' . forminator_addcslashes( $required_message ) . '",' . "\n";
 			}
@@ -584,7 +588,7 @@ class Forminator_Name extends Forminator_Field {
 					$field,
 					'lname_required_message',
 					'last',
-					__( 'This field is required. Please input your last name.', Forminator::DOMAIN )
+					__( 'This field is required. Please input your last name.', 'forminator' )
 				);
 				$messages        .= '"' . $this->get_id( $field ) . '-last-name": "' . forminator_addcslashes( $required_message ) . '",' . "\n";
 			}
@@ -593,7 +597,7 @@ class Forminator_Name extends Forminator_Field {
 				// backward compat
 				$required_message = self::get_property( 'required_message', $field, self::FIELD_PROPERTY_VALUE_NOT_EXIST, 'string' );
 				if ( self::FIELD_PROPERTY_VALUE_NOT_EXIST === $required_message ) {
-					$required_message = __( 'This field is required. Please input your name.', Forminator::DOMAIN );
+					$required_message = __( 'This field is required. Please input your name.', 'forminator' );
 				}
 
 				$required_message = apply_filters( 'forminator_name_field_required_validation_message', $required_message, $id, $field );
@@ -642,7 +646,7 @@ class Forminator_Name extends Forminator_Field {
 						$field,
 						'prefix_required_message',
 						'prefix',
-						__( 'Prefix is required.', Forminator::DOMAIN )
+						__( 'Prefix is required.', 'forminator' )
 					);
 				}
 
@@ -652,7 +656,7 @@ class Forminator_Name extends Forminator_Field {
 						$field,
 						'fname_required_message',
 						'first',
-						__( 'This field is required. Please input your first name.', Forminator::DOMAIN )
+						__( 'This field is required. Please input your first name.', 'forminator' )
 					);
 				}
 
@@ -662,7 +666,7 @@ class Forminator_Name extends Forminator_Field {
 						$field,
 						'mname_required_message',
 						'middle',
-						__( 'This field is required. Please input your middle name.', Forminator::DOMAIN )
+						__( 'This field is required. Please input your middle name.', 'forminator' )
 					);
 				}
 
@@ -672,7 +676,7 @@ class Forminator_Name extends Forminator_Field {
 						$field,
 						'lname_required_message',
 						'last',
-						__( 'This field is required. Please input your last name.', Forminator::DOMAIN )
+						__( 'This field is required. Please input your last name.', 'forminator' )
 					);
 				}
 			}
@@ -682,7 +686,7 @@ class Forminator_Name extends Forminator_Field {
 					// backward compat
 					$required_message = self::get_property( 'required_message', $field, self::FIELD_PROPERTY_VALUE_NOT_EXIST, 'string' );
 					if ( self::FIELD_PROPERTY_VALUE_NOT_EXIST === $required_message ) {
-						$required_message = __( 'This field is required. Please input your name.', Forminator::DOMAIN );
+						$required_message = __( 'This field is required. Please input your name.', 'forminator' );
 					}
 
 					$required_message                = apply_filters( 'forminator_name_field_required_validation_message', $required_message, $id, $field );

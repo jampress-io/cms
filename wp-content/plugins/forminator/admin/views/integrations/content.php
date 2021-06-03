@@ -7,19 +7,19 @@
 		<ul class="sui-vertical-tabs sui-sidenav-hide-md">
 
 			<li class="sui-vertical-tab forminator-integrations" data-tab-id="forminator-integrations">
-				<a href="#forminator-integrations" role="button"><?php esc_html_e( 'Applications', Forminator::DOMAIN ); ?></a>
+				<a href="#forminator-integrations" role="button"><?php esc_html_e( 'Applications', 'forminator' ); ?></a>
 			</li>
             <?php if ( forminator_is_show_documentation_link() ) { ?>
                 <li class="sui-vertical-tab forminator-api" data-tab-id="forminator-api">
-                    <a href="#forminator-api" role="button"><?php esc_html_e( 'API', Forminator::DOMAIN ); ?></a>
+                    <a href="#forminator-api" role="button"><?php esc_html_e( 'API', 'forminator' ); ?></a>
                 </li>
             <?php } ?>
 		</ul>
 
 		<select class="sui-mobile-nav sui-sidenav-hide-lg">
-			<option value="forminator-integrations"><?php esc_html_e( 'Applications', Forminator::DOMAIN ); ?></option>
+			<option value="forminator-integrations"><?php esc_html_e( 'Applications', 'forminator' ); ?></option>
 			<?php if ( forminator_is_show_documentation_link() ) { ?>
-                <option value="forminator-api"><?php esc_html_e( 'API', Forminator::DOMAIN ); ?></option>
+                <option value="forminator-api"><?php esc_html_e( 'API', 'forminator' ); ?></option>
 			<?php } ?>
 		</select>
 
@@ -31,13 +31,13 @@
 
 			<div class="sui-box-header">
 
-				<h2 class="sui-box-title"><?php esc_html_e( 'Applications', Forminator::DOMAIN ); ?></h2>
+				<h2 class="sui-box-title"><?php esc_html_e( 'Applications', 'forminator' ); ?></h2>
 
 			</div>
 
 			<div id="forminator-integrations-page" class="sui-box-body">
 
-				<p><?php esc_html_e( 'Forminator integrates with your favorite third party apps. You can connect to the available apps via their API here and activate them to collect data in the Integrations tab of your forms, polls or quizzes.', Forminator::DOMAIN ); ?></p>
+				<p><?php esc_html_e( 'Forminator integrates with your favorite third party apps. You can connect to the available apps via their API here and activate them to collect data in the Integrations tab of your forms, polls or quizzes.', 'forminator' ); ?></p>
 
 				<div id="forminator-integrations-display"></div>
 
@@ -53,7 +53,7 @@
 
                 <div class="sui-box-header">
 
-                    <h2 class="sui-box-title"><?php esc_html_e( 'API', Forminator::DOMAIN ); ?></h2>
+                    <h2 class="sui-box-title"><?php esc_html_e( 'API', 'forminator' ); ?></h2>
 
                 </div>
 
@@ -65,7 +65,7 @@
                             <img src="<?php echo $url . 'assets/img/forminator-disabled.png'; // phpcs:ignore ?>"
                                 srcset="<?php echo $url . 'assets/img/forminator-disabled.png'; // phpcs:ignore ?> 1x,
                                 <?php echo $url . 'assets/img/forminator-disabled@2x.png'; // phpcs:ignore ?> 2x"
-                                alt="<?php esc_html_e( 'Forminator APIs', Forminator::DOMAIN ); ?>"
+                                alt="<?php esc_html_e( 'Forminator APIs', 'forminator' ); ?>"
                                 class="sui-image sui-image-center fui-image"/>
                         <?php endif; ?>
 
@@ -73,11 +73,11 @@
 
                         <p>
                             <?php
-                            esc_html_e( 'Build your own integrations and custom Forminator apps using our full featured API! Visit the Forminator API Docs to get started.', Forminator::DOMAIN );
+                            esc_html_e( 'Build your own integrations and custom Forminator apps using our full featured API! Visit the Forminator API Docs to get started.', 'forminator' );
                             ?>
                         </p>
                         <p>
-                            <a href="https://premium.wpmudev.org/docs/wpmu-dev-plugins/forminator-api-docs/" target="_blank" class="sui-button sui-button-blue">Get Started</a>
+                            <a href="https://wpmudev.com/docs/wpmu-dev-plugins/forminator-api-docs/" target="_blank" class="sui-button sui-button-blue">Get Started</a>
                         </p>
                         </div>
 

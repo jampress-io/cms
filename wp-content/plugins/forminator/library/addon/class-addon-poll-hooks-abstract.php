@@ -13,7 +13,7 @@
  *
  * @since 1.6.1
  */
-abstract class Forminator_Addon_Poll_Hooks_Abstract {
+abstract class Forminator_Addon_Poll_Hooks_Abstract extends Forminator_Addon_Hooks_Abstract {
 
 	/**
 	 * Addon Instance
@@ -52,7 +52,7 @@ abstract class Forminator_Addon_Poll_Hooks_Abstract {
 	 * Poll Model
 	 *
 	 * @since 1.6.1
-	 * @var Forminator_Poll_Form_Model
+	 * @var Forminator_Poll_Model
 	 */
 	protected $poll;
 
@@ -68,10 +68,10 @@ abstract class Forminator_Addon_Poll_Hooks_Abstract {
 	public function __construct( Forminator_Addon_Abstract $addon, $poll_id ) {
 		$this->addon   = $addon;
 		$this->poll_id = $poll_id;
-		$this->poll    = Forminator_Poll_Form_Model::model()->load( $this->poll_id );
+		$this->poll    = Forminator_Poll_Model::model()->load( $this->poll_id );
 		if ( ! $this->poll ) {
 			/* translators: ... */
-			throw new Forminator_Addon_Exception( sprintf( __( 'Poll with id %d could not be found', Forminator::DOMAIN ), $this->poll_id ) );
+			throw new Forminator_Addon_Exception( sprintf( __( 'Poll with id %d could not be found', 'forminator' ), $this->poll_id ) );
 		}
 
 		$this->_submit_poll_error_message = __( 'Failed to submit poll because of an addon, please check your poll and try again' );

@@ -13,7 +13,7 @@ foreach ( $template_vars as $key => $val ) {
 	<h3 class="sui-box-title" id="dialogTitle2">
 		<?php
 		/* translators: ... */
-		echo esc_html( sprintf( __( 'Failed to add %1$s', Forminator::DOMAIN ), 'Slack' ) );
+		echo esc_html( sprintf( __( 'Failed to add %1$s', 'forminator' ), 'Slack' ) );
 		?>
 	</h3>
 	<p>
@@ -22,4 +22,4 @@ foreach ( $template_vars as $key => $val ) {
 		<?php endif; ?>
 	</p>
 </div>
-<a href="<?php echo esc_attr( $vars['auth_url'] ); ?>" target="_blank" class="sui-button forminator-addon-connect"><?php esc_html_e( 'RETRY', Forminator::DOMAIN ); ?></a>
+<a href="<?php echo esc_attr( $vars['auth_url'] ); ?>" target="_blank" class="sui-button forminator-addon-connect"><?php esc_html_e( 'RETRY', 'forminator' ); ?></a>

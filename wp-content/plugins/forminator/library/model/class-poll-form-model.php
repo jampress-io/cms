@@ -6,7 +6,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Author: Hoang Ngo
  */
-class Forminator_Poll_Form_Model extends Forminator_Base_Form_Model {
+class Forminator_Poll_Model extends Forminator_Base_Form_Model {
+
+	/**
+	 * Module slug
+	 *
+	 * @var string
+	 */
+	protected static $module_slug = 'poll';
+
 	protected $post_type = 'forminator_polls';
 
 	/**
@@ -19,47 +27,19 @@ class Forminator_Poll_Form_Model extends Forminator_Base_Form_Model {
 	protected $check_access = true;
 
 	/**
-	 * @param int|string $class_name
+	 * Prepare data for preview
 	 *
-	 * @since 1.0
-	 * @return self
+	 * @param object $form_model Model.
+	 * @param array  $data Passed data.
+	 *
+	 * @return object
 	 */
-	public static function model( $class_name = __CLASS__ ) { // phpcs:ignore
-		return parent::model( $class_name );
-	}
-
-	/**
-	 * Load preview
-	 *
-	 * @since 1.0
-	 *
-	 * @param $id
-	 * @param $data
-	 *
-	 * @return bool|Forminator_Base_Form_Model
-	 */
-	public function load_preview( $id, $data ) {
-		$form_model = $this->load( $id, true );
-
-		// If bool, abort
-		if ( is_bool( $form_model ) ) {
-			return false;
-		}
-
-		$form_model->clear_fields();
-		$form_model->set_var_in_array( 'name', 'formName', $data );
-
+	public static function prepare_data_for_preview( $form_model, $data ) {
 		//build the field
 		$fields = array();
 		if ( isset( $data['answers'] ) ) {
 			$fields = $data['answers'];
 			unset( $data['answers'] );
-		}
-
-		//build the settings
-		if ( isset( $data['settings'] ) ) {
-			$settings             = $data['settings'];
-			$form_model->settings = $settings;
 		}
 
 		// Set fields
@@ -70,8 +50,6 @@ class Forminator_Poll_Form_Model extends Forminator_Base_Form_Model {
 			$field->import( $f );
 			$form_model->add_field( $field );
 		}
-
-		$form_model->check_access = false;
 
 		return $form_model;
 	}
@@ -220,7 +198,7 @@ class Forminator_Poll_Form_Model extends Forminator_Base_Form_Model {
 	 * @param      $id
 	 * @param bool $callback
 	 *
-	 * @return bool|Forminator_Poll_Form_Model
+	 * @return bool|Forminator_Poll_Model
 	 */
 	public function load( $id, $callback = false ) {
 		$model = parent::load( $id, $callback );
@@ -228,7 +206,7 @@ class Forminator_Poll_Form_Model extends Forminator_Base_Form_Model {
 		// callback means load latest post and replace data,
 		// so we dont need to add element_id since its must be try to loading preview
 		if ( ! $callback ) {
-			if ( $model instanceof Forminator_Poll_Form_Model ) {
+			if ( $model instanceof Forminator_Poll_Model ) {
 				// patch for backward compat
 				return $this->maybe_add_element_id_on_answers( $model );
 			}
@@ -242,11 +220,11 @@ class Forminator_Poll_Form_Model extends Forminator_Base_Form_Model {
 	 *
 	 * @since 1.0.5
 	 *
-	 * @param Forminator_Poll_Form_Model $model
+	 * @param Forminator_Poll_Model $model
 	 *
-	 * @return Forminator_Poll_Form_Model
+	 * @return Forminator_Poll_Model
 	 */
-	private function maybe_add_element_id_on_answers( Forminator_Poll_Form_Model $model ) {
+	private function maybe_add_element_id_on_answers( Forminator_Poll_Model $model ) {
 		$answers                   = $model->get_fields_as_array();
 		$is_need_to_add_element_id = false;
 
@@ -298,11 +276,11 @@ class Forminator_Poll_Form_Model extends Forminator_Base_Form_Model {
 	 *
 	 * @since 1.0.5
 	 *
-	 * @param Forminator_Poll_Form_Model $model
+	 * @param Forminator_Poll_Model $model
 	 *
-	 * @return Forminator_Poll_Form_Model
+	 * @return Forminator_Poll_Model
 	 */
-	private function resave_and_reload( Forminator_Poll_Form_Model $model ) {
+	private function resave_and_reload( Forminator_Poll_Model $model ) {
 		$model->save();
 
 		return $model;
@@ -375,259 +353,6 @@ class Forminator_Poll_Form_Model extends Forminator_Base_Form_Model {
 	}
 
 	/**
-	 * Get status of prevent_store
-	 *
-	 * @since 1.6.1
-	 *
-	 * @return boolean
-	 */
-	public function is_prevent_store() {
-		$poll_id       = (int) $this->id;
-		$poll_settings = $this->settings;
-
-		// default is always store
-		$is_prevent_store = false;
-
-		$is_prevent_store = isset( $this->settings['store'] ) ? $this->settings['store'] : $is_prevent_store;
-		$is_prevent_store = filter_var( $is_prevent_store, FILTER_VALIDATE_BOOLEAN );
-
-		/**
-		 * Filter is_prevent_store flag of a poll
-		 *
-		 * @since 1.6.1
-		 *
-		 * @param bool $is_prevent_store
-		 * @param int $poll_id
-		 * @param array $poll_settings
-		 */
-		$is_prevent_store = apply_filters( 'forminator_poll_is_prevent_store', $is_prevent_store, $poll_id, $poll_settings );
-
-		return $is_prevent_store;
-	}
-
-	/**
-	 * Export model
-	 *
-	 * Add filter to include `integrations`
-	 *
-	 * @since 1.6.1
-	 * @return array
-	 */
-	public function to_exportable_data() {
-
-		if ( ! Forminator::is_import_export_feature_enabled() ) {
-			return array();
-		}
-
-		if ( Forminator::is_export_integrations_feature_enabled() ) {
-			add_filter( 'forminator_poll_model_to_exportable_data', array( $this, 'export_integrations_data' ), 1, 1 );
-		}
-
-		$exportable_data = parent::to_exportable_data();
-
-		// avoid filter executed on next cycle
-		remove_filter( 'forminator_poll_model_to_exportable_data', array( $this, 'export_integrations_data' ), 1 );
-
-		return $exportable_data;
-	}
-
-	/**
-	 * Export integrations Poll setting
-	 *
-	 * @since 1.6.1
-	 *
-	 * @param $exportable_data
-	 *
-	 * @return array
-	 */
-	public function export_integrations_data( $exportable_data ) {
-		$model_id                = $this->id;
-		$exportable_integrations = array();
-
-		$connected_addons = forminator_get_addons_instance_connected_with_poll( $model_id );
-
-		foreach ( $connected_addons as $connected_addon ) {
-			try {
-				$poll_settings = $connected_addon->get_addon_poll_settings( $model_id );
-				if ( $poll_settings instanceof Forminator_Addon_Poll_Settings_Abstract ) {
-					$exportable_integrations[ $connected_addon->get_slug() ] = $poll_settings->to_exportable_data();
-				}
-			} catch ( Exception $e ) {
-				forminator_addon_maybe_log( $connected_addon->get_slug(), 'failed to get to_exportable_data', $e->getMessage() );
-			}
-		}
-
-		/**
-		 * Filter integrations data to export
-		 *
-		 * @since 1.6.1
-		 *
-		 * @param array $exportable_integrations
-		 * @param array $exportable_data all exportable data from model, useful
-		 */
-		$exportable_integrations         = apply_filters( 'forminator_poll_model_export_integrations_data', $exportable_integrations, $model_id );
-		$exportable_data['integrations'] = $exportable_integrations;
-
-		return $exportable_data;
-	}
-
-	/**
-	 * Import Model
-	 *
-	 * add filter `forminator_import_model`
-	 *
-	 * @since 1.6.1
-	 *
-	 * @param        $import_data
-	 * @param string $module
-	 *
-	 * @return Forminator_Base_Form_Model|WP_Error
-	 */
-	public static function create_from_import_data( $import_data, $module = __CLASS__ ) {
-		if ( Forminator::is_import_integrations_feature_enabled() ) {
-			add_filter(
-				'forminator_import_model',
-				array(
-					'Forminator_Poll_Form_Model',
-					'import_integrations_data',
-				),
-				1,
-				3
-			);
-		}
-
-		$model = parent::create_from_import_data( $import_data, $module );
-
-		// avoid filter executed on next cycle
-		remove_filter(
-			'forminator_import_model',
-			array(
-				'Forminator_Poll_Form_Model',
-				'import_integrations_data',
-			),
-			1
-		);
-
-		return $model;
-	}
-
-	/**
-	 * Import Integrations data model
-	 *
-	 * @since 1.6.1
-	 *
-	 * @param $model
-	 * @param $import_data
-	 * @param $module
-	 *
-	 * @return Forminator_Poll_Form_Model
-	 */
-	public static function import_integrations_data( $model, $import_data, $module ) {
-		// return what it is
-		if ( is_wp_error( $model ) ) {
-			return $model;
-		}
-
-		// make sure its custom form
-		if ( __CLASS__ !== $module ) {
-			return $model;
-		}
-
-		if ( ! isset( $import_data['integrations'] ) || empty( $import_data['integrations'] ) || ! is_array( $import_data['integrations'] ) ) {
-			return $model;
-		}
-
-		/** @var Forminator_Poll_Form_Model $model */
-
-		$integrations_data = $import_data['integrations'];
-		foreach ( $integrations_data as $slug => $integrations_datum ) {
-			try {
-				$addon = forminator_get_addon( $slug );
-				if ( $addon instanceof Forminator_Addon_Abstract ) {
-					$poll_settings = $addon->get_addon_poll_settings( $model->id );
-					if ( $poll_settings instanceof Forminator_Addon_Poll_Settings_Abstract ) {
-						$poll_settings->import_data( $integrations_datum );
-					}
-				}
-			} catch ( Exception $e ) {
-				forminator_addon_maybe_log( $slug, 'failed to get import form settings', $e->getMessage() );
-			}
-		}
-
-		return $model;
-
-	}
-
-	/**
-	 * Flag if module should be loaded via ajax
-	 *
-	 * @since 1.6.1
-	 *
-	 * @param bool $force
-	 *
-	 * @return bool
-	 */
-	public function is_ajax_load( $force = false ) {
-		$poll_id        = (int) $this->id;
-		$form_settings  = $this->settings;
-		$global_enabled = parent::is_ajax_load( $force );
-
-		$enabled = isset( $form_settings['use_ajax_load'] ) ? $this->settings['use_ajax_load'] : false;
-		$enabled = filter_var( $enabled, FILTER_VALIDATE_BOOLEAN );
-
-		$enabled = $global_enabled || $enabled;
-
-		/**
-		 * Filter is ajax load for Poll
-		 *
-		 * @since 1.6.1
-		 *
-		 * @param bool $enabled
-		 * @param bool $global_enabled
-		 * @param int $poll_id
-		 * @param array $form_settings
-		 *
-		 * @return bool
-		 */
-		$enabled = apply_filters( 'forminator_poll_is_ajax_load', $enabled, $global_enabled, $poll_id, $form_settings );
-
-		return $enabled;
-	}
-
-	/**
-	 * Flag to use `DONOTCACHEPAGE`
-	 *
-	 * @since 1.6.1
-	 * @return bool
-	 */
-	public function is_use_donotcachepage_constant() {
-		$poll_id        = (int) $this->id;
-		$form_settings  = $this->settings;
-		$global_enabled = parent::is_use_donotcachepage_constant();
-
-		$enabled = isset( $form_settings['use_donotcachepage'] ) ? $this->settings['use_donotcachepage'] : false;
-		$enabled = filter_var( $enabled, FILTER_VALIDATE_BOOLEAN );
-
-		$enabled = $global_enabled || $enabled;
-
-		/**
-		 * Filter use `DONOTCACHEPAGE` Poll
-		 *
-		 * @since 1.6.1
-		 *
-		 * @param bool $enabled
-		 * @param bool $global_enabled
-		 * @param int $poll_id
-		 * @param array $form_settings
-		 *
-		 * @return bool
-		 */
-		$enabled = apply_filters( 'forminator_poll_is_use_donotcachepage_constant', $enabled, $global_enabled, $poll_id, $form_settings );
-
-		return $enabled;
-	}
-
-	/**
 	 * Get Browser votes method enable status flag
 	 *
 	 * @since 1.7
@@ -673,17 +398,17 @@ class Forminator_Poll_Form_Model extends Forminator_Base_Form_Model {
 
 		$close_msg = ( isset( $settings['opening_close_msg'] ) ) ? trim( $settings['opening_close_msg'] ) : '';
 		if ( '' === $close_msg ) {
-			$close_msg = __( 'Voting is closed', Forminator::DOMAIN );
+			$close_msg = __( 'Voting is closed', 'forminator' );
 		}
 
 		$pause_msg = ( isset( $settings['opening_pause_msg'] ) ) ? trim( $settings['opening_pause_msg'] ) : '';
 		if ( '' === $pause_msg ) {
-			$pause_msg = __( 'Voting is paused, check again later', Forminator::DOMAIN );
+			$pause_msg = __( 'Voting is paused, check again later', 'forminator' );
 		}
 
 		$before_open_from_msg = ( isset( $settings['opening_before_open_from_msg'] ) ) ? trim( $settings['opening_before_open_from_msg'] ) : '';
 		if ( '' === $before_open_from_msg ) {
-			$before_open_from_msg = __( 'Voting has not been started yet, check again later', Forminator::DOMAIN );
+			$before_open_from_msg = __( 'Voting has not been started yet, check again later', 'forminator' );
 		}
 
 
@@ -709,7 +434,7 @@ class Forminator_Poll_Form_Model extends Forminator_Base_Form_Model {
 
 			case 'open': {
 				$current_time = current_time( 'timestamp' );
-				
+
 				//check open from and open until time
 				$open_from = ( isset( $settings['opening_open_from'] ) ) ? trim( $settings['opening_open_from'] ) : 'now';
 				if ( '' === $open_from ) {
@@ -751,7 +476,7 @@ class Forminator_Poll_Form_Model extends Forminator_Base_Form_Model {
 
 			default:
 				break;
-				
+
 		}
 
 		return $info;

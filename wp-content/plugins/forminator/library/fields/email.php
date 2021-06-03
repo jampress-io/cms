@@ -57,7 +57,7 @@ class Forminator_Email extends Forminator_Field {
 	 */
 	public function __construct() {
 		parent::__construct();
-		$this->name = __( 'Email', Forminator::DOMAIN );
+		$this->name = __( 'Email', 'forminator' );
 	}
 
 	/**
@@ -69,8 +69,8 @@ class Forminator_Email extends Forminator_Field {
 	public function defaults() {
 		return array(
 			'validation'  => false,
-			'placeholder' => __( 'E.g., john@doe.com', Forminator::DOMAIN ),
-			'field_label' => __( 'Email Address', Forminator::DOMAIN ),
+			'placeholder' => __( 'E.g. john@doe.com', 'forminator' ),
+			'field_label' => __( 'Email Address', 'forminator' ),
 		);
 	}
 
@@ -199,7 +199,7 @@ class Forminator_Email extends Forminator_Field {
 		$field              = $this->field;
 		$id                 = $this->get_id( $field );
 		$is_validate        = self::get_property( 'validation', $field );
-		$validation_message = self::get_property( 'validation_message', $field, __( 'This is not a valid email.', Forminator::DOMAIN ) );
+		$validation_message = self::get_property( 'validation_message', $field, __( 'This is not a valid email.', 'forminator' ) );
 
 		$validation_message = htmlentities( $validation_message );
 
@@ -212,7 +212,7 @@ class Forminator_Email extends Forminator_Field {
 					$field,
 					'required_message',
 					'',
-					__( 'This field is required. Please input a valid email.', Forminator::DOMAIN )
+					__( 'This field is required. Please input a valid email.', 'forminator' )
 				);
 			$messages                      .= '"required": "' . forminator_addcslashes( $default_required_error_message ) . '",' . "\n";
 		}
@@ -260,7 +260,7 @@ class Forminator_Email extends Forminator_Field {
 	public function validate( $field, $data, $post_data = array() ) {
 		$id                 = self::get_property( 'element_id', $field );
 		$is_validate        = self::get_property( 'validation', $field );
-		$validation_message = self::get_property( 'validation_message', $field, __( 'This is not a valid email.', Forminator::DOMAIN ) );
+		$validation_message = self::get_property( 'validation_message', $field, __( 'This is not a valid email.', 'forminator' ) );
 		if ( $this->is_required( $field ) ) {
 			$required_error_message =
 				$this->get_field_multiple_required_message(
@@ -268,7 +268,7 @@ class Forminator_Email extends Forminator_Field {
 					$field,
 					'required_message',
 					'',
-					__( 'This field is required. Please input a valid email.', Forminator::DOMAIN )
+					__( 'This field is required. Please input a valid email.', 'forminator' )
 				);
 
 			if ( empty( $data ) ) {

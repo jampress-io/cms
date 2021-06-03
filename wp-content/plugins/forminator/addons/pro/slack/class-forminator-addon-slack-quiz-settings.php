@@ -33,13 +33,13 @@ class Forminator_Addon_Slack_Quiz_Settings extends Forminator_Addon_Quiz_Setting
 
 		$this->_update_quiz_settings_error_message = __(
 			'The update to your settings for this quiz failed, check the form input and try again.',
-			Forminator::DOMAIN
+			'forminator'
 		);
 
 		$this->target_types = array(
-			Forminator_Addon_Slack::TARGET_TYPE_PUBLIC_CHANNEL  => __( 'Public Channel', Forminator::DOMAIN ),
-			Forminator_Addon_Slack::TARGET_TYPE_PRIVATE_CHANNEL => __( 'Private Channel', Forminator::DOMAIN ),
-			Forminator_Addon_Slack::TARGET_TYPE_DIRECT_MESSAGE  => __( 'Direct Message', Forminator::DOMAIN ),
+			Forminator_Addon_Slack::TARGET_TYPE_PUBLIC_CHANNEL  => __( 'Public Channel', 'forminator' ),
+			Forminator_Addon_Slack::TARGET_TYPE_PRIVATE_CHANNEL => __( 'Private Channel', 'forminator' ),
+			Forminator_Addon_Slack::TARGET_TYPE_DIRECT_MESSAGE  => __( 'Direct Message', 'forminator' ),
 		);
 	}
 
@@ -125,14 +125,14 @@ class Forminator_Addon_Slack_Quiz_Settings extends Forminator_Addon_Quiz_Setting
 		$buttons = array();
 		if ( $this->pick_name_is_completed( array( 'multi_id' => $multi_id ) ) ) {
 			$buttons['disconnect']['markup'] = Forminator_Addon_Abstract::get_button_markup(
-				esc_html__( 'Deactivate', Forminator::DOMAIN ),
+				esc_html__( 'Deactivate', 'forminator' ),
 				'sui-button-ghost sui-tooltip sui-tooltip-top-center forminator-addon-form-disconnect',
-				esc_html__( 'Deactivate this Slack Integration from this Quiz.', Forminator::DOMAIN )
+				esc_html__( 'Deactivate this Slack Integration from this Quiz.', 'forminator' )
 			);
 		}
 
 		$buttons['next']['markup'] = '<div class="sui-actions-right">' .
-									Forminator_Addon_Abstract::get_button_markup( esc_html__( 'Next', Forminator::DOMAIN ), 'forminator-addon-next' ) .
+									Forminator_Addon_Abstract::get_button_markup( esc_html__( 'Next', 'forminator' ), 'forminator-addon-next' ) .
 									'</div>';
 
 		return array(
@@ -184,7 +184,7 @@ class Forminator_Addon_Slack_Quiz_Settings extends Forminator_Addon_Quiz_Setting
 		$template = forminator_addon_slack_dir() . 'views/quiz-settings/select-type.php';
 
 		if ( ! isset( $submitted_data['multi_id'] ) ) {
-			return $this->get_force_closed_wizard( __( 'Please pick valid connection', Forminator::DOMAIN ) );
+			return $this->get_force_closed_wizard( __( 'Please pick valid connection', 'forminator' ) );
 		}
 
 		$multi_id = $submitted_data['multi_id'];
@@ -233,14 +233,14 @@ class Forminator_Addon_Slack_Quiz_Settings extends Forminator_Addon_Quiz_Setting
 		$buttons = array();
 		if ( $this->pick_name_is_completed( array( 'multi_id' => $multi_id ) ) ) {
 			$buttons['disconnect']['markup'] = Forminator_Addon_Abstract::get_button_markup(
-				esc_html__( 'Deactivate', Forminator::DOMAIN ),
+				esc_html__( 'Deactivate', 'forminator' ),
 				'sui-button-ghost sui-tooltip sui-tooltip-top-center forminator-addon-form-disconnect',
-				esc_html__( 'Deactivate this Slack Integration from this Quiz.', Forminator::DOMAIN )
+				esc_html__( 'Deactivate this Slack Integration from this Quiz.', 'forminator' )
 			);
 		}
 
 		$buttons['next']['markup'] = '<div class="sui-actions-right">' .
-									Forminator_Addon_Abstract::get_button_markup( esc_html__( 'Next', Forminator::DOMAIN ), 'forminator-addon-next' ) .
+									Forminator_Addon_Abstract::get_button_markup( esc_html__( 'Next', 'forminator' ), 'forminator-addon-next' ) .
 									'</div>';
 
 		return array(
@@ -297,7 +297,7 @@ class Forminator_Addon_Slack_Quiz_Settings extends Forminator_Addon_Quiz_Setting
 	public function select_target( $submitted_data ) {
 		$template = forminator_addon_slack_dir() . 'views/quiz-settings/select-target.php';
 		if ( ! isset( $submitted_data['multi_id'] ) ) {
-			return $this->get_force_closed_wizard( __( 'Please pick valid connection', Forminator::DOMAIN ) );
+			return $this->get_force_closed_wizard( __( 'Please pick valid connection', 'forminator' ) );
 		}
 
 		$multi_id = $submitted_data['multi_id'];
@@ -317,17 +317,17 @@ class Forminator_Addon_Slack_Quiz_Settings extends Forminator_Addon_Quiz_Setting
 			case Forminator_Addon_Slack::TARGET_TYPE_PRIVATE_CHANNEL:
 				$func_get_targets                = 'get_groups_list';
 				$key_to_walk                     = 'channels';
-				$template_params['help_message'] = __( 'Select which Slack private group / channel this feed will post a message to.', Forminator::DOMAIN );
+				$template_params['help_message'] = __( 'Select which Slack private group / channel this feed will post a message to.', 'forminator' );
 				break;
 			case Forminator_Addon_Slack::TARGET_TYPE_DIRECT_MESSAGE:
 				$func_get_targets                = 'get_users_list';
 				$key_to_walk                     = 'members';
-				$template_params['help_message'] = __( 'Select which Slack user this feed will post a message to.', Forminator::DOMAIN );
+				$template_params['help_message'] = __( 'Select which Slack user this feed will post a message to.', 'forminator' );
 				break;
 			default:
 				$func_get_targets                = 'get_channels_list';
 				$key_to_walk                     = 'channels';
-				$template_params['help_message'] = __( 'Select which Slack channel this feed will post a message to.', Forminator::DOMAIN );
+				$template_params['help_message'] = __( 'Select which Slack channel this feed will post a message to.', 'forminator' );
 				break;
 		}
 
@@ -341,7 +341,7 @@ class Forminator_Addon_Slack_Quiz_Settings extends Forminator_Addon_Quiz_Setting
 			$api             = $this->addon->get_api();
 			$targets_request = call_user_func( array( $api, $func_get_targets ) );
 			if ( ! is_object( $targets_request ) || ! isset( $targets_request->$key_to_walk ) || ! is_array( $targets_request->$key_to_walk ) || empty( $targets_request->$key_to_walk ) ) {
-				throw new Forminator_Addon_Slack_Exception( __( 'No target found on your selected target type.', Forminator::DOMAIN ) );
+				throw new Forminator_Addon_Slack_Exception( __( 'No target found on your selected target type.', 'forminator' ) );
 			}
 
 			foreach ( $targets_request->$key_to_walk as $value ) {
@@ -388,14 +388,14 @@ class Forminator_Addon_Slack_Quiz_Settings extends Forminator_Addon_Quiz_Setting
 		$buttons = array();
 		if ( $this->pick_name_is_completed( array( 'multi_id' => $multi_id ) ) ) {
 			$buttons['disconnect']['markup'] = Forminator_Addon_Abstract::get_button_markup(
-				esc_html__( 'Deactivate', Forminator::DOMAIN ),
+				esc_html__( 'Deactivate', 'forminator' ),
 				'sui-button-ghost sui-tooltip sui-tooltip-top-center forminator-addon-form-disconnect',
-				esc_html__( 'Deactivate this Slack Integration from this Quiz.', Forminator::DOMAIN )
+				esc_html__( 'Deactivate this Slack Integration from this Quiz.', 'forminator' )
 			);
 		}
 
 		$buttons['next']['markup'] = '<div class="sui-actions-right">' .
-									Forminator_Addon_Abstract::get_button_markup( esc_html__( 'Next', Forminator::DOMAIN ), 'forminator-addon-next' ) .
+									Forminator_Addon_Abstract::get_button_markup( esc_html__( 'Next', 'forminator' ), 'forminator-addon-next' ) .
 									'</div>';
 
 		return array(
@@ -448,7 +448,7 @@ class Forminator_Addon_Slack_Quiz_Settings extends Forminator_Addon_Quiz_Setting
 	public function setup_message( $submitted_data ) {
 		$template = forminator_addon_slack_dir() . 'views/quiz-settings/setup-message.php';
 		if ( ! isset( $submitted_data['multi_id'] ) ) {
-			return $this->get_force_closed_wizard( __( 'Please pick valid connection', Forminator::DOMAIN ) );
+			return $this->get_force_closed_wizard( __( 'Please pick valid connection', 'forminator' ) );
 		}
 
 		$multi_id = $submitted_data['multi_id'];
@@ -464,7 +464,7 @@ class Forminator_Addon_Slack_Quiz_Settings extends Forminator_Addon_Quiz_Setting
 		);
 
 		$template_params['tags']              = forminator_get_vars();
-		$template_params['tags']['quiz_name'] = __( 'Quiz Name', Forminator::DOMAIN );
+		$template_params['tags']['quiz_name'] = __( 'Quiz Name', 'forminator' );
 
 		if ( isset( $this->quiz_settings['hasLeads'] ) && $this->quiz_settings['hasLeads'] ) {
 			$template_params['lead_fields'] = $this->form_fields;
@@ -482,7 +482,7 @@ class Forminator_Addon_Slack_Quiz_Settings extends Forminator_Addon_Quiz_Setting
 			try {
 
 				if ( empty( $message ) ) {
-					throw new Forminator_Addon_Slack_Exception( __( 'Please add a message', Forminator::DOMAIN ) );
+					throw new Forminator_Addon_Slack_Exception( __( 'Please add a message', 'forminator' ) );
 				}
 
 				$this->save_multi_id_quiz_setting_values(
@@ -507,14 +507,14 @@ class Forminator_Addon_Slack_Quiz_Settings extends Forminator_Addon_Quiz_Setting
 		$buttons = array();
 		if ( $this->pick_name_is_completed( array( 'multi_id' => $multi_id ) ) ) {
 			$buttons['disconnect']['markup'] = Forminator_Addon_Abstract::get_button_markup(
-				esc_html__( 'Deactivate', Forminator::DOMAIN ),
+				esc_html__( 'Deactivate', 'forminator' ),
 				'sui-button-ghost sui-tooltip sui-tooltip-top-center forminator-addon-form-disconnect',
-				esc_html__( 'Deactivate this Slack Integration from this Quiz.', Forminator::DOMAIN )
+				esc_html__( 'Deactivate this Slack Integration from this Quiz.', 'forminator' )
 			);
 		}
 
 		$buttons['next']['markup'] = '<div class="sui-actions-right">' .
-									Forminator_Addon_Abstract::get_button_markup( esc_html__( 'CONNECT', Forminator::DOMAIN ), 'forminator-addon-next' ) .
+									Forminator_Addon_Abstract::get_button_markup( esc_html__( 'CONNECT', 'forminator' ), 'forminator-addon-next' ) .
 									'</div>';
 
 		return array(

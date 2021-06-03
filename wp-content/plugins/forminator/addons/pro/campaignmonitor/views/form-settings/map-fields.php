@@ -16,9 +16,9 @@ foreach ( $template_vars as $key => $val ) {
 
 <div class="integration-header">
 
-	<h3 id="dialogTitle2" class="sui-box-title"><?php echo esc_html( __( 'Assign Fields', Forminator::DOMAIN ) ); ?></h3>
+	<h3 id="dialogTitle2" class="sui-box-title"><?php echo esc_html( __( 'Assign Fields', 'forminator' ) ); ?></h3>
 
-	<span class="sui-description" style="margin-top: 20px;"><?php esc_html_e( "Match up your form fields with your Campaign Monitor fields to make sure we're sending data to the right place.", Forminator::DOMAIN ); ?></span>
+	<span class="sui-description" style="margin-top: 20px;"><?php esc_html_e( "Match up your form fields with your Campaign Monitor fields to make sure we're sending data to the right place.", 'forminator' ); ?></span>
 
 	<?php if ( ! empty( $vars['error_message'] ) ) : ?>
 		<div class="sui-notice sui-notice-error">
@@ -35,8 +35,8 @@ foreach ( $template_vars as $key => $val ) {
 		<thead>
 
 			<tr>
-				<th><?php esc_html_e( 'Campaign Monitor Field', Forminator::DOMAIN ); ?></th>
-				<th><?php esc_html_e( 'Forminator Field', Forminator::DOMAIN ); ?></th>
+				<th><?php esc_html_e( 'Campaign Monitor Field', 'forminator' ); ?></th>
+				<th><?php esc_html_e( 'Forminator Field', 'forminator' ); ?></th>
 			</tr>
 
 		</thead>

@@ -258,7 +258,7 @@ class Forminator_Google_Service_Cloudbuild_ProjectsBuilds_Resource extends Formi
    * Starts a build with the specified configuration.
    *
    * The long-running Operation returned by this method will include the ID of the
-   * build, which can be passed to GetBuild to determine its status (e.g., success
+   * build, which can be passed to GetBuild to determine its status (e.g. success
    * or failure). (builds.create)
    *
    * @param string $projectId ID of the project.
@@ -276,7 +276,7 @@ class Forminator_Google_Service_Cloudbuild_ProjectsBuilds_Resource extends Formi
   /**
    * Returns information about a previously requested build.
    *
-   * The Build that is returned includes its status (e.g., success or failure, or
+   * The Build that is returned includes its status (e.g. success or failure, or
    * in-progress), and timing information. (builds.get)
    *
    * @param string $projectId ID of the project.

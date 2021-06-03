@@ -15,24 +15,33 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
  * Drop custom tables
  *
  * @since 1.0.2
+ * @since 1.14.10 Added $db_prefix parameter
+ *
+ * @param string $db_prefix - database prefix
  */
-function forminator_drop_custom_tables() {
+function forminator_drop_custom_tables( $db_prefix = 'wp_' ) {
 	global $wpdb;
-	$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}frmt_form_entry" );
-	$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}frmt_form_entry_meta" );
-	$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}frmt_form_views" );
+
+	$wpdb->query( "DROP TABLE IF EXISTS {$db_prefix}frmt_form_entry" );
+	$wpdb->query( "DROP TABLE IF EXISTS {$db_prefix}frmt_form_entry_meta" );
+	$wpdb->query( "DROP TABLE IF EXISTS {$db_prefix}frmt_form_views" );
 }
 
 /**
  * Clear custom posts
  *
  * @since 1.0.2
+ * @since 1.14.10 Added $db_prefix parameter
+ *
+ * @param string $db_prefix - database prefix
  */
-function forminator_delete_custom_posts() {
+function forminator_delete_custom_posts( $db_prefix = 'wp_' ) {
 	global $wpdb;
+
 	//Now we delete the custom posts
-	$forms_sql        = "SELECT GROUP_CONCAT(`ID`) FROM {$wpdb->posts} WHERE `post_type` = %s";
-	$delete_forms_sql = "DELETE FROM {$wpdb->posts} WHERE `post_type` = %s";
+	$forms_sql        = "SELECT GROUP_CONCAT(`ID`) FROM {$db_prefix}posts WHERE `post_type` = %s";
+	$delete_forms_sql = "DELETE FROM {$db_prefix}posts WHERE `post_type` = %s";
+
 	$form_types       = array(
 		'forminator_forms',
 		'forminator_polls',
@@ -47,7 +56,7 @@ function forminator_delete_custom_posts() {
 				wp_cache_delete( $array_id, 'forminator_total_entries' );
 			}
 
-			$delete_form_meta_sql = "DELETE FROM {$wpdb->postmeta} WHERE `post_id` in($ids)";
+			$delete_form_meta_sql = "DELETE FROM {$db_prefix}postmeta WHERE `post_id` in($ids)";
 			$wpdb->query( $delete_form_meta_sql ); // WPCS: unprepared SQL ok. false positive. no need to prepared since all param are not user defined
 		}
 		$wpdb->query( $wpdb->prepare( $delete_forms_sql, $type ) ); // WPCS: unprepared SQL ok. false positive
@@ -55,89 +64,37 @@ function forminator_delete_custom_posts() {
 }
 
 /**
- * Delete custom options
+ * Delete custom options and addon options
  *
  * @since 1.0.2
  * @since 1.0.6 Delete privacy options
- */
-function forminator_delete_custom_options() {
-	delete_option( "forminator_pagination_listings" );
-	delete_option( "forminator_pagination_entries" );
-	delete_option( "forminator_captcha_key" );
-	delete_option( "forminator_captcha_secret" );
-	delete_option( "forminator_v2_captcha_key" );
-	delete_option( "forminator_v2_captcha_secret" );
-	delete_option( "forminator_v2_invisible_captcha_key" );
-	delete_option( "forminator_v2_invisible_captcha_secret" );
-	delete_option( "forminator_v3_captcha_key" );
-	delete_option( "forminator_v3_captcha_secret" );
-	delete_option( "forminator_captcha_language" );
-	delete_option( "forminator_captcha_theme" );
-	delete_option( "forminator_welcome_dismissed" );
-	delete_option( "forminator_version" );
-	delete_option( "forminator_retain_votes_interval_number" );
-	delete_option( "forminator_retain_votes_interval_unit" );
-	delete_option( "forminator_retain_submissions_interval_number" );
-	delete_option( "forminator_retain_submissions_interval_unit" );
-	delete_option( "forminator_enable_erasure_request_erase_form_submissions" );
-	delete_option( "forminator_form_privacy_settings" );
-	delete_option( "forminator_poll_privacy_settings" );
-	delete_option( "forminator_retain_ip_interval_number" );
-	delete_option( "forminator_retain_ip_interval_unit" );
-	delete_option( "forminator_retain_poll_submissions_interval_number" );
-	delete_option( "forminator_retain_poll_submissions_interval_unit" );
-	delete_option( "forminator_posts_map" );
-	delete_option( "forminator_module_enable_load_ajax" );
-	delete_option( "forminator_module_use_donotcachepage" );
-	delete_option( "forminator_retain_quiz_submissions_interval_number" );
-	delete_option( "forminator_retain_quiz_submissions_interval_unit" );
-	delete_option( "forminator_dashboard_settings" );
-	delete_option( "forminator_sender_email_address" );
-	delete_option( "forminator_sender_name" );
-	delete_option( "forminator_enable_accessibility" );
-	delete_option( "forminator_entries_export_schedule" );
-	delete_option( "forminator_paypal_api_mode" );
-	delete_option( "forminator_paypal_secret" );
-	delete_option( "forminator_currency" );
-	delete_option( "forminator_exporter_log" );
-	delete_option( "forminator_uninstall_clear_data" );
-	delete_option( "forminator_stripe_configuration" );
-	delete_option( "forminator_paypal_configuration" );
-}
-
-/**
- * Delete options created by Packaged Forminator Addons
+ * @since 1.14.10 Deletes all forminator options including the addons' options
+ * @since 1.14.10 Added $db_prefix parameter
  *
- * @since 1.4
+ * @param string $db_prefix - database prefix
  */
-function forminator_delete_addon_options() {
-	delete_option( 'forminator_activated_addons' );
-	$addon_slugs = array(
-		'activecampaign',
-		'aweber',
-		'campaignmonitor',
-		'googlesheet',
-		'mailchimp',
-		'slack',
-		'trello',
-		'zapier',
-	);
+function forminator_delete_custom_options( $db_prefix = 'wp_' ) {
+	global $wpdb;
 
-	foreach ( $addon_slugs as $addon_slug ) {
-		delete_option( "forminator_addon_{$addon_slug}_version" );
-		delete_option( "forminator_addon_{$addon_slug}_settings" );
+	$forminator_options = $wpdb->get_results( "SELECT option_name FROM {$db_prefix}options WHERE option_name LIKE 'forminator_%'" );
+
+	foreach( $forminator_options as $option ) {
+		delete_option( $option->option_name );
 	}
 }
 
-function forminator_clear_module_views() {
-	global $wpdb;
-	$wpdb->query( "TRUNCATE {$wpdb->prefix}frmt_form_views" );
-}
 
-function forminator_clear_module_submissions() {
+/**
+ * Clear the module submissions cache data
+ *
+ * @since 1.14.10 Added $db_prefix parameter
+ *
+ * @param string $db_prefix - database prefix
+ */
+function forminator_clear_module_submissions( $db_prefix = 'wp_' ) {
 	global $wpdb;
 
-	$max_entry_id_query = "SELECT MAX(`entry_id`) FROM {$wpdb->prefix}frmt_form_entry";
+	$max_entry_id_query = "SELECT MAX(`entry_id`) FROM {$db_prefix}frmt_form_entry";
 	$max_entry_id       = $wpdb->get_var( $max_entry_id_query ); // phpcs:ignore
 
 	if ( $max_entry_id && is_numeric( $max_entry_id ) && $max_entry_id > 0 ) {
@@ -146,26 +103,81 @@ function forminator_clear_module_submissions() {
 		}
 	}
 
-	$wpdb->query( "TRUNCATE {$wpdb->prefix}frmt_form_entry" );
-	$wpdb->query( "TRUNCATE {$wpdb->prefix}frmt_form_entry_meta" );
-
 	wp_cache_delete( 'all_form_types', 'forminator_total_entries' );
 	wp_cache_delete( 'custom-forms' . '_form_type', 'forminator_total_entries' );
 	wp_cache_delete( 'poll' . '_form_type', 'forminator_total_entries' );
 	wp_cache_delete( 'quizzes' . '_form_type', 'forminator_total_entries' );
-
-	wp_cache_delete( 'forminator_form_total_entries', 'forminator_form_total_entries' );
-	wp_cache_delete( 'forminator_form_total_entries_publish', 'forminator_form_total_entries_publish' );
-	wp_cache_delete( 'forminator_form_total_entries_draft', 'forminator_form_total_entries_draft' );
 }
 
-$clear_data = get_option( 'forminator_uninstall_clear_data', false );
+$uninstall_settings = array();
 
-if ( $clear_data ) {
-	forminator_delete_custom_options();
-	forminator_delete_addon_options();
-	forminator_delete_custom_posts();
-	forminator_clear_module_views();
-	forminator_clear_module_submissions();
-	forminator_drop_custom_tables();
+$forminator_uninstall = get_option( "forminator_uninstall_clear_data", false );
+if ( $forminator_uninstall ) {
+	// delete all
+	$uninstall_settings = array(
+		'settings' => true,
+		'data'     => true,
+	);
+}
+
+/**
+ * Remove forminator files in uploads folder
+ */
+function forminator_remove_upload_files() {
+	$upload_dir = wp_upload_dir();
+	$folder     = $upload_dir['basedir'] . '/forminator/';
+	$recursive  = true;
+	if ( ! class_exists( 'WP_Filesystem_Direct', false ) ) {
+		require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-base.php';
+		require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-direct.php';
+	}
+	$filesystem = new WP_Filesystem_Direct( null );
+	$filesystem->rmdir( $folder, $recursive );
+}
+
+$delete_settings = isset( $uninstall_settings['settings'] ) ? $uninstall_settings['settings'] : false;
+$delete_data     = isset( $uninstall_settings['data'] ) ? $uninstall_settings['data'] : false;
+
+global $wpdb;
+if ( ! is_multisite() ) {
+	$db_prefix = $wpdb->prefix;
+
+	if ( $delete_settings ) {
+		forminator_delete_custom_options( $db_prefix );
+		forminator_delete_custom_posts( $db_prefix );
+	}
+	if ( $delete_data ) {
+		forminator_clear_module_submissions( $db_prefix );
+		forminator_remove_upload_files();
+	}
+	if ( $delete_settings && $delete_data ) {
+		forminator_drop_custom_tables( $db_prefix );
+	}
+
+} else {
+	$sites = get_sites();
+
+	foreach ( $sites as $site ) {
+		$blog_id = $site->blog_id;
+		$db_prefix = $wpdb->get_blog_prefix( $blog_id );
+
+		if ( $delete_settings ) {
+			forminator_delete_custom_posts( $db_prefix );
+			// Switch to blog before deleting options
+			switch_to_blog( $blog_id );
+			forminator_delete_custom_options( $db_prefix );
+			restore_current_blog();
+		}
+		if ( $delete_data ) {
+			forminator_clear_module_submissions( $db_prefix );
+
+			switch_to_blog( $blog_id );
+			forminator_remove_upload_files();
+			restore_current_blog();
+		}
+		if ( $delete_settings && $delete_data ) {
+			forminator_drop_custom_tables( $db_prefix );
+		}
+	}
+
 }

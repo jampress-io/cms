@@ -1,11 +1,11 @@
-.forminator-custom-form-<?php echo $properties['form_id'] ?> .forminator-pagination-footer .forminator-button-paypal {
+#forminator-module-<?php echo $properties['form_id'] ?> .forminator-pagination-footer .forminator-button-paypal {
 	<?php if ( forminator_array_value_exists( $properties, 'paypal-width' ) && '' !== $properties['paypal-width'] ) { ?>
 		flex: 0 1 <?php echo $properties['paypal-width'] ?>px;
 	<?php } else { ?>
 		flex: 1;
 	<?php } ?>
 }
-.forminator-custom-form-<?php echo $properties['form_id'] ?> .forminator-button-paypal > .paypal-buttons {
+#forminator-module-<?php echo $properties['form_id'] ?> .forminator-button-paypal > .paypal-buttons {
 	<?php if ( forminator_array_value_exists( $properties, 'paypal-width' ) && '' !== $properties['paypal-width'] ) { ?>
 		max-width: <?php echo $properties['paypal-width'] ?>px !important;
 	<?php } ?>

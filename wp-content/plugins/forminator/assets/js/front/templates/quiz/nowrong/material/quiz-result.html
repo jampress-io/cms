@@ -1,5 +1,5 @@
 /* ELEMENT: Quiz Result */
-.forminator-ui.forminator-quiz-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-result {
+.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-result {
 	<?php if ( forminator_array_value_exists( $properties, 'nowrong-toggle-palette' ) ) { ?>
 		<?php if ( forminator_array_value_exists( $properties, 'nowrong-result-border-color' ) ) { ?>
 			border-color: <?php echo $properties['nowrong-result-border-color'] ?>;
@@ -17,7 +17,7 @@
 	<?php } ?>
 }
 
-.forminator-ui.forminator-quiz-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-result .forminator-result--content .forminator-result--title {
+.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-result .forminator-result--content .forminator-result--title {
 	<?php if ( forminator_array_value_exists( $properties, 'nowrong-toggle-palette' ) ) { ?>
 		<?php if ( forminator_array_value_exists( $properties, 'nowrong-result-title-color' ) ) { ?>
 			color: <?php echo $properties['nowrong-result-title-color'] ?>;
@@ -53,8 +53,8 @@
 	<?php } ?>
 }
 
-.forminator-ui.forminator-quiz-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-result .forminator-result--content .forminator-result--description,
-.forminator-ui.forminator-quiz-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-result .forminator-result--content .forminator-result--description p {
+.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-result .forminator-result--content .forminator-result--description,
+.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-result .forminator-result--content .forminator-result--description p {
 	<?php if ( forminator_array_value_exists( $properties, 'nowrong-toggle-palette' ) ) { ?>
 		<?php if ( forminator_array_value_exists( $properties, 'nowrong-result-description-color' ) ) { ?>
 			color: <?php echo $properties['nowrong-result-description-color'] ?>;
@@ -90,7 +90,7 @@
 	<?php } ?>
 }
 
-.forminator-ui.forminator-quiz-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-result .forminator-result--retake {
+.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-result .forminator-result--retake {
 	<?php if ( forminator_array_value_exists( $properties, 'nowrong-toggle-palette' ) ) { ?>
 		<?php if ( forminator_array_value_exists( $properties, 'nowrong-result-retake-color-static' ) ) { ?>
 			color: <?php echo $properties['nowrong-result-retake-color-static'] ?>;
@@ -126,7 +126,7 @@
 	<?php } ?>
 }
 
-.forminator-ui.forminator-quiz-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-result .forminator-result--retake:hover {
+.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-result .forminator-result--retake:hover {
 	<?php if ( forminator_array_value_exists( $properties, 'nowrong-toggle-palette' ) ) { ?>
 		<?php if ( forminator_array_value_exists( $properties, 'nowrong-result-retake-color-hover' ) ) { ?>
 			color: <?php echo $properties['nowrong-result-retake-color-hover'] ?>;
@@ -138,8 +138,8 @@
 	<?php } ?>
 }
 
-.forminator-ui.forminator-quiz-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-result .forminator-result--retake:focus,
-.forminator-ui.forminator-quiz-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-result .forminator-result--retake:active {}
+.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-result .forminator-result--retake:focus,
+.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-result .forminator-result--retake:active {}
 	<?php if ( forminator_array_value_exists( $properties, 'nowrong-toggle-palette' ) ) { ?>
 		<?php if ( forminator_array_value_exists( $properties, 'nowrong-result-retake-color-active' ) ) { ?>
 			color: <?php echo $properties['nowrong-result-retake-color-active'] ?>;

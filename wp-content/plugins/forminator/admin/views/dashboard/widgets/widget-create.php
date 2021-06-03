@@ -13,7 +13,7 @@ $hero_sample = forminator_plugin_dir() . 'assets/icons/forminator-icons/hero-sam
 
 				<div class="wpmudev-header--text">
 
-					<h2 class="wpmudev-title"><?php esc_html_e( 'Create Modules', Forminator::DOMAIN ); ?></h2>
+					<h2 class="wpmudev-title"><?php esc_html_e( 'Create Modules', 'forminator' ); ?></h2>
 
 				</div>
 
@@ -21,7 +21,7 @@ $hero_sample = forminator_plugin_dir() . 'assets/icons/forminator-icons/hero-sam
 
 					<button class="wpmudev-box--action" aria-hidden="true"><span class="wpmudev-icon--plus"></span></button>
 
-					<button class="wpmudev-sr-only"><?php esc_html_e( 'Hide box', Forminator::DOMAIN ); ?></button>
+					<button class="wpmudev-sr-only"><?php esc_html_e( 'Hide box', 'forminator' ); ?></button>
 
 				</div>
 

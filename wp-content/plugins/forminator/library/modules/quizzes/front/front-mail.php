@@ -6,48 +6,37 @@
  * @since 1.6.2
  */
 class Forminator_Quiz_Front_Mail extends Forminator_Mail {
-
-	protected $message_vars;
-
 	/**
-	 * Default content type
+	 * Module slug
 	 *
 	 * @var string
 	 */
-	protected $content_type = 'text/html; charset=UTF-8';
+	protected static $module_slug = 'quiz';
 
 	/**
-	 * Initialize the mail
+	 * Replace all placeholders for mail properties
 	 *
-	 * @param array $post_vars - post variables
+	 * @param array  $settings Settings.
+	 * @param string $option_name Current option name.
+	 * @param object $module Module.
+	 * @param array  $data Submitted data.
+	 * @param object $entry Saved entry.
+	 * @param object $lead_model Lead module.
+	 * @return string
 	 */
-	public function init( $post_vars ) {
-		$user_email  = false;
-		$user_name   = '';
-		$user_login  = '';
-		$embed_id    = $post_vars['page_id'];
-		$embed_title = get_the_title( $embed_id );
-		$embed_url   = forminator_get_current_url();
-		$site_url    = site_url();
-
-		//Check if user is logged in
-		if ( is_user_logged_in() ) {
-			$current_user = wp_get_current_user();
-			$user_email   = $current_user->user_email;
-			if ( ! empty( $current_user->user_firstname ) ) {
-				$user_name = $current_user->user_firstname . ' ' . $current_user->user_lastname;
-			} elseif ( ! empty( $current_user->display_name ) ) {
-				$user_name = $current_user->display_name;
-			} else {
-				$user_name = $current_user->display_name;
-			}
-			$user_login = $current_user->user_login;
+	private function replace_placeholders( $settings, $option_name, $module, $data, $entry, $lead_model ) {
+		if ( ! isset( $settings[ $option_name ] ) ) {
+			return '';
 		}
 
-		//Set up mail variables
-		$message_vars       = forminator_set_message_vars( $embed_id, $embed_title, $embed_url, $user_name, $user_email, $user_login, $site_url );
-		$this->message_vars = $message_vars;
+		$text = forminator_replace_variables( $settings[ $option_name ], $module->id, $data['current_url'] );
+		$text = forminator_replace_quiz_form_data( $text, $module, $data, $entry );
+		if ( $lead_model ) {
+			$text = forminator_replace_form_data( $text, $data, $lead_model, $entry );
+			$text = forminator_replace_custom_form_data( $text, $lead_model, $data, $entry );
+		}
 
+		return $text;
 	}
 
 	/**
@@ -55,7 +44,7 @@ class Forminator_Quiz_Front_Mail extends Forminator_Mail {
 	 *
 	 * @since 1.6.2
 	 *
-	 * @param Forminator_Quiz_Form_Model  $quiz
+	 * @param Forminator_Quiz_Model  $quiz
 	 * @param array                       $data
 	 * @param Forminator_Form_Entry_Model $entry
 	 */
@@ -67,14 +56,14 @@ class Forminator_Quiz_Front_Mail extends Forminator_Mail {
 		$lead_model    = null;
 		$result_slug   = isset( $final_res['slug'] ) ? $final_res['slug'] : '';
 
-		if ( ! isset( $data['current_url'] ) || empty( $data['current_url'] ) ) {
+		if ( empty( $data['current_url'] ) ) {
 			$data['current_url'] = forminator_get_current_url();
 		}
 
 		$has_lead = isset( $setting['hasLeads'] ) ? $setting['hasLeads'] : false;
 		if ( $has_lead ) {
 			$lead_id     = isset( $setting['leadsId'] ) ? $setting['leadsId'] : 0;
-			$lead_model  = Forminator_Custom_Form_Model::model()->load( $lead_id );
+			$lead_model  = Forminator_Form_Model::model()->load( $lead_id );
 			$form_fields = forminator_addon_format_form_fields( $lead_model );
 			$lead_data   = forminator_addons_lead_submitted_data( $form_fields, $entry );
 			$data        = array_merge( $data, $lead_data );
@@ -96,7 +85,7 @@ class Forminator_Quiz_Front_Mail extends Forminator_Mail {
 		 * @since 1.6.2
 		 *
 		 * @param array                       $data - the post data
-		 * @param Forminator_Quiz_Form_Model  $quiz - the quiz model
+		 * @param Forminator_Quiz_Model  $quiz - the quiz model
 		 * @param Forminator_Form_Entry_Model $entry
 		 *
 		 *
@@ -108,7 +97,7 @@ class Forminator_Quiz_Front_Mail extends Forminator_Mail {
 		 * Action called before mail is sent
 		 *
 		 * @param Forminator_Quiz_Front_Mail  $this - the current mail class
-		 * @param Forminator_Quiz_Form_Model  $quiz - the current quiz
+		 * @param Forminator_Quiz_Model  $quiz - the current quiz
 		 * @param array                       $data - current data
 		 * @param Forminator_Form_Entry_Model $entry
 		 */
@@ -119,50 +108,34 @@ class Forminator_Quiz_Front_Mail extends Forminator_Mail {
 			//Process admin mail
 			foreach ( $notifications as $notification ) {
 
-				if ( $this->is_quiz_condition( $notification, $data, $quiz, $result_slug ) ) {
+				if ( $this->is_condition( $notification, $data, $quiz, $result_slug ) ) {
 					continue;
 				}
 
-				$recipients = $this->get_admin_email_recipients( $notification, $data, $quiz, $entry, $lead_model );
+				$recipients = $this->get_admin_email_recipients( $notification, $data, $quiz, $entry, array(), $lead_model );
 
 				if ( ! empty( $recipients ) ) {
-					$subject = '';
-					$message = '';
-					if ( isset( $notification['email-subject'] ) ) {
-						$subject = forminator_replace_variables( $notification['email-subject'], $quiz->id, $data['current_url'] );
-						$subject = forminator_replace_quiz_form_data( $subject, $quiz, $data, $entry );
-						if ( $has_lead ) {
-							$subject = forminator_replace_form_data( $subject, $data, $lead_model, $entry );
-							$subject = forminator_replace_custom_form_data( $subject, $lead_model, $data, $entry );
-						}
-					}
+					$subject = $this->replace_placeholders( $notification, 'email-subject', $quiz, $data, $entry, $lead_model );
 					/**
 					 * Quiz admin mail subject filter
 					 *
 					 * @since 1.6.2
 					 *
 					 * @param string                     $subject
-					 * @param Forminator_Quiz_Form_Model $quiz the current quiz modal
+					 * @param Forminator_Quiz_Model $quiz the current quiz modal
 					 *
 					 * @return string $subject
 					 */
 					$subject = apply_filters( 'forminator_quiz_mail_admin_subject', $subject, $quiz, $data, $entry, $this );
 
-					if ( isset( $notification['email-editor'] ) ) {
-						$message = forminator_replace_variables( $notification['email-editor'], $quiz->id, $data['current_url'] );
-						$message = forminator_replace_quiz_form_data( $message, $quiz, $data, $entry );
-						if ( $has_lead ) {
-							$message = forminator_replace_form_data( $message, $data, $lead_model, $entry );
-							$message = forminator_replace_custom_form_data( $message, $lead_model, $data, $entry );
-						}
-					}
+					$message = $this->replace_placeholders( $notification, 'email-editor', $quiz, $data, $entry, $lead_model );
 					/**
 					 * Quiz admin mail message filter
 					 *
 					 * @since 1.6.2
 					 *
 					 * @param string                     $message
-					 * @param Forminator_Quiz_Form_Model $quiz the current quiz
+					 * @param Forminator_Quiz_Model $quiz the current quiz
 					 * @param array                      $data
 					 * @param Forminator_Quiz_Front_Mail $this
 					 *
@@ -170,199 +143,7 @@ class Forminator_Quiz_Front_Mail extends Forminator_Mail {
 					 */
 					$message = apply_filters( 'forminator_quiz_mail_admin_message', $message, $quiz, $data, $entry, $this );
 
-					$from_name = $this->sender_name;
-					if ( isset( $notification['from-name'] ) && ! empty( $notification['from-name'] ) ) {
-						$notification_from_name = $notification['from-name'];
-						$notification_from_name = forminator_replace_variables( $notification_from_name, $quiz->id, $data['current_url'] );
-						$notification_from_name = forminator_replace_quiz_form_data( $notification_from_name, $quiz, $data, $entry );
-						if ( $has_lead ) {
-							$notification_from_name = forminator_replace_form_data( $notification_from_name, $data, $lead_model, $entry );
-							$notification_from_name = forminator_replace_custom_form_data( $notification_from_name, $lead_model, $data, $entry );
-						}
-
-						if ( ! empty( $notification_from_name ) ) {
-							$from_name = $notification_from_name;
-						}
-					}
-					/**
-					 * Filter `From` name of mail that send to admin
-					 *
-					 * @since 1.6.2
-					 *
-					 * @param string                      $from_name
-					 * @param Forminator_Quiz_Form_Model  $quiz  current quiz Model
-					 * @param array                       $data  POST data
-					 * @param Forminator_Form_Entry_Model $entry entry model
-					 * @param Forminator_Quiz_Front_Mail  $this  mail class
-					 */
-					$from_name = apply_filters( 'forminator_quiz_mail_admin_from_name', $from_name, $quiz, $data, $entry, $this );
-
-					$from_email = $this->sender_email;
-
-					if ( isset( $notification['form-email'] ) && ! empty( $notification['form-email'] ) ) {
-						$notification_from_address = $notification['form-email'];
-						$notification_from_address = forminator_replace_variables( $notification_from_address, $quiz->id, $data['current_url'] );
-						$notification_from_address = forminator_replace_quiz_form_data( $notification_from_address, $quiz, $data, $entry );
-						if ( $has_lead ) {
-							$notification_from_address = forminator_replace_form_data( $notification_from_address, $data, $lead_model, $entry );
-							$notification_from_address = forminator_replace_custom_form_data( $notification_from_address, $lead_model, $data, $entry );
-						}
-
-						if ( is_email( $notification_from_address ) ) {
-							$from_email = $notification_from_address;
-						}
-					}
-					/**
-					 * Filter `From` email address of mail that send to admin
-					 *
-					 * @since 1.6.2
-					 *
-					 * @param string                      $from_email
-					 * @param Forminator_Quiz_Form_Model  $quiz  current quiz Model
-					 * @param array                       $data  POST data
-					 * @param Forminator_Form_Entry_Model $entry entry model
-					 * @param Forminator_Quiz_Front_Mail  $this  mail class
-					 */
-					$from_email = apply_filters( 'forminator_quiz_mail_admin_from_email', $from_email, $quiz, $data, $entry, $this );
-
-					$reply_to_address = '';
-					if ( isset( $notification['replyto-email'] ) && ! empty( $notification['replyto-email'] ) ) {
-						$notification_reply_to_address = $notification['replyto-email'];
-						$notification_reply_to_address = forminator_replace_variables( $notification_reply_to_address, $quiz->id, $data['current_url'] );
-						$notification_reply_to_address = forminator_replace_quiz_form_data( $notification_reply_to_address, $quiz, $data, $entry );
-						if ( $has_lead ) {
-							$notification_reply_to_address = forminator_replace_form_data( $notification_reply_to_address, $data, $lead_model, $entry );
-							$notification_reply_to_address = forminator_replace_custom_form_data( $notification_reply_to_address, $lead_model, $data, $entry );
-						}
-
-						if ( is_email( $notification_reply_to_address ) ) {
-							$reply_to_address = $notification_reply_to_address;
-						}
-					}
-
-					/**
-					 * Filter `Reply To` email address of mail that send to admin
-					 *
-					 * @since 1.6.2
-					 *
-					 * @param string                      $reply_to_address
-					 * @param Forminator_Quiz_Form_Model  $quiz  current quiz Model
-					 * @param array                       $data  POST data
-					 * @param Forminator_Form_Entry_Model $entry entry model
-					 * @param Forminator_Quiz_Front_Mail  $this  mail class
-					 */
-					$reply_to_address = apply_filters( 'forminator_quiz_mail_admin_reply_to', $reply_to_address, $quiz, $data, $entry, $this );
-
-					$cc_addresses = array();
-					if ( isset( $notification['cc-email'] ) && ! empty( $notification['cc-email'] ) ) {
-						$notification_cc_addresses = array_map( 'trim', explode( ',', $notification['cc-email'] ) );
-						foreach ( $notification_cc_addresses as $key => $notification_cc_address ) {
-							$notification_cc_address = forminator_replace_variables( $notification_cc_address, $quiz->id, $data['current_url'] );
-							$notification_cc_address = forminator_replace_quiz_form_data( $notification_cc_address, $quiz, $data, $entry );
-							if ( $has_lead ) {
-								$notification_cc_address = forminator_replace_form_data( $notification_cc_address, $data, $lead_model, $entry );
-								$notification_cc_address = forminator_replace_custom_form_data( $notification_cc_address, $lead_model, $data, $entry );
-							}
-
-							if ( is_email( $notification_cc_address ) ) {
-								$cc_addresses[] = $notification_cc_address;
-							}
-						}
-
-					}
-					/**
-					 * Filter `CC` email addresses of mail that send to admin
-					 *
-					 * @since 1.6.2
-					 *
-					 * @param array                       $cc_addresses
-					 * @param Forminator_Quiz_Form_Model  $quiz  current quiz Model
-					 * @param array                       $data  POST data
-					 * @param Forminator_Form_Entry_Model $entry entry model
-					 * @param Forminator_Quiz_Front_Mail  $this  mail class
-					 */
-					$cc_addresses = apply_filters( 'forminator_quiz_mail_admin_cc_addresses', $cc_addresses, $quiz, $data, $entry, $this );
-
-					$bcc_addresses = array();
-					if ( isset( $notification['bcc-email'] ) && ! empty( $notification['bcc-email'] ) ) {
-						$notification_bcc_addresses = array_map( 'trim', explode( ',', $notification['bcc-email'] ) );
-
-						foreach ( $notification_bcc_addresses as $key => $notification_bcc_address ) {
-							$notification_bcc_address = forminator_replace_variables( $notification_bcc_address, $quiz->id, $data['current_url'] );
-							$notification_bcc_address = forminator_replace_quiz_form_data( $notification_bcc_address, $quiz, $data, $entry );
-							if ( $has_lead ) {
-								$notification_bcc_address = forminator_replace_form_data( $notification_bcc_address, $data, $lead_model, $entry );
-								$notification_bcc_address = forminator_replace_custom_form_data( $notification_bcc_address, $lead_model, $data, $entry );
-							}
-							if ( is_email( $notification_bcc_address ) ) {
-								$bcc_addresses[] = $notification_bcc_address;
-							}
-						}
-					}
-					/**
-					 * Filter `BCC` email addresses of mail that send to admin
-					 *
-					 * @since 1.6.2
-					 *
-					 * @param array                       $bcc_addresses
-					 * @param Forminator_Quiz_Form_Model  $quiz  current quiz Model
-					 * @param array                       $data  POST data
-					 * @param Forminator_Form_Entry_Model $entry entry model
-					 * @param Forminator_Quiz_Front_Mail  $this  mail class
-					 */
-					$bcc_addresses = apply_filters( 'forminator_quiz_mail_admin_bcc_addresses', $bcc_addresses, $quiz, $data, $entry, $this );
-
-					$content_type = $this->content_type;
-					/**
-					 * Filter `Content-Type` of mail that send to admin
-					 *
-					 * @since 1.6.2
-					 *
-					 * @param string                      $content_type
-					 * @param Forminator_Quiz_Form_Model  $quiz  current quiz Model
-					 * @param array                       $data  POST data
-					 * @param Forminator_Form_Entry_Model $entry entry model
-					 * @param Forminator_Quiz_Front_Mail  $this  mail class
-					 */
-					$content_type = apply_filters( 'forminator_quiz_mail_admin_content_type', $content_type, $quiz, $data, $entry, $this );
-
-
-					$headers = array();
-
-					// only change From header if these two are valid
-					if ( ! empty( $from_name ) && ! empty( $from_email ) ) {
-						$headers[] = 'From: ' . $from_name . ' <' . $from_email . '>';
-					}
-
-					if ( ! empty( $reply_to_address ) ) {
-						$headers[] = 'Reply-To: ' . $reply_to_address;
-					}
-
-					if ( ! empty( $cc_addresses ) && is_array( $cc_addresses ) ) {
-						$headers[] = 'Cc: ' . implode( ', ', $cc_addresses );
-					}
-
-					if ( ! empty( $bcc_addresses ) && is_array( $bcc_addresses ) ) {
-						$headers[] = 'BCc: ' . implode( ', ', $bcc_addresses );
-					}
-
-					if ( ! empty( $content_type ) ) {
-						$headers[] = 'Content-Type: ' . $content_type;
-					}
-
-					/**
-					 * Filter headers of mail that send to admin
-					 *
-					 * @since 1.6.2
-					 *
-					 * @param array                       $headers
-					 * @param Forminator_Quiz_Form_Model  $quiz  current quiz Model
-					 * @param array                       $data  POST data
-					 * @param Forminator_Form_Entry_Model $entry entry model
-					 * @param Forminator_Quiz_Front_Mail  $this  mail class
-					 */
-					$headers = apply_filters( 'forminator_quiz_mail_admin_headers', $headers, $quiz, $data, $entry, $this );
-
+					$headers = $this->prepare_headers( $notification, $quiz, $data, $entry, $lead_model );
 					$this->set_headers( $headers );
 
 					$this->set_subject( $subject );
@@ -370,6 +151,8 @@ class Forminator_Quiz_Front_Mail extends Forminator_Mail {
 					$this->set_message_with_vars( $this->message_vars, $message );
 					if ( ! empty( $files ) && isset( $notification['email-attachment'] ) && 'true' === $notification['email-attachment'] ) {
 						$this->set_attachment( $files );
+					} else {
+						$this->set_attachment( array() );
 					}
 					$this->send_multiple();
 
@@ -377,7 +160,7 @@ class Forminator_Quiz_Front_Mail extends Forminator_Mail {
 					 * Action called after admin mail sent
 					 *
 					 * @param Forminator_Quiz_Front_Mail  $this       the mail class
-					 * @param Forminator_Quiz_Form_Model  $quiz       the current quiz
+					 * @param Forminator_Quiz_Model  $quiz       the current quiz
 					 * @param array                       $data       - current data
 					 * @param Forminator_Form_Entry_Model $entry      - saved entry
 					 * @param array                       $recipients - array or recipients
@@ -391,88 +174,184 @@ class Forminator_Quiz_Front_Mail extends Forminator_Mail {
 		 * Action called after mail is sent
 		 *
 		 * @param Forminator_Quiz_Front_Mail $this mail class
-		 * @param Forminator_Quiz_Form_Model $quiz current quiz
+		 * @param Forminator_Quiz_Model $quiz current quiz
 		 * @param array                      $data current data
 		 */
 		do_action( 'forminator_quiz_mail_after_send_mail', $this, $quiz, $data );
 	}
 
 	/**
-	 * Check if all conditions are met to send admin email
+	 * Prepare headers.
 	 *
-	 * @since 1.6.2
-	 *
-	 * @param array $setting - the quiz settings
-	 *
-	 * @return bool
-	 */
-	public function is_send_admin_mail( $setting ) {
-		if ( isset( $setting['use-admin-email'] ) && ! empty( $setting['use-admin-email'] ) ) {
-			if ( filter_var( $setting['use-admin-email'], FILTER_VALIDATE_BOOLEAN ) ) {
-				if ( isset( $setting['admin-email-title'] ) && isset( $setting['admin-email-editor'] ) ) {
-					return true;
-				}
-			}
-		}
-
-		return false;
-	}
-
-
-	/**
-	 * Get Recipients of admin emails
-	 *
-	 * @since 1.6.2
-	 *
-	 * @param array                       $notification
-	 * @param array                       $data
-	 * @param Forminator_Quiz_Form_Model  $quiz
-	 * @param Forminator_Form_Entry_Model $entry
-	 * @param                             $lead_model
-	 *
+	 * @param array  $notification Settings.
+	 * @param object $quiz Module.
+	 * @param array  $data Submitted data.
+	 * @param object $entry Saved entry.
+	 * @param object $lead_model Lead module.
 	 * @return array
 	 */
-	public function get_admin_email_recipients( $notification, $data, $quiz, $entry, $lead_model ) {
-		$email = array();
-		if ( isset( $notification['email-recipients'] ) && 'routing' === $notification['email-recipients'] ) {
-			if ( ! empty( $notification['routing'] ) ) {
-				foreach ( $notification['routing'] as $routing ) {
-					if ( $this->is_quiz_routing( $routing, $data, $quiz ) ) {
-						$recipients = array_map( 'trim', explode( ',', $routing['email'] ) );
-						if ( ! empty( $recipients ) ) {
-							foreach ( $recipients as $key => $recipient ) {
-								$recipient = forminator_replace_variables( $recipient, $quiz->id, $data['current_url'] );
-								$recipient = forminator_replace_quiz_form_data( $recipient, $quiz, $data, $entry );
-								if ( isset( $quiz->settings['hasLeads'] ) && $quiz->settings['hasLeads'] ) {
-									$recipient        = forminator_replace_form_data( $recipient, $data, $lead_model, $entry );
-									$recipient        = forminator_replace_custom_form_data( $recipient, $lead_model, $data, $entry );
-								}
-								if ( is_email( $recipient ) ) {
-									$email[] = $recipient;
-								}
-							}
-						}
-					}
-				}
-			}
-		} else if ( isset( $notification['recipients'] ) && ! empty( $notification['recipients'] ) ) {
-			$recipients = array_map( 'trim', explode( ',', $notification['recipients'] ) );
-			if ( ! empty( $recipients ) ) {
-				foreach ( $recipients as $key => $recipient ) {
-					$recipient = forminator_replace_variables( $recipient, $quiz->id, $data['current_url'] );
-					$recipient = forminator_replace_quiz_form_data( $recipient, $quiz, $data, $entry );
-					if ( isset( $quiz->settings['hasLeads'] ) && $quiz->settings['hasLeads'] ) {
-						$recipient        = forminator_replace_form_data( $recipient, $data, $lead_model, $entry );
-						$recipient        = forminator_replace_custom_form_data( $recipient, $lead_model, $data, $entry );
-					}
-					if ( is_email( $recipient ) ) {
-						$email[] = $recipient;
-					}
-				}
+	private function prepare_headers( $notification, $quiz, $data, $entry, $lead_model ) {
+		$from_name = $this->replace_placeholders( $notification, 'from-name', $quiz, $data, $entry, $lead_model );
+		if ( empty( $from_name ) ) {
+			$from_name = $this->sender_name;
+		}
+		/**
+		 * Filter `From` name of mail that send to admin
+		 *
+		 * @since 1.6.2
+		 *
+		 * @param string                      $from_name
+		 * @param Forminator_Quiz_Model  $quiz  current quiz Model
+		 * @param array                       $data  POST data
+		 * @param Forminator_Form_Entry_Model $entry entry model
+		 * @param Forminator_Quiz_Front_Mail  $this  mail class
+		 */
+		$from_name = apply_filters( 'forminator_quiz_mail_admin_from_name', $from_name, $quiz, $data, $entry, $this );
+
+		$from_email = $this->replace_placeholders( $notification, 'form-email', $quiz, $data, $entry, $lead_model );
+		if ( ! is_email( $from_email ) ) {
+			$from_email = $this->sender_email;
+		}
+		/**
+		 * Filter `From` email address of mail that send to admin
+		 *
+		 * @since 1.6.2
+		 *
+		 * @param string                      $from_email
+		 * @param Forminator_Quiz_Model  $quiz  current quiz Model
+		 * @param array                       $data  POST data
+		 * @param Forminator_Form_Entry_Model $entry entry model
+		 * @param Forminator_Quiz_Front_Mail  $this  mail class
+		 */
+		$from_email = apply_filters( 'forminator_quiz_mail_admin_from_email', $from_email, $quiz, $data, $entry, $this );
+
+		$reply_to_address = $this->replace_placeholders( $notification, 'replyto-email', $quiz, $data, $entry, $lead_model );
+		if ( ! is_email( $reply_to_address ) ) {
+			$reply_to_address = '';
+		}
+		/**
+		 * Filter `Reply To` email address of mail that send to admin
+		 *
+		 * @since 1.6.2
+		 *
+		 * @param string                      $reply_to_address
+		 * @param Forminator_Quiz_Model  $quiz  current quiz Model
+		 * @param array                       $data  POST data
+		 * @param Forminator_Form_Entry_Model $entry entry model
+		 * @param Forminator_Quiz_Front_Mail  $this  mail class
+		 */
+		$reply_to_address = apply_filters( 'forminator_quiz_mail_admin_reply_to', $reply_to_address, $quiz, $data, $entry, $this );
+
+		$cc_addresses              = array();
+		$notification_cc_addresses = $this->replace_placeholders( $notification, 'cc-email', $quiz, $data, $entry, $lead_model );
+		$notification_cc_addresses = array_map( 'trim', explode( ',', $notification_cc_addresses ) );
+		foreach ( $notification_cc_addresses as $key => $notification_cc_address ) {
+			if ( is_email( $notification_cc_address ) ) {
+				$cc_addresses[] = $notification_cc_address;
 			}
 		}
+		/**
+		 * Filter `CC` email addresses of mail that send to admin
+		 *
+		 * @since 1.6.2
+		 *
+		 * @param array                       $cc_addresses
+		 * @param Forminator_Quiz_Model  $quiz  current quiz Model
+		 * @param array                       $data  POST data
+		 * @param Forminator_Form_Entry_Model $entry entry model
+		 * @param Forminator_Quiz_Front_Mail  $this  mail class
+		 */
+		$cc_addresses = apply_filters( 'forminator_quiz_mail_admin_cc_addresses', $cc_addresses, $quiz, $data, $entry, $this );
 
-		return apply_filters( 'forminator_quiz_get_admin_email_recipients', $email, $notification, $data, $quiz, $entry );
+		$bcc_addresses              = array();
+		$notification_bcc_addresses = $this->replace_placeholders( $notification, 'bcc-email', $quiz, $data, $entry, $lead_model );
+		$notification_bcc_addresses = array_map( 'trim', explode( ',', $notification_bcc_addresses ) );
+		foreach ( $notification_bcc_addresses as $key => $notification_bcc_address ) {
+			if ( is_email( $notification_bcc_address ) ) {
+				$bcc_addresses[] = $notification_bcc_address;
+			}
+		}
+		/**
+		 * Filter `BCC` email addresses of mail that send to admin
+		 *
+		 * @since 1.6.2
+		 *
+		 * @param array                       $bcc_addresses
+		 * @param Forminator_Quiz_Model  $quiz  current quiz Model
+		 * @param array                       $data  POST data
+		 * @param Forminator_Form_Entry_Model $entry entry model
+		 * @param Forminator_Quiz_Front_Mail  $this  mail class
+		 */
+		$bcc_addresses = apply_filters( 'forminator_quiz_mail_admin_bcc_addresses', $bcc_addresses, $quiz, $data, $entry, $this );
+
+		$content_type = $this->content_type;
+		/**
+		 * Filter `Content-Type` of mail that send to admin
+		 *
+		 * @since 1.6.2
+		 *
+		 * @param string                      $content_type
+		 * @param Forminator_Quiz_Model  $quiz  current quiz Model
+		 * @param array                       $data  POST data
+		 * @param Forminator_Form_Entry_Model $entry entry model
+		 * @param Forminator_Quiz_Front_Mail  $this  mail class
+		 */
+		$content_type = apply_filters( 'forminator_quiz_mail_admin_content_type', $content_type, $quiz, $data, $entry, $this );
+
+
+		$headers = array();
+
+		// only change From header if these two are valid
+		if ( ! empty( $from_name ) && ! empty( $from_email ) ) {
+			$headers[] = 'From: ' . $from_name . ' <' . $from_email . '>';
+		}
+
+		if ( ! empty( $reply_to_address ) ) {
+			$headers[] = 'Reply-To: ' . $reply_to_address;
+		}
+
+		if ( ! empty( $cc_addresses ) && is_array( $cc_addresses ) ) {
+			$headers[] = 'Cc: ' . implode( ', ', $cc_addresses );
+		}
+
+		if ( ! empty( $bcc_addresses ) && is_array( $bcc_addresses ) ) {
+			$headers[] = 'Bcc: ' . implode( ', ', $bcc_addresses );
+		}
+
+		if ( ! empty( $content_type ) ) {
+			$headers[] = 'Content-Type: ' . $content_type;
+		}
+
+		/**
+		 * Filter headers of mail that send to admin
+		 *
+		 * @since 1.6.2
+		 *
+		 * @param array                       $headers
+		 * @param Forminator_Quiz_Model  $quiz  current quiz Model
+		 * @param array                       $data  POST data
+		 * @param Forminator_Form_Entry_Model $entry entry model
+		 * @param Forminator_Quiz_Front_Mail  $this  mail class
+		 */
+		$headers = apply_filters( 'forminator_quiz_mail_admin_headers', $headers, $quiz, $data, $entry, $this );
+
+		return $headers;
+	}
+
+	/**
+	 * Get Recipient
+	 *
+	 * @return string
+	 */
+	public function get_recipient( $recipient, $quiz, $data, $entry, $lead_model ) {
+		$recipient = forminator_replace_variables( $recipient, $quiz->id, $data['current_url'] );
+		$recipient = forminator_replace_quiz_form_data( $recipient, $quiz, $data, $entry );
+		if ( isset( $quiz->settings['hasLeads'] ) && $quiz->settings['hasLeads'] ) {
+			$recipient = forminator_replace_form_data( $recipient, $data, $lead_model, $entry );
+			$recipient = forminator_replace_custom_form_data( $recipient, $lead_model, $data, $entry );
+		}
+
+		return $recipient;
 	}
 
 	/**
@@ -507,4 +386,134 @@ class Forminator_Quiz_Front_Mail extends Forminator_Mail {
 
 		return $files;
 	}
+
+	/**
+	 * Check if notification is routing
+	 *
+	 * @since 1.0
+	 *
+	 * @param $routing
+	 * @param $form_data
+	 * @param $quiz_model
+	 *
+	 * @return bool
+	 */
+	public function is_routing( $routing, $form_data, $quiz_model, $pseudo_submitted_data = array() ) {
+		// empty conditions
+		if ( empty( $routing ) ) {
+			return false;
+		}
+
+		$element_id = $routing['element_id'];
+		if ( stripos( $element_id, 'signature-' ) !== false ) {
+			// We have signature field
+			$signature_id = $element_id;
+			$signature_data = '';
+			if ( isset( $form_data[ $signature_id ] ) && isset( $form_data[ $signature_id ]['file']['file_url'] ) ) {
+				$signature_data = $form_data[ $signature_id ]['file']['file_url'];
+			}
+			return self::is_condition_fulfilled( $signature_data, $routing );
+		} elseif ( stripos( $element_id, 'url-' ) !== false ) {
+			$parts = ! empty( $routing['value'] ) ? wp_parse_url( $routing['value'] ) : false;
+			if ( false !== $parts ) {
+				if ( ! isset( $parts['scheme'] ) ) {
+					$routing['value'] = 'http://' . $routing['value'];
+				}
+			}
+			return self::is_condition_fulfilled( $form_data[ $element_id ], $routing );
+		} elseif ( stripos( $element_id, 'checkbox-' ) !== false || stripos( $element_id, 'radio-' ) !== false ) {
+			return self::is_condition_fulfilled( $form_data[ $element_id ], $routing );
+		} elseif ( stripos( $element_id, 'question-' ) !== false ) {
+			$is_correct  = self::is_correct_answer( $element_id, $form_data['answers'][ $element_id ], $quiz_model );
+			return self::is_condition_fulfilled( $is_correct, $routing );
+		} elseif ( 'final_result' === $element_id ) {
+			return self::is_condition_fulfilled( $form_data[ $element_id ], $routing );
+		} elseif ( ! isset( $form_data[ $element_id ] ) ) {
+			return false;
+		} else {
+			return self::is_condition_fulfilled( $form_data[ $element_id ], $routing );
+		}
+	}
+
+	/**
+	 * Check if Field is hidden based on conditions property and POST-ed data
+	 *
+	 * @since 1.0
+	 * @since 1.7 add $pseudo_submitted_data to get value of calculation and stripe etc
+	 *
+	 * @param $notification
+	 * @param $form_data
+	 * @param $quiz_model
+	 *
+	 * @return bool
+	 */
+	public function is_condition( $notification, $form_data, $quiz_model ) {
+		// empty conditions
+		if ( empty( $notification['conditions'] ) ) {
+			return false;
+		}
+
+		$condition_action = isset( $notification['condition_action'] ) ? $notification['condition_action'] : 'send';
+		$condition_rule   = isset( $notification['condition_rule'] ) ? $notification['condition_rule'] : 'all';
+
+		$condition_fulfilled = 0;
+
+		$all_conditions = $notification['conditions'];
+
+		foreach ( $all_conditions as $condition ) {
+			$element_id = $condition['element_id'];
+
+			if ( stripos( $element_id, 'signature-' ) !== false ) {
+				// We have signature field
+				$signature_id = $element_id;
+				$signature_data = '';
+				if ( isset( $form_data[ $signature_id ] ) && isset( $form_data[ $signature_id ]['file']['file_url'] ) ) {
+					$signature_data = $form_data[ $signature_id ]['file']['file_url'];
+				}
+				$is_condition_fulfilled = self::is_condition_fulfilled( $signature_data, $condition );
+			} elseif ( stripos( $element_id, 'url-' ) !== false ) {
+				// We have signature field
+				$parts = ! empty( $routing['value'] ) ? wp_parse_url( $condition['value'] ) : false;
+				if ( false !== $parts ) {
+					if ( ! isset( $parts['scheme'] ) ) {
+						$condition['value'] = 'http://' . $condition['value'];
+					}
+				}
+				$is_condition_fulfilled =  self::is_condition_fulfilled( $form_data[ $element_id ], $condition );
+			} elseif ( stripos( $element_id, 'checkbox-' ) !== false || stripos( $element_id, 'radio-' ) !== false ) {
+				$is_condition_fulfilled = self::is_condition_fulfilled( $form_data[ $element_id ], $condition );
+			} elseif ( stripos( $element_id, 'question-' ) !== false ) {
+				$is_correct  = self::is_correct_answer( $element_id, $form_data['answers'][ $element_id ], $quiz_model );
+				$is_condition_fulfilled = self::is_condition_fulfilled( $is_correct, $condition );
+			} elseif ( stripos( $element_id, 'result-' ) !== false ) {
+				$is_condition_fulfilled = self::is_condition_fulfilled( '', $condition );
+			} elseif ( 'final_result' === $element_id ) {
+				$is_condition_fulfilled = self::is_condition_fulfilled( $form_data[ $element_id ], $condition );
+			} elseif ( ! isset( $form_data[ $element_id ] ) ) {
+				$is_condition_fulfilled = false;
+			} else {
+				$is_condition_fulfilled = self::is_condition_fulfilled( $form_data[ $element_id ], $condition );
+			}
+
+			if ( $is_condition_fulfilled ) {
+				$condition_fulfilled ++;
+			}
+		}
+		//initialized as hidden
+		if ( 'send' === $condition_action ) {
+			if ( ( $condition_fulfilled > 0 && 'any' === $condition_rule ) || ( count( $all_conditions ) === $condition_fulfilled && 'all' === $condition_rule ) ) {
+				return false;
+			}
+
+			return true;
+		} else {
+			//initialized as shown
+			if ( ( $condition_fulfilled > 0 && 'any' === $condition_rule ) || ( count( $all_conditions ) === $condition_fulfilled && 'all' === $condition_rule ) ) {
+				return true;
+			}
+
+			return false;
+		}
+	}
+
 }

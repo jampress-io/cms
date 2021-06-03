@@ -19,8 +19,8 @@ class Forminator_Template_Blank extends Forminator_Template {
 	public function defaults() {
 		return array(
 			'id'          => 'blank',
-			'name'        => __( 'Blank', Forminator::DOMAIN ),
-			'description' => __( "A simple contact form for your users to contact you", Forminator::DOMAIN ),
+			'name'        => __( 'Blank', 'forminator' ),
+			'description' => __( "A simple contact form for your users to contact you", 'forminator' ),
 			'icon'        => 'book',
 			'priortiy'    => 1,
 		);
@@ -46,10 +46,10 @@ class Forminator_Template_Blank extends Forminator_Template {
 		return array(
 			"form-type"                     => "default",
 			"submission-behaviour"          => "behaviour-thankyou",
-			"thankyou-message"              => __( "Thank you for contacting us, we will be in touch shortly.", Forminator::DOMAIN ),
+			"thankyou-message"              => __( "Thank you for contacting us, we will be in touch shortly.", 'forminator' ),
 			'submitData'                    => array(
-				"custom-submit-text"          => __( "Send Message", Forminator::DOMAIN ),
-				"custom-invalid-form-message" => __( "Error: Your form is not valid, please fix the errors!", Forminator::DOMAIN ),
+				"custom-submit-text"          => __( "Send Message", 'forminator' ),
+				"custom-invalid-form-message" => __( "Error: Your form is not valid, please fix the errors!", 'forminator' ),
 			),
 			'enable-ajax'                   => 'true',
 			'validation-inline'             => true,

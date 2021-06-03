@@ -85,6 +85,7 @@ class Forminator_Admin_Data {
 	public function admin_js_defaults() {
 		// Generate addon nonce
 		Forminator_Addon_Admin_Ajax::get_instance()->generate_nonce();
+		$id = filter_input( INPUT_GET, 'id', FILTER_VALIDATE_INT );
 
 		return array(
 			'ajaxUrl'                        => forminator_ajax_url(),
@@ -104,16 +105,18 @@ class Forminator_Admin_Data {
 			'hasV3Captcha'                   => forminator_has_v3_captcha_settings(),
 			'hasStripe'                      => forminator_has_stripe_connected(),
 			'formNonce'                      => $this->get_nonce(),
+			'resetTrackingDataNonce'         => wp_create_nonce( 'forminator_reset_tracking_data' ),
 			'previewNonce'							=> wp_create_nonce( 'forminator_load_module' ),
 			'searchNonce'                    => wp_create_nonce( 'forminator_search_emails' ),
 			'gFontNonce'                     => wp_create_nonce( 'forminator_load_google_fonts' ),
 			'dismissNonce'					 		=> wp_create_nonce( 'forminator_dismiss_notification' ),
-			'formProcessNonce'               => wp_create_nonce( 'forminatorCustomFormRequest' ),
-			'formExportNonce'                => wp_create_nonce( 'forminator_popup_export_cform' ),
-			'pollProcessNonce'               => wp_create_nonce( 'forminatorPollFormRequest' ),
+			'formProcessNonce'               => wp_create_nonce( 'forminator_form_request' ),
+			'formExportNonce'                => wp_create_nonce( 'forminator_popup_export_form' ),
+			'pollProcessNonce'               => wp_create_nonce( 'forminator_poll_request' ),
 			'pollExportNonce'                => wp_create_nonce( 'forminator_popup_export_poll' ),
-			'quizProcessNonce'               => wp_create_nonce( 'forminatorQuizFormRequest' ),
+			'quizProcessNonce'               => wp_create_nonce( 'forminator_quiz_request' ),
 			'quizExportNonce'                => wp_create_nonce( 'forminator_popup_export_quiz' ),
+			'cloneNonce'                     => wp_create_nonce( 'forminator-nonce-clone-' . $id ),
 			'addons_enabled'                 => Forminator::is_addons_feature_enabled(),
 			'pluginUrl'                      => forminator_plugin_url(),
 			'imagesUrl'                      => forminator_plugin_url() . '/assets/images',

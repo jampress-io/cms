@@ -84,8 +84,8 @@ class Forminator_Integrations_Page extends Forminator_Admin_Page {
 				<h1 class="sui-header-title"><?php echo esc_html( $this->addon_page['title'] ); ?></h1>
 				<div class="sui-actions-right">
 					<?php if ( forminator_is_show_documentation_link() ) : ?>
-						<a href="https://premium.wpmudev.org/docs/wpmu-dev-plugins/forminator/#integrations" target="_blank" class="sui-button sui-button-ghost">
-							<i class="sui-icon-academy"></i> <?php esc_html_e( 'View Documentation', Forminator::DOMAIN ); ?>
+						<a href="https://wpmudev.com/docs/wpmu-dev-plugins/forminator/#integrations" target="_blank" class="sui-button sui-button-ghost">
+							<i class="sui-icon-academy"></i> <?php esc_html_e( 'View Documentation', 'forminator' ); ?>
 						</a>
 					<?php endif; ?>
 				</div>

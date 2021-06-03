@@ -10,6 +10,7 @@ require_once forminator_plugin_dir() . 'library/addon/contracts/interface-addon.
 require_once forminator_plugin_dir() . 'library/addon/class-addon-abstract.php';
 require_once forminator_plugin_dir() . 'library/addon/class-addon-settings-abstract.php';
 require_once forminator_plugin_dir() . 'library/addon/class-addon-form-settings-abstract.php';
+require_once forminator_plugin_dir() . 'library/addon/class-addon-hooks-abstract.php';
 require_once forminator_plugin_dir() . 'library/addon/class-addon-form-hooks-abstract.php';
 require_once forminator_plugin_dir() . 'library/addon/class-addon-poll-settings-abstract.php';
 require_once forminator_plugin_dir() . 'library/addon/class-addon-poll-hooks-abstract.php';
@@ -142,10 +143,10 @@ class Forminator_Addon_Loader {
 		 * Initiate standard default error messages
 		 */
 		$this->default_addon_error_messages = array(
-			'activate'             => __( 'Failed to activate addon', Forminator::DOMAIN ),
-			'deactivate'           => __( 'Failed to deactivate addon', Forminator::DOMAIN ),
-			'update_settings'      => __( 'Failed to update settings', Forminator::DOMAIN ),
-			'update_form_settings' => __( 'Failed to update form settings', Forminator::DOMAIN ),
+			'activate'             => __( 'Failed to activate addon', 'forminator' ),
+			'deactivate'           => __( 'Failed to deactivate addon', 'forminator' ),
+			'update_settings'      => __( 'Failed to update settings', 'forminator' ),
+			'update_form_settings' => __( 'Failed to update form settings', 'forminator' ),
 		);
 
 		// Only enable wp_ajax hooks
@@ -359,13 +360,13 @@ class Forminator_Addon_Loader {
 	public function deactivate_addon( $slug ) {
 		$addon = $this->get_addon( $slug );
 		if ( is_null( $addon ) ) {
-			$this->last_error_message = __( 'Addon not found', Forminator::DOMAIN );
+			$this->last_error_message = __( 'Addon not found', 'forminator' );
 
 			return false;
 		}
 
 		if ( ! $this->addon_is_active( $slug ) ) {
-			$this->last_error_message = __( 'Addon is not activated before', Forminator::DOMAIN );
+			$this->last_error_message = __( 'Addon is not activated before', 'forminator' );
 
 			return false;
 		}
@@ -485,19 +486,19 @@ class Forminator_Addon_Loader {
 
 
 		if ( is_null( $addon ) ) {
-			$this->last_error_message = __( 'Addon not found', Forminator::DOMAIN );
+			$this->last_error_message = __( 'Addon not found', 'forminator' );
 
 			return false;
 		}
 
 		if ( $this->addon_is_active( $slug ) ) {
-			$this->last_error_message = __( 'Addon already activated before', Forminator::DOMAIN );
+			$this->last_error_message = __( 'Addon already activated before', 'forminator' );
 
 			return false;
 		}
 
 		if ( ! $addon->is_activable() ) {
-			$this->last_error_message = __( 'Addon is not activable', Forminator::DOMAIN );
+			$this->last_error_message = __( 'Addon is not activable', 'forminator' );
 
 			return false;
 		}

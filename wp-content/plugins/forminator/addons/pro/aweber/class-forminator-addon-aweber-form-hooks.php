@@ -39,7 +39,7 @@ class Forminator_Addon_Aweber_Form_Hooks extends Forminator_Addon_Form_Hooks_Abs
 	 */
 	public function __construct( Forminator_Addon_Abstract $addon, $form_id ) {
 		parent::__construct( $addon, $form_id );
-		$this->_submit_form_error_message = __( 'AWeber failed to process submitted data. Please check your form and try again', Forminator::DOMAIN );
+		$this->_submit_form_error_message = __( 'AWeber failed to process submitted data. Please check your form and try again', 'forminator' );
 	}
 
 	/**
@@ -148,7 +148,7 @@ class Forminator_Addon_Aweber_Form_Hooks extends Forminator_Addon_Form_Hooks_Abs
 			$args = array();
 
 			if ( ! isset( $connection_settings['list_id'] ) ) {
-				throw new Forminator_Addon_Aweber_Exception( __( 'List ID not properly setup.', Forminator::DOMAIN ) );
+				throw new Forminator_Addon_Aweber_Exception( __( 'List ID not properly setup.', 'forminator' ) );
 			}
 
 			$list_id = $connection_settings['list_id'];
@@ -159,7 +159,7 @@ class Forminator_Addon_Aweber_Form_Hooks extends Forminator_Addon_Form_Hooks_Abs
 			$email_element_id = $connection_settings['fields_map']['default_field_email'];
 			if ( ! isset( $submitted_data[ $email_element_id ] ) || empty( $submitted_data[ $email_element_id ] ) ) {
 				throw new Forminator_Addon_Aweber_Exception(/* translators: ... */
-					sprintf( __( 'Email Address on element %1$s not found or not filled on submitted data.', Forminator::DOMAIN ), $email_element_id )
+					sprintf( __( 'Email Address on element %1$s not found or not filled on submitted data.', 'forminator' ), $email_element_id )
 				);
 			}
 			$email         = $submitted_data[ $email_element_id ];
@@ -207,7 +207,7 @@ class Forminator_Addon_Aweber_Form_Hooks extends Forminator_Addon_Form_Hooks_Abs
 						// https://labs.aweber.com/docs/reference/1.0#subscriber_entry
 						// you can not modify or delete Subscribers with a status of 'unconfirmed'.
 						if ( isset( $existing_subscriber->status ) && 'unconfirmed' === $existing_subscriber->status ) {
-							throw new Forminator_Addon_Aweber_Exception( __( 'Unconfirmed subscriber can\'t be modified.', Forminator::DOMAIN ) );
+							throw new Forminator_Addon_Aweber_Exception( __( 'Unconfirmed subscriber can\'t be modified.', 'forminator' ) );
 						}
 					}
 				}
@@ -486,7 +486,7 @@ class Forminator_Addon_Aweber_Form_Hooks extends Forminator_Addon_Form_Hooks_Abs
 			return array(
 				'is_sent'         => true,
 				'connection_name' => $connection_settings['name'],
-				'description'     => __( 'Successfully send data to AWeber', Forminator::DOMAIN ),
+				'description'     => __( 'Successfully send data to AWeber', 'forminator' ),
 				'data_sent'       => $api->get_last_data_sent(),
 				'data_received'   => $api->get_last_data_received(),
 				'url_request'     => $api->get_last_url_request(),
@@ -591,29 +591,29 @@ class Forminator_Addon_Aweber_Form_Hooks extends Forminator_Addon_Form_Hooks_Abs
 		}
 		$status                = $addon_meta_data['value'];
 		$additional_entry_item = array(
-			'label' => __( 'AWeber Integration', Forminator::DOMAIN ),
+			'label' => __( 'AWeber Integration', 'forminator' ),
 			'value' => '',
 		);
 
 		$sub_entries = array();
 		if ( isset( $status['connection_name'] ) ) {
 			$sub_entries[] = array(
-				'label' => __( 'Integration Name', Forminator::DOMAIN ),
+				'label' => __( 'Integration Name', 'forminator' ),
 				'value' => $status['connection_name'],
 			);
 		}
 
 		if ( isset( $status['is_sent'] ) ) {
-			$is_sent       = true === $status['is_sent'] ? __( 'Yes', Forminator::DOMAIN ) : __( 'No', Forminator::DOMAIN );
+			$is_sent       = true === $status['is_sent'] ? __( 'Yes', 'forminator' ) : __( 'No', 'forminator' );
 			$sub_entries[] = array(
-				'label' => __( 'Sent To AWeber', Forminator::DOMAIN ),
+				'label' => __( 'Sent To AWeber', 'forminator' ),
 				'value' => $is_sent,
 			);
 		}
 
 		if ( isset( $status['description'] ) ) {
 			$sub_entries[] = array(
-				'label' => __( 'Info', Forminator::DOMAIN ),
+				'label' => __( 'Info', 'forminator' ),
 				'value' => $status['description'],
 			);
 		}
@@ -622,21 +622,21 @@ class Forminator_Addon_Aweber_Form_Hooks extends Forminator_Addon_Form_Hooks_Abs
 			// too long to be added on entry data enable this with `define('FORMINATOR_ADDON_AWEBER_SHOW_FULL_LOG', true)`
 			if ( isset( $status['url_request'] ) ) {
 				$sub_entries[] = array(
-					'label' => __( 'API URL', Forminator::DOMAIN ),
+					'label' => __( 'API URL', 'forminator' ),
 					'value' => $status['url_request'],
 				);
 			}
 
 			if ( isset( $status['data_sent'] ) ) {
 				$sub_entries[] = array(
-					'label' => __( 'Data sent to AWeber', Forminator::DOMAIN ),
+					'label' => __( 'Data sent to AWeber', 'forminator' ),
 					'value' => '<pre class="sui-code-snippet">' . wp_json_encode( $status['data_sent'], JSON_PRETTY_PRINT ) . '</pre>',
 				);
 			}
 
 			if ( isset( $status['data_received'] ) ) {
 				$sub_entries[] = array(
-					'label' => __( 'Data received from AWeber', Forminator::DOMAIN ),
+					'label' => __( 'Data received from AWeber', 'forminator' ),
 					'value' => '<pre class="sui-code-snippet">' . wp_json_encode( $status['data_received'], JSON_PRETTY_PRINT ) . '</pre>',
 				);
 			}
@@ -658,7 +658,7 @@ class Forminator_Addon_Aweber_Form_Hooks extends Forminator_Addon_Form_Hooks_Abs
 	public function on_export_render_title_row() {
 
 		$export_headers = array(
-			'info' => __( 'AWeber Info', Forminator::DOMAIN ),
+			'info' => __( 'AWeber Info', 'forminator' ),
 		);
 
 		$form_id                = $this->form_id;

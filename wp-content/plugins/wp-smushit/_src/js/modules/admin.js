@@ -574,6 +574,15 @@ jQuery( function( $ ) {
 	} );
 
 	/**
+	 * Handles the tabs navigation on mobile.
+	 *
+	 * @since 3.8.4
+	 */
+	$('.sui-mobile-nav').on('change', (e) => {
+		window.location.assign($(e.currentTarget).val());
+	});
+
+	/**
 	 * Handle re-check api status button click (Settings)
 	 *
 	 * @since 3.2.0.2
@@ -1045,12 +1054,12 @@ jQuery( function( $ ) {
 			'undefined' !== typeof e.target.dataset.type &&
 			'nextgen' === e.target.dataset.type
 		) {
-			$( '.wp-smush-nextgen-bulk' ).click();
+			$('.wp-smush-nextgen-bulk').trigger('click');
 		} else {
-			$( '.wp-smush-all' ).click();
+			$('.wp-smush-all').trigger('click');
 		}
 
-		$( 'span.sui-notice-dismiss' ).click();
+		$( 'span.sui-notice-dismiss' ).trigger('click');
 	} );
 
 	//Trigger Bulk
@@ -1063,14 +1072,14 @@ jQuery( function( $ ) {
 	} );
 
 	//Allow the checkboxes to be Keyboard Accessible
-	$( '.wp-smush-setting-row .toggle-checkbox' ).focus( function() {
+	$( '.wp-smush-setting-row .toggle-checkbox' ).on( 'focus', function() {
 		//If Space is pressed
 		$( this ).keypress( function( e ) {
 			if ( e.keyCode == 32 ) {
 				e.preventDefault();
 				$( this )
 					.find( '.toggle-checkbox' )
-					.click();
+					.trigger('click');
 			}
 		} );
 	} );
@@ -1122,7 +1131,7 @@ jQuery( function( $ ) {
 	} );
 
 	// Handle PNG to JPG Checkbox toggle, to show/hide Transparent image conversion settings.
-	$( '#wp-smush-png_to_jpg' ).click( function() {
+	$( '#wp-smush-png_to_jpg' ).on( 'click', function() {
 		const self = $( this );
 		const settings_wrap = $( '.wp-smush-png_to_jpg-wrap' );
 
@@ -1214,73 +1223,4 @@ jQuery( function( $ ) {
 		// Displays the modal with the release's higlights if it exists.
 		window.SUI.openModal( 'smush-updated-dialog', 'wpbody-content', undefined, false );
 	}
-
-	/**
-	 * @namespace aria
-	 */
-	let aria = aria || {};
-
-	// Key codes.
-	aria.KeyCode = {
-		TAB: 9,
-		RETURN: 13,
-		ESC: 27,
-		SPACE: 32,
-		PAGE_UP: 33,
-		PAGE_DOWN: 34,
-		END: 35,
-		HOME: 36,
-		LEFT: 37,
-		UP: 38,
-		RIGHT: 39,
-		DOWN: 40,
-		DELETE: 46
-	};
-
-	// Handling accessibility for the tutorials tab.
-	$( '#smush-box-tutorials div[role="link"]' ).on( 'click', function( e ) {
-
-		let ref = e.target !== null ? e.target : e.srcElement;
-
-		if ( ref ) {
-			window.open( ref.getAttribute( 'data-href' ), '_blank' );
-		}
-	}).on( 'keydown', function( e ) {
-
-		const focusOnNextTut = function( direction ) {
-			const current = $( ref ).data( 'tutorial' ),
-				next = 'next' === direction ? current + 1 : current - 1;
-
-			let $nextTut = $( `#smush-box-tutorials [data-tutorial="${ next }"]` );
-
-			// When we are at the end and moving forward, or at the beginning and moving backward.
-			if ( ! $nextTut.length ) {
-				const allTuts = $( '#smush-box-tutorials .wp-smush-tutorial-item' ),
-					nextTutKey = 'next' === direction ? 0 : allTuts.length - 1;
-				$nextTut = allTuts[ nextTutKey ];
-			}
-
-			$nextTut.focus();
-		}
-
-		let key = e.which || e.keyCode,
-			ref = e.target !== null ? e.target : e.srcElement;
-
-		switch ( key ) {
-
-			case aria.KeyCode.RETURN :
-				if ( ref ) {
-					window.open( ref.getAttribute( 'data-href' ), '_blank' );
-				}
-				break;
-
-			case aria.KeyCode.LEFT :
-				focusOnNextTut( 'prev' );
-				break;
-
-			case aria.KeyCode.RIGHT :
-				focusOnNextTut( 'next' );
-				break;
-		}
-	});
 } );

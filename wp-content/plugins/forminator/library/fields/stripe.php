@@ -63,7 +63,7 @@ class Forminator_Stripe extends Forminator_Field {
 	public function __construct() {
 		parent::__construct();
 
-		$this->name = __( 'Stripe', Forminator::DOMAIN );
+		$this->name = __( 'Stripe', 'forminator' );
 
 		try {
 			$stripe = new Forminator_Gateway_Stripe();
@@ -92,7 +92,7 @@ class Forminator_Stripe extends Forminator_Field {
 		}
 
 		return array(
-			'field_label'         => __( 'Credit / Debit Card', Forminator::DOMAIN ),
+			'field_label'         => __( 'Credit / Debit Card', 'forminator' ),
 			'mode'                => 'test',
 			'currency'            => $default_currency,
 			'amount_type'         => 'fixed',
@@ -454,7 +454,7 @@ class Forminator_Stripe extends Forminator_Field {
 		// Throw error if payment ID is empty
 		if ( empty( $id ) || "" === $id ) {
 			$response = array(
-				'message' => __( 'Your Payment ID is empty, please reload the page and try again!', Forminator::DOMAIN ),
+				'message' => __( 'Your Payment ID is empty, please reload the page and try again!', 'forminator' ),
 				'errors' => array()
 			);
 
@@ -473,17 +473,17 @@ class Forminator_Stripe extends Forminator_Field {
 			try {
 				// Check payment amount
 				if ( 0 > $amount ) {
-					throw new Exception( __( 'Payment amount should be larger than 0.', Forminator::DOMAIN ) );
+					throw new Exception( __( 'Payment amount should be larger than 0.', 'forminator' ) );
 				}
 
 				// Check payment ID
 				if ( empty( $id ) ) {
-					throw new Exception( __( 'Your Payment ID is empty!', Forminator::DOMAIN ) );
+					throw new Exception( __( 'Your Payment ID is empty!', 'forminator' ) );
 				}
 
 				// Check payment method
 				if ( ! isset( $submitted_data['payment_method'] ) || is_null( $submitted_data['payment_method'] ) ) {
-					throw new Exception( __( 'Your Payment ID is empty!', Forminator::DOMAIN ) );
+					throw new Exception( __( 'Your Payment ID is empty!', 'forminator' ) );
 				}
 
 				$options = array(
@@ -655,7 +655,7 @@ class Forminator_Stripe extends Forminator_Field {
 
 	/**
 	 * @param array                        $field
-	 * @param Forminator_Custom_Form_Model $custom_form
+	 * @param Forminator_Form_Model $custom_form
 	 * @param array                        $submitted_data
 	 * @param array                        $pseudo_submitted_data
 	 * @param array                        $field_data_array
@@ -678,7 +678,7 @@ class Forminator_Stripe extends Forminator_Field {
 		try {
 			// Makue sure payment ID exist
 			if ( ! isset( $submitted_data['paymentid'] ) ) {
-				throw new Exception( __('Stripe Payment ID does not exist.', Forminator::DOMAIN ) );
+				throw new Exception( __('Stripe Payment ID does not exist.', 'forminator' ) );
 			}
 
 			//Get Payment intent
@@ -686,12 +686,12 @@ class Forminator_Stripe extends Forminator_Field {
 
 			// Makue sure Payment Intent is object
 			if ( ! is_object( $intent ) ) {
-				throw new Exception( __('Payment Intent object is not valid Payment object.', Forminator::DOMAIN ) );
+				throw new Exception( __('Payment Intent object is not valid Payment object.', 'forminator' ) );
 			}
 
 			// Check if the PaymentIntent is set or empty
 			if ( ! isset( $intent->id ) || empty( $intent->id ) ) {
-				throw new Exception( __('Payment Intent ID is not valid!', Forminator::DOMAIN ) );
+				throw new Exception( __('Payment Intent ID is not valid!', 'forminator' ) );
 			}
 
 			$charge_amount = $this->get_payment_amount( $field, $custom_form, $submitted_data, $pseudo_submitted_data );
@@ -724,7 +724,7 @@ class Forminator_Stripe extends Forminator_Field {
 		 *
 		 * @param array                        $entry_data
 		 * @param array                        $field            field properties
-		 * @param Forminator_Custom_Form_Model $custom_form
+		 * @param Forminator_Form_Model $custom_form
 		 * @param array                        $submitted_data
 		 * @param array                        $field_data_array current entry meta
 		 *
@@ -789,7 +789,7 @@ class Forminator_Stripe extends Forminator_Field {
 		try {
 			// Makue sure payment ID exist
 			if ( ! isset( $submitted_data['paymentid'] ) ) {
-				throw new Exception( __('Stripe Payment ID does not exist.', Forminator::DOMAIN ) );
+				throw new Exception( __('Stripe Payment ID does not exist.', 'forminator' ) );
 			}
 
 			// Check payment amount
@@ -844,7 +844,7 @@ class Forminator_Stripe extends Forminator_Field {
 	 * @since 1.7
 	 *
 	 * @param array                        $field
-	 * @param Forminator_Custom_Form_Model $custom_form
+	 * @param Forminator_Form_Model $custom_form
 	 * @param array                        $submitted_data
 	 * @param array                        $pseudo_submitted_data
 	 *
@@ -902,7 +902,7 @@ class Forminator_Stripe extends Forminator_Field {
 		 *
 		 * @param double                       $payment_amount
 		 * @param array                        $field field settings
-		 * @param Forminator_Custom_Form_Model $custom_form
+		 * @param Forminator_Form_Model $custom_form
 		 * @param array                        $submitted_data
 		 * @param array                        $pseudo_submitted_data
 		 */

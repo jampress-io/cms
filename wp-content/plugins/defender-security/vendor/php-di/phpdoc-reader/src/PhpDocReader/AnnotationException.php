@@ -1,9 +1,9 @@
-<?php declare(strict_types=1);
+<?php
 
 namespace PhpDocReader;
 
 /**
- * We stumbled upon an invalid class/property/method annotation.
+ * @author Matthieu Napoli <matthieu@mnapoli.fr>
  */
 class AnnotationException extends \Exception
 {

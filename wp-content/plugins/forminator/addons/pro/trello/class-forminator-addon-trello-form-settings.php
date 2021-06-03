@@ -31,7 +31,7 @@ class Forminator_Addon_Trello_Form_Settings extends Forminator_Addon_Form_Settin
 
 		$this->_update_form_settings_error_message = __(
 			'The update to your settings for this form failed, check the form input and try again.',
-			Forminator::DOMAIN
+			'forminator'
 		);
 	}
 
@@ -117,14 +117,14 @@ class Forminator_Addon_Trello_Form_Settings extends Forminator_Addon_Form_Settin
 		$buttons = array();
 		if ( $this->setup_name_is_completed( array( 'multi_id' => $multi_id ) ) ) {
 			$buttons['disconnect']['markup'] = Forminator_Addon_Abstract::get_button_markup(
-				esc_html__( 'Deactivate', Forminator::DOMAIN ),
+				esc_html__( 'Deactivate', 'forminator' ),
 				'sui-button-ghost sui-tooltip sui-tooltip-top-center forminator-addon-form-disconnect',
-				esc_html__( 'Deactivate this Trello Integration from this Form.', Forminator::DOMAIN )
+				esc_html__( 'Deactivate this Trello Integration from this Form.', 'forminator' )
 			);
 		}
 
 		$buttons['next']['markup'] = '<div class="sui-actions-right">' .
-		                             Forminator_Addon_Abstract::get_button_markup( esc_html__( 'Next', Forminator::DOMAIN ), 'forminator-addon-next' ) .
+		                             Forminator_Addon_Abstract::get_button_markup( esc_html__( 'Next', 'forminator' ), 'forminator-addon-next' ) .
 		                             '</div>';
 
 		return array(
@@ -176,7 +176,7 @@ class Forminator_Addon_Trello_Form_Settings extends Forminator_Addon_Form_Settin
 		$template = forminator_addon_trello_dir() . 'views/form-settings/setup-board.php';
 
 		if ( ! isset( $submitted_data['multi_id'] ) ) {
-			return $this->get_force_closed_wizard( __( 'Please pick valid connection', Forminator::DOMAIN ) );
+			return $this->get_force_closed_wizard( __( 'Please pick valid connection', 'forminator' ) );
 		}
 
 		$multi_id = $submitted_data['multi_id'];
@@ -207,7 +207,7 @@ class Forminator_Addon_Trello_Form_Settings extends Forminator_Addon_Form_Settin
 			}
 
 			if ( empty( $boards ) ) {
-				throw new Forminator_Addon_Trello_Exception( __( 'No board found on your Trello account. Please create one.', Forminator::DOMAIN ) );
+				throw new Forminator_Addon_Trello_Exception( __( 'No board found on your Trello account. Please create one.', 'forminator' ) );
 			}
 
 			$template_params['boards'] = $boards;
@@ -250,14 +250,14 @@ class Forminator_Addon_Trello_Form_Settings extends Forminator_Addon_Form_Settin
 		$buttons = array();
 		if ( $this->setup_name_is_completed( array( 'multi_id' => $multi_id ) ) ) {
 			$buttons['disconnect']['markup'] = Forminator_Addon_Abstract::get_button_markup(
-				esc_html__( 'Deactivate', Forminator::DOMAIN ),
+				esc_html__( 'Deactivate', 'forminator' ),
 				'sui-button-ghost sui-tooltip sui-tooltip-top-center forminator-addon-form-disconnect',
-				esc_html__( 'Deactivate this Trello Integration from this Form.', Forminator::DOMAIN )
+				esc_html__( 'Deactivate this Trello Integration from this Form.', 'forminator' )
 			);
 		}
 
 		$buttons['next']['markup'] = '<div class="sui-actions-right">' .
-		                             Forminator_Addon_Abstract::get_button_markup( esc_html__( 'Next', Forminator::DOMAIN ), 'forminator-addon-next' ) .
+		                             Forminator_Addon_Abstract::get_button_markup( esc_html__( 'Next', 'forminator' ), 'forminator-addon-next' ) .
 		                             '</div>';
 
 		return array(
@@ -310,7 +310,7 @@ class Forminator_Addon_Trello_Form_Settings extends Forminator_Addon_Form_Settin
 		$template = forminator_addon_trello_dir() . 'views/form-settings/setup-list.php';
 
 		if ( ! isset( $submitted_data['multi_id'] ) ) {
-			return $this->get_force_closed_wizard( __( 'Please pick valid connection', Forminator::DOMAIN ) );
+			return $this->get_force_closed_wizard( __( 'Please pick valid connection', 'forminator' ) );
 		}
 
 		$multi_id = $submitted_data['multi_id'];
@@ -347,7 +347,7 @@ class Forminator_Addon_Trello_Form_Settings extends Forminator_Addon_Form_Settin
 
 			if ( empty( $lists ) ) {
 				/* translators: ... */
-				throw new Forminator_Addon_Trello_Exception( sprintf( __( 'No list found on Trello Board of %1$s. Please create one.', Forminator::DOMAIN ), $board_name ) );
+				throw new Forminator_Addon_Trello_Exception( sprintf( __( 'No list found on Trello Board of %1$s. Please create one.', 'forminator' ), $board_name ) );
 			}
 
 			$template_params['lists'] = $lists;
@@ -390,14 +390,14 @@ class Forminator_Addon_Trello_Form_Settings extends Forminator_Addon_Form_Settin
 		$buttons = array();
 		if ( $this->setup_name_is_completed( array( 'multi_id' => $multi_id ) ) ) {
 			$buttons['disconnect']['markup'] = Forminator_Addon_Abstract::get_button_markup(
-				esc_html__( 'Deactivate', Forminator::DOMAIN ),
+				esc_html__( 'Deactivate', 'forminator' ),
 				'sui-button-ghost sui-tooltip sui-tooltip-top-center forminator-addon-form-disconnect',
-				esc_html__( 'Deactivate this Trello Integration from this Form.', Forminator::DOMAIN )
+				esc_html__( 'Deactivate this Trello Integration from this Form.', 'forminator' )
 			);
 		}
 
 		$buttons['next']['markup'] = '<div class="sui-actions-right">' .
-		                             Forminator_Addon_Abstract::get_button_markup( esc_html__( 'Next', Forminator::DOMAIN ), 'forminator-addon-next' ) .
+		                             Forminator_Addon_Abstract::get_button_markup( esc_html__( 'Next', 'forminator' ), 'forminator-addon-next' ) .
 		                             '</div>';
 
 		return array(
@@ -450,15 +450,15 @@ class Forminator_Addon_Trello_Form_Settings extends Forminator_Addon_Form_Settin
 		$template = forminator_addon_trello_dir() . 'views/form-settings/setup-card.php';
 
 		if ( ! isset( $submitted_data['multi_id'] ) ) {
-			return $this->get_force_closed_wizard( __( 'Please pick valid connection', Forminator::DOMAIN ) );
+			return $this->get_force_closed_wizard( __( 'Please pick valid connection', 'forminator' ) );
 		}
 
 		$multi_id = $submitted_data['multi_id'];
 		unset( $submitted_data['multi_id'] );
 
 		$positions = array(
-			'top'    => __( 'Top', Forminator::DOMAIN ),
-			'bottom' => __( 'Bottom', Forminator::DOMAIN ),
+			'top'    => __( 'Top', 'forminator' ),
+			'bottom' => __( 'Bottom', 'forminator' ),
 		);
 
 		//todo: validate this, step wizard back if needed
@@ -633,14 +633,14 @@ class Forminator_Addon_Trello_Form_Settings extends Forminator_Addon_Form_Settin
 		$buttons = array();
 		if ( $this->setup_name_is_completed( array( 'multi_id' => $multi_id ) ) ) {
 			$buttons['disconnect']['markup'] = Forminator_Addon_Abstract::get_button_markup(
-				esc_html__( 'Deactivate', Forminator::DOMAIN ),
+				esc_html__( 'Deactivate', 'forminator' ),
 				'sui-button-ghost sui-tooltip sui-tooltip-top-center forminator-addon-form-disconnect',
-				esc_html__( 'Deactivate this Trello Integration from this Form.', Forminator::DOMAIN )
+				esc_html__( 'Deactivate this Trello Integration from this Form.', 'forminator' )
 			);
 		}
 
 		$buttons['next']['markup'] = '<div class="sui-actions-right">' .
-		                             Forminator_Addon_Abstract::get_button_markup( esc_html__( 'Save', Forminator::DOMAIN ), 'sui-button-primary forminator-addon-finish' ) .
+		                             Forminator_Addon_Abstract::get_button_markup( esc_html__( 'Save', 'forminator' ), 'sui-button-primary forminator-addon-finish' ) .
 		                             '</div>';
 
 		return array(

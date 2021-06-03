@@ -69,7 +69,7 @@ class Forminator_Password extends Forminator_Field {
 	public function __construct() {
 		parent::__construct();
 
-		$this->name = __( 'Password', Forminator::DOMAIN );
+		$this->name = __( 'Password', 'forminator' );
 	}
 
 	/**
@@ -80,10 +80,10 @@ class Forminator_Password extends Forminator_Field {
 	 */
 	public function defaults() {
 		return array(
-			'field_label'                  => __( 'Password', Forminator::DOMAIN ),
-			'placeholder'                  => __( 'Enter your password', Forminator::DOMAIN ),
-			'confirm-password-label'       => __( 'Confirm Password', Forminator::DOMAIN ),
-			'confirm-password-placeholder' => __( 'Confirm new password', Forminator::DOMAIN ),
+			'field_label'                  => __( 'Password', 'forminator' ),
+			'placeholder'                  => __( 'Enter your password', 'forminator' ),
+			'confirm-password-label'       => __( 'Confirm Password', 'forminator' ),
+			'confirm-password-placeholder' => __( 'Confirm new password', 'forminator' ),
 			'strength'                     => 'none',
 		);
 	}
@@ -376,7 +376,7 @@ class Forminator_Password extends Forminator_Field {
 			if ( $is_required ) {
 				$required_error = apply_filters(
 					'forminator_text_field_required_validation_message',
-					! empty( $required_message ) ? $required_message : __( 'Your password is required.', Forminator::DOMAIN ),
+					! empty( $required_message ) ? $required_message : __( 'Your password is required.', 'forminator' ),
 					$id,
 					$field
 				);
@@ -387,7 +387,7 @@ class Forminator_Password extends Forminator_Field {
 				if ( isset( $field['limit_type'] ) && 'characters' === trim( $field['limit_type'] ) ) {
 					$max_length_error = apply_filters(
 						'forminator_text_field_characters_validation_message',
-						__( 'You exceeded the allowed amount of characters. Please check again.', Forminator::DOMAIN ),
+						__( 'You exceeded the allowed amount of characters. Please check again.', 'forminator' ),
 						$id,
 						$field
 					);
@@ -395,7 +395,7 @@ class Forminator_Password extends Forminator_Field {
 				} else {
 					$max_words_error = apply_filters(
 						'forminator_text_field_words_validation_message',
-						__( 'You exceeded the allowed amount of words. Please check again.', Forminator::DOMAIN ),
+						__( 'You exceeded the allowed amount of words. Please check again.', 'forminator' ),
 						$id,
 						$field
 					);
@@ -408,7 +408,7 @@ class Forminator_Password extends Forminator_Field {
 			$strength_validation_message = self::get_property( 'strength_validation_message', $field, '' );
 			$min_strength_error = apply_filters(
 				'forminator_text_field_min_password_strength_validation_message',
-				! empty( $strength_validation_message ) ? $strength_validation_message : __( 'Your password doesn\'t meet the minimum strength requirement. We recommend using 8 or more characters with a mix of letters, numbers & symbols.', Forminator::DOMAIN ),
+				! empty( $strength_validation_message ) ? $strength_validation_message : __( 'Your password doesn\'t meet the minimum strength requirement. We recommend using 8 or more characters with a mix of letters, numbers & symbols.', 'forminator' ),
 				$id,
 				$field
 			);
@@ -423,7 +423,7 @@ class Forminator_Password extends Forminator_Field {
 			if ( $is_required ) {
 				$required_error = apply_filters(
 					'forminator_confirm_password_field_required_validation_message',
-					! empty( $required_confirm_message ) ? $required_confirm_message : __( 'You must confirm your chosen password.', Forminator::DOMAIN ),
+					! empty( $required_confirm_message ) ? $required_confirm_message : __( 'You must confirm your chosen password.', 'forminator' ),
 					$id,
 					$field
 				);
@@ -435,7 +435,7 @@ class Forminator_Password extends Forminator_Field {
 				$validation_message_not_match = self::get_property( 'validation_message', $field, '' );
 				$not_match_error = apply_filters(
 					'forminator_confirm_password_field_not_match_validation_message',
-					! empty( $validation_message_not_match ) ? $validation_message_not_match : __( 'Your passwords don\'t match.', Forminator::DOMAIN ),
+					! empty( $validation_message_not_match ) ? $validation_message_not_match : __( 'Your passwords don\'t match.', 'forminator' ),
 					$id,
 					$field
 				);
@@ -470,7 +470,7 @@ class Forminator_Password extends Forminator_Field {
 			if ( empty( $data ) ) {
 				$this->validation_message[ $id ] = apply_filters(
 					'forminator_text_field_required_validation_message',
-					( ! empty( $required_message ) ? $required_message : __( 'This field is required. Please enter text.', Forminator::DOMAIN ) ),
+					( ! empty( $required_message ) ? $required_message : __( 'This field is required. Please enter text.', 'forminator' ) ),
 					$id,
 					$field
 				);
@@ -480,7 +480,7 @@ class Forminator_Password extends Forminator_Field {
 			if ( ( isset( $field['limit_type'] ) && 'characters' === trim( $field['limit_type'] ) ) && ( strlen( $data ) > $field['limit'] ) ) {
 				$this->validation_message[ $id ] = apply_filters(
 					'forminator_text_field_characters_validation_message',
-					__( 'You exceeded the allowed amount of characters. Please check again.', Forminator::DOMAIN ),
+					__( 'You exceeded the allowed amount of characters. Please check again.', 'forminator' ),
 					$id,
 					$field
 				);
@@ -489,7 +489,7 @@ class Forminator_Password extends Forminator_Field {
 				if ( is_array( $words ) && count( $words ) > $field['limit'] ) {
 					$this->validation_message[ $id ] = apply_filters(
 						'forminator_text_field_words_validation_message',
-						__( 'You exceeded the allowed amount of words. Please check again.', Forminator::DOMAIN ),
+						__( 'You exceeded the allowed amount of words. Please check again.', 'forminator' ),
 						$id,
 						$field
 					);
@@ -501,7 +501,7 @@ class Forminator_Password extends Forminator_Field {
 			if ( ! $this->get_password_strength( $data ) ) {
 				$this->validation_message[ $id ] = apply_filters(
 					'forminator_text_field_min_password_strength_validation_message',
-					! empty( $strength_validation_message ) ? $strength_validation_message : __( 'Your password doesn\'t meet the minimum strength requirement. We recommend using 8 or more characters with a mix of letters, numbers & symbols.', Forminator::DOMAIN ),
+					! empty( $strength_validation_message ) ? $strength_validation_message : __( 'Your password doesn\'t meet the minimum strength requirement. We recommend using 8 or more characters with a mix of letters, numbers & symbols.', 'forminator' ),
 					$id,
 					$field
 				);

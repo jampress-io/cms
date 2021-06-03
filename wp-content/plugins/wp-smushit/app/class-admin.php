@@ -48,6 +48,7 @@ class Admin {
 		'smush_page_smush-upgrade-network',
 		'smush_page_smush-upgrade',
 		'smush-pro_page_smush-upgrade',
+		'smush-pro_page_smush-upgrade-network',
 	);
 
 	/**
@@ -172,16 +173,20 @@ class Admin {
 			// Smush admin (smush-admin) includes the Shared UI.
 			wp_enqueue_style( 'smush-admin' );
 			wp_enqueue_script( 'smush-wpmudev-sui' );
+
+			if ( ! WP_Smush::is_pro() ) {
+				// Used on dashboard video widget.
+				wp_enqueue_script( 'smush-wistia' );
+			}
+		}
+
+		// Skip these pages where the script isn't used.
+		if ( ! in_array( $current_page, array( 'post', 'post-new', 'page', 'edit-page' ), true ) ) {
+			wp_enqueue_script( 'smush-admin' );
 		}
 
 		// We need it on media pages and Smush pages.
-		wp_enqueue_script( 'smush-admin' );
 		wp_enqueue_style( 'smush-admin-common' );
-
-		if ( ! WP_Smush::is_pro() ) {
-			// Used on dashboard video widget.
-			wp_enqueue_script( 'smush-wistia' );
-		}
 
 		// Localize translatable strings for js.
 		WP_Smush::get_instance()->core()->localize();
@@ -205,7 +210,7 @@ class Admin {
 					'utm_medium'   => 'plugin',
 					'utm_campaign' => 'wp-smush-pro/wp-smush.php' !== WP_SMUSH_BASENAME ? 'smush_pluginlist_upgrade' : 'smush_pluginlist_renew',
 				),
-				esc_url( 'https://premium.wpmudev.org/project/wp-smush-pro/' )
+				esc_url( 'https://wpmudev.com/project/wp-smush-pro/' )
 			);
 
 			$label = 'wp-smush-pro/wp-smush.php' !== WP_SMUSH_BASENAME ? __( 'Upgrade to Smush Pro', 'wp-smushit' ) : __( 'Renew Membership', 'wp-smushit' );
@@ -215,7 +220,7 @@ class Admin {
 		}
 
 		// Documentation link.
-		$links['smush_docs'] = '<a href="https://premium.wpmudev.org/docs/wpmu-dev-plugins/smush/?utm_source=smush&utm_medium=plugin&utm_campaign=smush_pluginlist_docs" aria-label="' . esc_attr( __( 'View Smush Documentation', 'wp-smushit' ) ) . '" target="_blank">' . esc_html__( 'Docs', 'wp-smushit' ) . '</a>';
+		$links['smush_docs'] = '<a href="https://wpmudev.com/docs/wpmu-dev-plugins/smush/?utm_source=smush&utm_medium=plugin&utm_campaign=smush_pluginlist_docs" aria-label="' . esc_attr( __( 'View Smush Documentation', 'wp-smushit' ) ) . '" target="_blank">' . esc_html__( 'Docs', 'wp-smushit' ) . '</a>';
 
 		// Settings link.
 		$settings_page      = is_multisite() && is_network_admin() ? network_admin_url( 'admin.php?page=smush' ) : menu_page_url( 'smush', false );
@@ -245,15 +250,15 @@ class Admin {
 		} else {
 			if ( isset( $links[2] ) && false !== strpos( $links[2], 'project/wp-smush-pro' ) ) {
 				$links[2] = sprintf(
-					'<a href="https://premium.wpmudev.org/project/wp-smush-pro/" target="_blank">%s</a>',
+					'<a href="https://wpmudev.com/project/wp-smush-pro/" target="_blank">%s</a>',
 					__( 'View details', 'wp-smushit' )
 				);
 			}
 
-			$links[] = '<a href="https://premium.wpmudev.org/get-support/" target="_blank" title="' . esc_attr__( 'Premium Support', 'wp-smushit' ) . '">' . esc_html__( 'Premium Support', 'wp-smushit' ) . '</a>';
+			$links[] = '<a href="https://wpmudev.com/get-support/" target="_blank" title="' . esc_attr__( 'Premium Support', 'wp-smushit' ) . '">' . esc_html__( 'Premium Support', 'wp-smushit' ) . '</a>';
 		}
 
-		$links[] = '<a href="https://premium.wpmudev.org/roadmap/" target="_blank" title="' . esc_attr__( 'Roadmap', 'wp-smushit' ) . '">' . esc_html__( 'Roadmap', 'wp-smushit' ) . '</a>';
+		$links[] = '<a href="https://wpmudev.com/roadmap/" target="_blank" title="' . esc_attr__( 'Roadmap', 'wp-smushit' ) . '">' . esc_html__( 'Roadmap', 'wp-smushit' ) . '</a>';
 
 		return $links;
 	}
@@ -337,7 +342,7 @@ class Admin {
 						),
 						'<a href="#" id="wp-smush-revalidate-member" data-message="%s">',
 						'</a>',
-						'<a href="https://premium.wpmudev.org/contact" target="_blank">',
+						'<a href="https://wpmudev.com/contact" target="_blank">',
 						'</a>'
 					);
 					?>
@@ -490,7 +495,7 @@ class Admin {
 					'utm_medium'   => 'plugin',
 					'utm_campaign' => 'smush_bulksmush_morethan50images_upgradetopro',
 				),
-				esc_url( 'https://premium.wpmudev.org/project/wp-smush-pro/' )
+				esc_url( 'https://wpmudev.com/project/wp-smush-pro/' )
 			);
 
 			$image_count_description .= sprintf(

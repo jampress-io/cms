@@ -39,7 +39,7 @@ class Forminator_Addon_Zapier_Poll_Settings extends Forminator_Addon_Poll_Settin
 
 		$this->_update_poll_settings_error_message = __(
 			'The update to your settings for this poll failed, check the form input and try again.',
-			Forminator::DOMAIN
+			'forminator'
 		);
 	}
 
@@ -74,7 +74,7 @@ class Forminator_Addon_Zapier_Poll_Settings extends Forminator_Addon_Poll_Settin
 		$template = forminator_addon_zapier_dir() . 'views/poll-settings/setup-webhook.php';
 
 		if ( ! isset( $submitted_data['multi_id'] ) ) {
-			return $this->get_force_closed_wizard( __( 'Please pick valid connection', Forminator::DOMAIN ) );
+			return $this->get_force_closed_wizard( __( 'Please pick valid connection', 'forminator' ) );
 		}
 
 		$multi_id = $submitted_data['multi_id'];
@@ -103,7 +103,7 @@ class Forminator_Addon_Zapier_Poll_Settings extends Forminator_Addon_Poll_Settin
 				$input_exceptions = new Forminator_Addon_Zapier_Poll_Settings_Exception();
 
 				if ( empty( $name ) ) {
-					$input_exceptions->add_input_exception( __( 'Please specify integration name.', Forminator::DOMAIN ), 'name_error' );
+					$input_exceptions->add_input_exception( __( 'Please specify integration name.', 'forminator' ), 'name_error' );
 				}
 
 				$this->validate_and_send_sample( $submitted_data, $input_exceptions );
@@ -124,7 +124,7 @@ class Forminator_Addon_Zapier_Poll_Settings extends Forminator_Addon_Poll_Settin
 
 				$notification = array(
 					'type' => 'success',
-					'text' => '<strong>' . $this->addon->get_title() . '</strong> ' . __( 'Successfully connected and sent sample data to your ZAP', Forminator::DOMAIN ),
+					'text' => '<strong>' . $this->addon->get_title() . '</strong> ' . __( 'Successfully connected and sent sample data to your ZAP', 'forminator' ),
 				);
 				$is_close     = true;
 
@@ -140,14 +140,14 @@ class Forminator_Addon_Zapier_Poll_Settings extends Forminator_Addon_Poll_Settin
 		$buttons = array();
 		if ( $this->setup_webhook_url_is_completed( array( 'multi_id' => $multi_id ) ) ) {
 			$buttons['disconnect']['markup'] = Forminator_Addon_Zapier::get_button_markup(
-				esc_html__( 'Deactivate', Forminator::DOMAIN ),
+				esc_html__( 'Deactivate', 'forminator' ),
 				'sui-button-ghost sui-tooltip sui-tooltip-top-center forminator-addon-form-disconnect',
-				esc_html__( 'Deactivate Zapier from this Poll.', Forminator::DOMAIN )
+				esc_html__( 'Deactivate Zapier from this Poll.', 'forminator' )
 			);
 		}
 
 		$buttons['next']['markup'] = '<div class="sui-actions-right">' .
-									Forminator_Addon_Zapier::get_button_markup( esc_html__( 'Save', Forminator::DOMAIN ), 'sui-button-primary forminator-addon-finish' ) .
+									Forminator_Addon_Zapier::get_button_markup( esc_html__( 'Save', 'forminator' ), 'sui-button-primary forminator-addon-finish' ) .
 									'</div>';
 
 		return array(
@@ -179,25 +179,25 @@ class Forminator_Addon_Zapier_Poll_Settings extends Forminator_Addon_Poll_Settin
 	private function validate_and_send_sample( $submitted_data, Forminator_Addon_Zapier_Poll_Settings_Exception $current_input_exception ) {
 		$poll_id = $this->poll_id;
 		if ( ! isset( $submitted_data['webhook_url'] ) ) {
-			$current_input_exception->add_input_exception( __( 'Please put a valid Webhook URL.', Forminator::DOMAIN ), 'webhook_url_error' );
+			$current_input_exception->add_input_exception( __( 'Please put a valid Webhook URL.', 'forminator' ), 'webhook_url_error' );
 			throw $current_input_exception;
 		}
 
 		// must be this prefix
 		if ( stripos( $submitted_data['webhook_url'], 'https://hooks.zapier.com/' ) !== 0 ) {
-			$current_input_exception->add_input_exception( __( 'Please put a valid Webhook URL.', Forminator::DOMAIN ), 'webhook_url_error' );
+			$current_input_exception->add_input_exception( __( 'Please put a valid Webhook URL.', 'forminator' ), 'webhook_url_error' );
 			throw $current_input_exception;
 		}
 
 		// must not be in silent mode
 		if ( stripos( $submitted_data['webhook_url'], 'silent' ) !== false ) {
-			$current_input_exception->add_input_exception( __( 'Please disable Silent Mode on Webhook URL.', Forminator::DOMAIN ), 'webhook_url_error' );
+			$current_input_exception->add_input_exception( __( 'Please disable Silent Mode on Webhook URL.', 'forminator' ), 'webhook_url_error' );
 			throw $current_input_exception;
 		}
 
 		$endpoint = wp_http_validate_url( $submitted_data['webhook_url'] );
 		if ( false === $endpoint ) {
-			$current_input_exception->add_input_exception( __( 'Please put a valid Webhook URL.', Forminator::DOMAIN ), 'webhook_url_error' );
+			$current_input_exception->add_input_exception( __( 'Please put a valid Webhook URL.', 'forminator' ), 'webhook_url_error' );
 			throw $current_input_exception;
 		}
 

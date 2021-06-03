@@ -39,7 +39,7 @@ class Forminator_Addon_Campaignmonitor_Quiz_Hooks extends Forminator_Addon_Quiz_
 	 */
 	public function __construct( Forminator_Addon_Abstract $addon, $quiz_id ) {
 		parent::__construct( $addon, $quiz_id );
-		$this->_submit_quiz_error_message = __( 'Campaign Monitor failed to process submitted data. Please check your quiz and try again', Forminator::DOMAIN );
+		$this->_submit_quiz_error_message = __( 'Campaign Monitor failed to process submitted data. Please check your quiz and try again', 'forminator' );
 	}
 
 	/**
@@ -160,7 +160,7 @@ class Forminator_Addon_Campaignmonitor_Quiz_Hooks extends Forminator_Addon_Quiz_
 			$args = array();
 
 			if ( ! isset( $connection_settings['list_id'] ) ) {
-				throw new Forminator_Addon_Campaignmonitor_Exception( __( 'List ID not properly setup.', Forminator::DOMAIN ) );
+				throw new Forminator_Addon_Campaignmonitor_Exception( __( 'List ID not properly setup.', 'forminator' ) );
 			}
 
 			$list_id = $connection_settings['list_id'];
@@ -170,7 +170,7 @@ class Forminator_Addon_Campaignmonitor_Quiz_Hooks extends Forminator_Addon_Quiz_
 			$email_element_id = $connection_settings['fields_map']['default_field_email'];
 			if ( ! isset( $submitted_data[ $email_element_id ] ) || empty( $submitted_data[ $email_element_id ] ) ) {
 				throw new Forminator_Addon_Campaignmonitor_Exception(/* translators: ... */
-					sprintf( __( 'Email Address on element %1$s not found or not filled on submitted data.', Forminator::DOMAIN ), $email_element_id )
+					sprintf( __( 'Email Address on element %1$s not found or not filled on submitted data.', 'forminator' ), $email_element_id )
 				);
 			}
 			$email = $submitted_data[ $email_element_id ];
@@ -182,7 +182,7 @@ class Forminator_Addon_Campaignmonitor_Quiz_Hooks extends Forminator_Addon_Quiz_
 			$name_element_id = $connection_settings['fields_map']['default_field_name'];
 			if ( ! isset( $submitted_data[ $name_element_id ] ) || empty( $submitted_data[ $name_element_id ] ) ) {
 				throw new Forminator_Addon_Campaignmonitor_Exception(/* translators: ... */
-					sprintf( __( 'Name on element %1$s not found or not filled on submitted data.', Forminator::DOMAIN ), $name_element_id )
+					sprintf( __( 'Name on element %1$s not found or not filled on submitted data.', 'forminator' ), $name_element_id )
 				);
 			}
 
@@ -264,7 +264,7 @@ class Forminator_Addon_Campaignmonitor_Quiz_Hooks extends Forminator_Addon_Quiz_
 			return array(
 				'is_sent'          => true,
 				'connection_name'  => $connection_settings['name'],
-				'description'      => __( 'Successfully send data to Campaign Monitor', Forminator::DOMAIN ),
+				'description'      => __( 'Successfully send data to Campaign Monitor', 'forminator' ),
 				'data_sent'        => $api->get_last_data_sent(),
 				'data_received'    => $api->get_last_data_received(),
 				'url_request'      => $api->get_last_url_request(),
@@ -370,29 +370,29 @@ class Forminator_Addon_Campaignmonitor_Quiz_Hooks extends Forminator_Addon_Quiz_
 		}
 		$status                = $addon_meta_data['value'];
 		$additional_entry_item = array(
-			'label' => __( 'Campaign Monitor Integration', Forminator::DOMAIN ),
+			'label' => __( 'Campaign Monitor Integration', 'forminator' ),
 			'value' => '',
 		);
 
 		$sub_entries = array();
 		if ( isset( $status['connection_name'] ) ) {
 			$sub_entries[] = array(
-				'label' => __( 'Integration Name', Forminator::DOMAIN ),
+				'label' => __( 'Integration Name', 'forminator' ),
 				'value' => $status['connection_name'],
 			);
 		}
 
 		if ( isset( $status['is_sent'] ) ) {
-			$is_sent       = true === $status['is_sent'] ? __( 'Yes', Forminator::DOMAIN ) : __( 'No', Forminator::DOMAIN );
+			$is_sent       = true === $status['is_sent'] ? __( 'Yes', 'forminator' ) : __( 'No', 'forminator' );
 			$sub_entries[] = array(
-				'label' => __( 'Sent To Campaign Monitor', Forminator::DOMAIN ),
+				'label' => __( 'Sent To Campaign Monitor', 'forminator' ),
 				'value' => $is_sent,
 			);
 		}
 
 		if ( isset( $status['description'] ) ) {
 			$sub_entries[] = array(
-				'label' => __( 'Info', Forminator::DOMAIN ),
+				'label' => __( 'Info', 'forminator' ),
 				'value' => $status['description'],
 			);
 		}
@@ -401,21 +401,21 @@ class Forminator_Addon_Campaignmonitor_Quiz_Hooks extends Forminator_Addon_Quiz_
 			// too long to be added on entry data enable this with `define('FORMINATOR_ADDON_CAMPAIGNMONITOR_SHOW_FULL_LOG', true)`
 			if ( isset( $status['url_request'] ) ) {
 				$sub_entries[] = array(
-					'label' => __( 'API URL', Forminator::DOMAIN ),
+					'label' => __( 'API URL', 'forminator' ),
 					'value' => $status['url_request'],
 				);
 			}
 
 			if ( isset( $status['data_sent'] ) ) {
 				$sub_entries[] = array(
-					'label' => __( 'Data sent to Campaign Monitor', Forminator::DOMAIN ),
+					'label' => __( 'Data sent to Campaign Monitor', 'forminator' ),
 					'value' => '<pre class="sui-code-snippet">' . wp_json_encode( $status['data_sent'], JSON_PRETTY_PRINT ) . '</pre>',
 				);
 			}
 
 			if ( isset( $status['data_received'] ) ) {
 				$sub_entries[] = array(
-					'label' => __( 'Data received from Campaign Monitor', Forminator::DOMAIN ),
+					'label' => __( 'Data received from Campaign Monitor', 'forminator' ),
 					'value' => '<pre class="sui-code-snippet">' . wp_json_encode( $status['data_received'], JSON_PRETTY_PRINT ) . '</pre>',
 				);
 			}
@@ -437,7 +437,7 @@ class Forminator_Addon_Campaignmonitor_Quiz_Hooks extends Forminator_Addon_Quiz_
 	public function on_export_render_title_row() {
 
 		$export_headers = array(
-			'info' => __( 'Campaign Monitor Info', Forminator::DOMAIN ),
+			'info' => __( 'Campaign Monitor Info', 'forminator' ),
 		);
 
 		$quiz_id                = $this->quiz_id;

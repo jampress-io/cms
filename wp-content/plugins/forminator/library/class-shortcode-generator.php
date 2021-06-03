@@ -14,6 +14,15 @@ class Forminator_Shortcode_Generator {
 	 * @since 1.0
 	 */
 	public function __construct() {
+		global $pagenow;
+		// Hide Shortcode Generator for pages with Smartcrawl until SUI is updated to latest version
+		if (
+			( defined( 'SMARTCRAWL_VERSION' ) && ( 'post.php' === $pagenow || 'post-new.php' === $pagenow ) ) ||
+			( isset( $_GET['page'] ) && 'hustle_popup' !== $_GET['page'] )
+		) {
+			return;
+		}
+
 		add_action( 'media_buttons', array( $this, 'attach_button' ) );
 		add_action( 'admin_footer', array( $this, 'enqueue_js_scripts' ) );
 		if ( function_exists( 'hustle_activated' ) ) {
@@ -29,6 +38,11 @@ class Forminator_Shortcode_Generator {
 	 * @return bool
 	 */
 	public function is_hustle_wizard() {
+        // Some plugins throw error of get_current_screen as undefined
+        if ( ! function_exists( 'get_current_screen' ) ) {
+            return false;
+        }
+
 		$screen = get_current_screen();
 
 		// If no screen id, abort
@@ -66,7 +80,7 @@ class Forminator_Shortcode_Generator {
 			'<button type="button" id="%s" class="button" data-editor="content" data-a11y-dialog-show="forminator-popup">%s<span>%s</span></button>',
 			'forminator-generate-shortcode',
 			'<i class="forminator-scgen-icon" aria-hidden="true"></i>',
-			esc_html__( 'Add Form', Forminator::DOMAIN )
+			esc_html__( 'Add Form', 'forminator' )
 		);
 	}
 
@@ -80,7 +94,18 @@ class Forminator_Shortcode_Generator {
 
 		global $pagenow;
 
-		$sanitize_version = str_replace( '.', '-', FORMINATOR_SUI_VERSION );
+		$sui_version = FORMINATOR_SUI_VERSION;
+		if (
+			defined( 'HUSTLE_SUI_VERSION' ) &&
+			version_compare( HUSTLE_SUI_VERSION, '2.8.0', '>' ) &&
+			version_compare( FORMINATOR_SUI_VERSION, '2.8.0', '<' ) &&
+			isset( $_GET['page'] ) && 'hustle_popup' === $_GET['page']
+		) {
+			$sui_version = HUSTLE_SUI_VERSION;
+		}
+
+		//$sanitize_version = str_replace( '.', '-', FORMINATOR_SUI_VERSION );
+		$sanitize_version = str_replace( '.', '-', $sui_version );
 		$sui_body_class   = "sui-$sanitize_version";
 
 		// If page different than Post or Page, abort
@@ -102,12 +127,7 @@ class Forminator_Shortcode_Generator {
 		);
 
 		// Get SUI JS
-        // Change the handle to prevent SUI version conflicts
-        if ( defined( 'HUSTLE_SUI_VERSION' ) && version_compare( HUSTLE_SUI_VERSION, '2.8.0', '<' ) ) {
-            $sui_handle = 'shared-ui';
-        } else {
-            $sui_handle = 'forminator-shared-ui';
-        }
+		$sui_handle = 'shared-ui';
         wp_enqueue_script(
             $sui_handle,
             forminator_plugin_url() . 'assets/js/shared-ui.min.js',
@@ -130,6 +150,7 @@ class Forminator_Shortcode_Generator {
 		) );
 
 		$this->print_markup();
+
 		?>
 		<script type="text/javascript">
 			jQuery(document).ready(function () {
@@ -173,39 +194,30 @@ class Forminator_Shortcode_Generator {
 	 */
 	public function print_markup() {
 		?>
-		<div id="forminator-scgen-modal" class="sui-wrap" style="display: none;">
-
-			<div
-				id="forminator-popup"
-				class="sui-dialog sui-dialog-alt sui-dialog-reduced"
-				tabindex="-1"
-				aria-hidden="true"
-			>
-
-				<div class="sui-dialog-overlay"></div>
+		<div id="forminator-scgen-modal" class="sui-wrap" style="display:none;">
+			<div class="sui-modal sui-modal-md">
 
 				<div
-					class="sui-dialog-content"
 					role="dialog"
+					id="forminator-popup"
+					class="sui-modal-content"
+					aria-modal="true"
 					aria-labelledby="scgenDialogTitle"
 					aria-describedby="scgenDialogDescription"
 				>
 
 					<div class="sui-box" role="document">
 
-						<div class="sui-box-header sui-block-content-center">
+						<div class="sui-box-header sui-flatten sui-content-center sui-spacing-top--60">
 
-							<h3 id="scgenDialogTitle" class="sui-box-title"><?php esc_html_e( 'Forminator Shortcodes', Forminator::DOMAIN ); ?></h3>
+							<h3 id="scgenDialogTitle" class="sui-box-title sui-lg"><?php esc_html_e( 'Forminator Shortcodes', 'forminator' ); ?></h3>
 
-							<p id="scgenDialogDescription" class="sui-description"><?php esc_html_e( 'Select an option from the dropdown menu and generate a shortcode to insert in your post or page.', Forminator::DOMAIN ); ?></p>
+							<p id="scgenDialogDescription" class="sui-description"><?php esc_html_e( 'Select an option from the dropdown menu and generate a shortcode to insert in your post or page.', 'forminator' ); ?></p>
 
-							<div class="sui-actions-right">
-
-								<button class="sui-dialog-close">
-									<span class="sui-screen-reader-text"><?php esc_html_e( 'Close this dialog window.', Forminator::DOMAIN ); ?></span>
-								</button>
-
-							</div>
+							<button class="sui-modal-skip sui-button-icon sui-button-float--right sui-dialog-close" data-modal-close="">
+								<span class="sui-icon-close sui-md" aria-hidden="true"></span>
+								<span class="sui-screen-reader-text"><?php esc_html_e( 'Close this dialog window.', 'forminator' ); ?></span>
+							</button>
 
 						</div>
 
@@ -213,89 +225,228 @@ class Forminator_Shortcode_Generator {
 
 							<div class="sui-tabs sui-tabs-flushed">
 
-								<div data-tabs>
+								<?php if ( isset( $_GET['page'] ) && 'hustle_popup' === $_GET['page'] ) : ?>
 
-									<div id="forminator-shortcode-type--forms" class="active"><?php esc_html_e( 'Forms', Forminator::DOMAIN ); ?></div>
-									<div id="forminator-shortcode-type--polls"><?php esc_html_e( 'Polls', Forminator::DOMAIN ); ?></div>
-									<div id="forminator-shortcode-type--quizzes"><?php esc_html_e( 'Quizzes', Forminator::DOMAIN ); ?></div>
+									<div role="tablist" class="sui-tabs-menu">
 
-								</div>
+										<button
+											id="forminator-shortcode-type--forms"
+											type="button"
+											role="tab"
+											class="sui-tab-item active"
+											aria-controls="forminator-custom-forms"
+											aria-selected="true"
+										>
+											<?php esc_html_e( 'Forms', 'forminator' ); ?>
+										</button>
+										<button
+											id="forminator-shortcode-type--polls"
+											type="button"
+											role="tab"
+											class="sui-tab-item"
+											aria-controls="forminator-polls"
+											aria-selected="false"
+											tabindex="-1"
+										>
+											<?php esc_html_e( 'Polls', 'forminator' ); ?>
+										</button>
+										<button
+											id="forminator-shortcode-type--quizzes"
+											type="button"
+											role="tab"
+											class="sui-tab-item"
+											aria-controls="forminator-quizzes"
+											aria-selected="false"
+											tabindex="-1"
+										>
+											<?php esc_html_e( 'Quizzes', 'forminator' ); ?>
+										</button>
 
-								<div data-panes>
+									</div>
 
-									<!-- Forms -->
-									<div id="forminator-custom-forms" class="active">
+									<div class="sui-tabs-content">
 
-										<div class="sui-form-field">
+										<!-- Forms -->
+										<div
+											role="tabpanel"
+											tabindex="0"
+											id="forminator-custom-forms"
+											class="sui-tab-content active"
+											aria-labelledby="forminator-shortcode-type--forms"
+										>
 
-											<label for="forminator-select-forms" class="sui-label"><?php esc_html_e( 'Choose an option', Forminator::DOMAIN ); ?></label>
+											<div class="sui-form-field">
 
-											<?php echo $this->get_forms(); // WPCS: XSS ok. ?>
+												<label for="forminator-select-forms" class="sui-label"><?php esc_html_e( 'Choose an option', 'forminator' ); ?></label>
 
-											<span class="sui-error-message" style="display: none;"><?php esc_html_e( 'Please, select an option before you proceed.', Forminator::DOMAIN ); ?></span>
+												<?php echo $this->get_forms(); // WPCS: XSS ok. ?>
+
+												<span class="sui-error-message" style="display: none;"><?php esc_html_e( 'Please, select an option before you proceed.', 'forminator' ); ?></span>
+
+											</div>
+
+											<div class="fui-simulate-footer">
+
+												<button class="sui-button sui-button-blue wpmudev-insert-cform">
+													<i class="sui-icon-loader sui-loading" aria-hidden="true"></i>
+													<span class="sui-loading-text"><?php esc_html_e( 'Generate Shortcode', 'forminator' ); ?></span>
+												</button>
+
+											</div>
 
 										</div>
 
-										<div class="fui-simulate-footer">
+										<!-- Polls -->
+										<div
+											role="tabpanel"
+											tabindex="0"
+											id="forminator-polls"
+											class="sui-tab-content"
+											aria-labelledby="forminator-shortcode-type--polls"
+											hidden
+										>
 
-											<button class="sui-button sui-button-blue wpmudev-insert-cform">
-												<i class="sui-icon-loader sui-loading" aria-hidden="true"></i>
-												<span class="sui-loading-text"><?php esc_html_e( 'Generate Shortcode', Forminator::DOMAIN ); ?></span>
-											</button>
+											<div class="sui-form-field">
+
+												<label for="forminator-select-forms" class="sui-label"><?php esc_html_e( 'Choose an option', 'forminator' ); ?></label>
+
+												<?php echo $this->get_polls(); // WPCS: XSS ok. ?>
+
+												<span class="sui-error-message" style="display: none;"><?php esc_html_e( 'Please, select an option before you proceed.', 'forminator' ); ?></span>
+
+											</div>
+
+											<div class="fui-simulate-footer">
+
+												<button class="sui-button sui-button-blue wpmudev-insert-poll">
+													<i class="sui-icon-loader sui-loading" aria-hidden="true"></i>
+													<span class="sui-loading-text"><?php esc_html_e( 'Generate Shortcode', 'forminator' ); ?></span>
+												</button>
+
+											</div>
+
+										</div>
+
+										<!-- Quizzes -->
+										<div
+											role="tabpanel"
+											tabindex="0"
+											id="forminator-quizzes"
+											class="sui-tab-content"
+											aria-labelledby="forminator-shortcode-type--quizzes"
+											hidden
+										>
+
+											<div class="sui-form-field">
+
+												<label for="forminator-select-forms" class="sui-label"><?php esc_html_e( 'Choose an option', 'forminator' ); ?></label>
+
+												<?php echo $this->get_quizzes(); // WPCS: XSS ok. ?>
+
+												<span class="sui-error-message" style="display: none;"><?php esc_html_e( 'Please, select an option before you proceed.', 'forminator' ); ?></span>
+
+											</div>
+
+											<div class="fui-simulate-footer">
+
+												<button class="sui-button sui-button-blue wpmudev-insert-quiz">
+													<i class="sui-icon-loader sui-loading" aria-hidden="true"></i>
+													<span class="sui-loading-text"><?php esc_html_e( 'Generate Shortcode', 'forminator' ); ?></span>
+												</button>
+
+											</div>
 
 										</div>
 
 									</div>
 
-									<!-- Polls -->
-									<div id="forminator-polls">
+								<?php else : ?>
 
-										<div class="sui-form-field">
+									<div data-tabs>
 
-											<label for="forminator-select-forms" class="sui-label"><?php esc_html_e( 'Choose an option', Forminator::DOMAIN ); ?></label>
+										<div id="forminator-shortcode-type--forms" class="active"><?php esc_html_e( 'Forms', 'forminator' ); ?></div>
+										<div id="forminator-shortcode-type--polls"><?php esc_html_e( 'Polls', 'forminator' ); ?></div>
+										<div id="forminator-shortcode-type--quizzes"><?php esc_html_e( 'Quizzes', 'forminator' ); ?></div>
 
-											<?php echo $this->get_polls(); // WPCS: XSS ok. ?>
+									</div>
 
-											<span class="sui-error-message" style="display: none;"><?php esc_html_e( 'Please, select an option before you proceed.', Forminator::DOMAIN ); ?></span>
+									<div data-panes>
+
+										<!-- Forms -->
+										<div id="forminator-custom-forms" class="active">
+
+											<div class="sui-form-field">
+
+												<label for="forminator-select-forms" class="sui-label"><?php esc_html_e( 'Choose an option', 'forminator' ); ?></label>
+
+												<?php echo $this->get_forms(); // WPCS: XSS ok. ?>
+
+												<span class="sui-error-message" style="display: none;"><?php esc_html_e( 'Please, select an option before you proceed.', 'forminator' ); ?></span>
+
+											</div>
+
+											<div class="fui-simulate-footer">
+
+												<button class="sui-button sui-button-blue wpmudev-insert-cform">
+													<i class="sui-icon-loader sui-loading" aria-hidden="true"></i>
+													<span class="sui-loading-text"><?php esc_html_e( 'Generate Shortcode', 'forminator' ); ?></span>
+												</button>
+
+											</div>
 
 										</div>
 
-										<div class="fui-simulate-footer">
+										<!-- Polls -->
+										<div id="forminator-polls">
 
-											<button class="sui-button sui-button-blue wpmudev-insert-poll">
-												<i class="sui-icon-loader sui-loading" aria-hidden="true"></i>
-												<span class="sui-loading-text"><?php esc_html_e( 'Generate Shortcode', Forminator::DOMAIN ); ?></span>
-											</button>
+											<div class="sui-form-field">
+
+												<label for="forminator-select-forms" class="sui-label"><?php esc_html_e( 'Choose an option', 'forminator' ); ?></label>
+
+												<?php echo $this->get_polls(); // WPCS: XSS ok. ?>
+
+												<span class="sui-error-message" style="display: none;"><?php esc_html_e( 'Please, select an option before you proceed.', 'forminator' ); ?></span>
+
+											</div>
+
+											<div class="fui-simulate-footer">
+
+												<button class="sui-button sui-button-blue wpmudev-insert-poll">
+													<i class="sui-icon-loader sui-loading" aria-hidden="true"></i>
+													<span class="sui-loading-text"><?php esc_html_e( 'Generate Shortcode', 'forminator' ); ?></span>
+												</button>
+
+											</div>
+
+										</div>
+
+										<!-- Quizzes -->
+										<div id="forminator-quizzes">
+
+											<div class="sui-form-field">
+
+												<label for="forminator-select-forms" class="sui-label"><?php esc_html_e( 'Choose an option', 'forminator' ); ?></label>
+
+												<?php echo $this->get_quizzes(); // WPCS: XSS ok. ?>
+
+												<span class="sui-error-message" style="display: none;"><?php esc_html_e( 'Please, select an option before you proceed.', 'forminator' ); ?></span>
+
+											</div>
+
+											<div class="fui-simulate-footer">
+
+												<button class="sui-button sui-button-blue wpmudev-insert-quiz">
+													<i class="sui-icon-loader sui-loading" aria-hidden="true"></i>
+													<span class="sui-loading-text"><?php esc_html_e( 'Generate Shortcode', 'forminator' ); ?></span>
+												</button>
+
+											</div>
 
 										</div>
 
 									</div>
 
-									<!-- Quizzes -->
-									<div id="forminator-quizzes">
-
-										<div class="sui-form-field">
-
-											<label for="forminator-select-forms" class="sui-label"><?php esc_html_e( 'Choose an option', Forminator::DOMAIN ); ?></label>
-
-											<?php echo $this->get_quizzes(); // WPCS: XSS ok. ?>
-
-											<span class="sui-error-message" style="display: none;"><?php esc_html_e( 'Please, select an option before you proceed.', Forminator::DOMAIN ); ?></span>
-
-										</div>
-
-										<div class="fui-simulate-footer">
-
-											<button class="sui-button sui-button-blue wpmudev-insert-quiz">
-												<i class="sui-icon-loader sui-loading" aria-hidden="true"></i>
-												<span class="sui-loading-text"><?php esc_html_e( 'Generate Shortcode', Forminator::DOMAIN ); ?></span>
-											</button>
-
-										</div>
-
-									</div>
-
-								</div>
+								<?php endif; ?>
 
 							</div>
 
@@ -323,13 +474,13 @@ class Forminator_Shortcode_Generator {
 
 		$html .= '<select id="forminator-select-forms" name="forms" class="sui-select forminator-custom-form-list">';
 
-			$html .= '<option value="">' . __( 'Select Custom Form', Forminator::DOMAIN ) . '</option>';
+			$html .= '<option value="">' . __( 'Select Custom Form', 'forminator' ) . '</option>';
 
-			$modules = forminator_cform_modules( 999 );
+			$modules = forminator_form_modules( 999 );
 
 			foreach( $modules as $module ) {
 
-				$title = forminator_get_form_name( $module['id'], 'custom_form' );
+				$title = forminator_get_form_name( $module['id'] );
 
 				if ( mb_strlen( $title ) > 25 ) {
 					$title = mb_substr( $title, 0, 25 ) . '...';
@@ -356,13 +507,13 @@ class Forminator_Shortcode_Generator {
 
 		$html .= '<select id="forminator-select-polls" name="forms" class="sui-select forminator-insert-poll">';
 
-			$html .= '<option value="">' . __( "Select Poll", Forminator::DOMAIN ) . '</option>';
+			$html .= '<option value="">' . __( "Select Poll", 'forminator' ) . '</option>';
 
-			$modules = forminator_polls_modules( 999 );
+			$modules = forminator_poll_modules( 999 );
 
 			foreach( $modules as $module ) {
 
-				$title = forminator_get_form_name( $module['id'], 'poll');
+				$title = forminator_get_form_name( $module['id'] );
 
 				if ( mb_strlen( $title ) > 25 ) {
 					$title = mb_substr( $title, 0, 25 ) . '...';
@@ -389,13 +540,13 @@ class Forminator_Shortcode_Generator {
 
 		$html .= '<select id="forminator-select-quizzes" name="forms" class="sui-select forminator-quiz-list">';
 
-			$html .= '<option value="">' . __( "Select Quiz", Forminator::DOMAIN ) . '</option>';
+			$html .= '<option value="">' . __( "Select Quiz", 'forminator' ) . '</option>';
 
-			$modules = forminator_quizzes_modules( 999 );
+			$modules = forminator_quiz_modules( 999 );
 
 			foreach( $modules as $module ) {
 
-				$title = forminator_get_form_name( $module['id'], 'quiz');
+				$title = forminator_get_form_name( $module['id'] );
 
 				if ( mb_strlen( $title ) > 25 ) {
 					$title = mb_substr( $title, 0, 25 ) . '...';

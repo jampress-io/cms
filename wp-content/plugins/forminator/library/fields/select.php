@@ -56,7 +56,7 @@ class Forminator_Select extends Forminator_Field {
 	public function __construct() {
 		parent::__construct();
 
-		$this->name = __( 'Select', Forminator::DOMAIN );
+		$this->name = __( 'Select', 'forminator' );
 	}
 
 	/**
@@ -68,16 +68,16 @@ class Forminator_Select extends Forminator_Field {
 	public function defaults() {
 		return array(
 			'value_type'  => 'single',
-			'field_label' => __( 'Select', Forminator::DOMAIN ),
+			'field_label' => __( 'Select', 'forminator' ),
 			'options'     => array(
 				array(
-					'label' => __( 'Option 1', Forminator::DOMAIN ),
+					'label' => __( 'Option 1', 'forminator' ),
 					'value' => 'one',
 					'limit' => '',
 					'key'   => forminator_unique_key(),
 				),
 				array(
-					'label' => __( 'Option 2', Forminator::DOMAIN ),
+					'label' => __( 'Option 2', 'forminator' ),
 					'value' => 'two',
 					'limit' => '',
 					'key'   => forminator_unique_key(),
@@ -387,7 +387,7 @@ class Forminator_Select extends Forminator_Field {
 		$field_type  = self::get_property( 'value_type', $field, '' );
 
 		if ( $is_required ) {
-			$required_message = self::get_property( 'required_message', $field, __( 'This field is required. Please select a value.', Forminator::DOMAIN ) );
+			$required_message = self::get_property( 'required_message', $field, __( 'This field is required. Please select a value.', 'forminator' ) );
 			$required_message = apply_filters(
 				'forminator_single_field_required_validation_message',
 				$required_message,
@@ -417,8 +417,8 @@ class Forminator_Select extends Forminator_Field {
 	public function validate( $field, $data, $post_data = array() ) {
 		if ( $this->is_required( $field ) ) {
 			$id = self::get_property( 'element_id', $field );
-			if ( empty( $data ) ) {
-				$required_message                = self::get_property( 'required_message', $field, __( 'This field is required. Please select a value.', Forminator::DOMAIN ) );
+			if ( ! isset( $data ) ) {
+				$required_message                = self::get_property( 'required_message', $field, __( 'This field is required. Please select a value.', 'forminator' ) );
 				$this->validation_message[ $id ] = apply_filters(
 					'forminator_single_field_required_validation_message',
 					$required_message,

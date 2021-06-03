@@ -70,6 +70,73 @@ abstract class Forminator_General_Data_Protection {
 	}
 
 	/**
+	 * Get retain time
+	 *
+	 * @param int    $retain_number Unit amount.
+	 * @param string $retain_unit Unit.
+	 * @return boolean|string
+	 */
+	public function get_retain_time( $retain_number, $retain_unit ) {
+
+		if ( empty( $retain_number ) || $retain_number <= 0 ) {
+			return false;
+		}
+
+		$possible_units = array(
+			'days',
+			'weeks',
+			'months',
+			'years',
+		);
+
+		if ( ! in_array( $retain_unit, $possible_units, true ) ) {
+			return false;
+		}
+
+		$retain_time = strtotime( '-' . $retain_number . ' ' . $retain_unit, current_time( 'timestamp' ) );
+		$retain_time = date_i18n( 'Y-m-d H:i:s', $retain_time );
+
+		return $retain_time;
+	}
+
+	/**
+	 * Anon Entry model IP
+	 *
+	 * @since 1.0.6
+	 *
+	 * @param Forminator_Form_Entry_Model $entry_model
+	 */
+	protected function anonymize_entry_model( Forminator_Form_Entry_Model $entry_model ) {
+		if ( isset( $entry_model->meta_data['_forminator_user_ip'] ) ) {
+			$meta_id    = $entry_model->meta_data['_forminator_user_ip']['id'];
+			$meta_value = $entry_model->meta_data['_forminator_user_ip']['value'];
+
+			if ( function_exists( 'wp_privacy_anonymize_data' ) ) {
+				$anon_value = wp_privacy_anonymize_data( 'ip', $meta_value );
+			} else {
+				$anon_value = '';
+			}
+
+			if ( $anon_value !== $meta_value ) {
+				$entry_model->update_meta( $meta_id, '_forminator_user_ip', $anon_value );
+			}
+		}
+	}
+
+	/**
+	 * Delete older entries
+	 *
+	 * @param int    $module_id
+	 * @param string $retain_time
+	 */
+	protected function delete_older_entries( $module_id, $retain_time ) {
+		$entry_ids = Forminator_Form_Entry_Model::get_older_entry_ids( $retain_time, '', $module_id );
+		foreach ( $entry_ids as $entry_id ) {
+			Forminator_Form_Entry_Model::delete_by_entry( $entry_id );
+		}
+	}
+
+	/**
 	 * Append registered exporters to wp exporter
 	 *
 	 * @param array $exporters

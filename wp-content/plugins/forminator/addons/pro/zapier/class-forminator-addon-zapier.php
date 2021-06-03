@@ -21,9 +21,9 @@ final class Forminator_Addon_Zapier extends Forminator_Addon_Abstract {
 	protected $_min_forminator_version = '1.1';
 	protected $_short_title            = 'Zapier';
 	protected $_title                  = 'Zapier';
-	protected $_url                    = 'https://premium.wpmudev.org';
+	protected $_url                    = 'https://wpmudev.com';
 	protected $_full_path              = __FILE__;
-	protected $_documentation          = 'https://premium.wpmudev.org/docs/wpmu-dev-plugins/forminator/#zapier';
+	protected $_documentation          = 'https://wpmudev.com/docs/wpmu-dev-plugins/forminator/#zapier';
 
 	protected $_form_settings = 'Forminator_Addon_Zapier_Form_Settings';
 	protected $_form_hooks    = 'Forminator_Addon_Zapier_Form_Hooks';
@@ -42,28 +42,28 @@ final class Forminator_Addon_Zapier extends Forminator_Addon_Abstract {
 	 */
 	public function __construct() {
 		// late init to allow translation
-		$this->_description = __( 'Make your form Zap-able', Forminator::DOMAIN );
+		$this->_description = __( 'Make your form Zap-able', 'forminator' );
 		$doc_description    = forminator_is_show_addons_documentation_link() ?
 			sprintf(
 			/* translators: 1: article anchor start, 2: article anchor end. */
-				__( 'Refer to this %1$sarticle%2$s for tips and tricks on using Zapier integration and creating automated workflows.', Forminator::DOMAIN ),
-				'<a href="https://premium.wpmudev.org/blog/zapier-wordpress-form-integrations/" target="_blank">',
+				__( 'Refer to this %1$sarticle%2$s for tips and tricks on using Zapier integration and creating automated workflows.', 'forminator' ),
+				'<a href="https://wpmudev.com/blog/zapier-wordpress-form-integrations/" target="_blank">',
 				'</a>'
 			) : '';
 		$this->_promotion   = sprintf(
 		/* translators: ... */
-			__( 'Zapier connects Forminator with %1$s1000+ apps%2$s. You can use it to send your submissions to third party apps not natively supported in Forminator and automate your after-submission workflows. %3$s Happy automating!', Forminator::DOMAIN ),
+			__( 'Zapier connects Forminator with %1$s1000+ apps%2$s. You can use it to send your submissions to third party apps not natively supported in Forminator and automate your after-submission workflows. %3$s Happy automating!', 'forminator' ),
 			'<a href="https://zapier.com/apps" target="_blank">',
 			'</a>',
 			$doc_description
 		);
 
-		$this->_activation_error_message   = __( 'Sorry but we failed to activate Zapier Integration, don\'t hesitate to contact us', Forminator::DOMAIN );
-		$this->_deactivation_error_message = __( 'Sorry but we failed to deactivate Zapier Integration, please try again', Forminator::DOMAIN );
+		$this->_activation_error_message   = __( 'Sorry but we failed to activate Zapier Integration, don\'t hesitate to contact us', 'forminator' );
+		$this->_deactivation_error_message = __( 'Sorry but we failed to deactivate Zapier Integration, please try again', 'forminator' );
 
 		$this->_update_settings_error_message = __(
 			'Sorry, we failed to update settings, please check your form and try again',
-			Forminator::DOMAIN
+			'forminator'
 		);
 
 		$this->_icon      = forminator_addon_zapier_assets_url() . 'icons/zapier.png';
@@ -141,7 +141,7 @@ final class Forminator_Addon_Zapier extends Forminator_Addon_Abstract {
 
 			try {
 				if ( empty( $connect ) ) {
-					throw new Forminator_Addon_Zapier_Exception( __( 'Please Connect Zapier', Forminator::DOMAIN ) );
+					throw new Forminator_Addon_Zapier_Exception( __( 'Please Connect Zapier', 'forminator' ) );
 				}
 
 				if ( ! forminator_addon_is_active( $this->_slug ) ) {
@@ -168,16 +168,16 @@ final class Forminator_Addon_Zapier extends Forminator_Addon_Abstract {
 
 		if ( $show_success ) {
 			$buttons['close'] = array(
-				'markup' => self::get_button_markup( esc_html__( 'Close', Forminator::DOMAIN ), 'sui-button-ghost forminator-addon-close' ),
+				'markup' => self::get_button_markup( esc_html__( 'Close', 'forminator' ), 'sui-button-ghost forminator-addon-close' ),
 			);
 		} else {
 			if ( $this->is_connected() ) {
 				$buttons['disconnect'] = array(
-					'markup' => self::get_button_markup( esc_html__( 'Disconnect', Forminator::DOMAIN ), 'sui-button-ghost forminator-addon-disconnect' ),
+					'markup' => self::get_button_markup( esc_html__( 'Disconnect', 'forminator' ), 'sui-button-ghost forminator-addon-disconnect' ),
 				);
 			} else {
 				$buttons['submit'] = array(
-					'markup' => self::get_button_markup( esc_html__( 'Activate', Forminator::DOMAIN ), 'forminator-addon-connect' ),
+					'markup' => self::get_button_markup( esc_html__( 'Activate', 'forminator' ), 'forminator-addon-connect' ),
 				);
 			}
 		}
@@ -202,7 +202,7 @@ final class Forminator_Addon_Zapier extends Forminator_Addon_Abstract {
 		try {
 			// check if its active
 			if ( ! $this->is_active() ) {
-				throw new Forminator_Addon_Zapier_Exception( __( 'Zapier is not active', Forminator::DOMAIN ) );
+				throw new Forminator_Addon_Zapier_Exception( __( 'Zapier is not active', 'forminator' ) );
 			}
 			$is_connected = true;
 		} catch ( Forminator_Addon_Zapier_Exception $e ) {
@@ -234,17 +234,17 @@ final class Forminator_Addon_Zapier extends Forminator_Addon_Abstract {
 		try {
 			$form_settings_instance = null;
 			if ( ! $this->is_connected() ) {
-				throw new Forminator_Addon_Zapier_Exception( __( 'Zapier is not connected', Forminator::DOMAIN ) );
+				throw new Forminator_Addon_Zapier_Exception( __( 'Zapier is not connected', 'forminator' ) );
 			}
 
 			$form_settings_instance = $this->get_addon_form_settings( $form_id );
 			if ( ! $form_settings_instance instanceof Forminator_Addon_Zapier_Form_Settings ) {
-				throw new Forminator_Addon_Zapier_Exception( __( 'Invalid Form Settings of Zapier', Forminator::DOMAIN ) );
+				throw new Forminator_Addon_Zapier_Exception( __( 'Invalid Form Settings of Zapier', 'forminator' ) );
 			}
 
 			// Mark as active when there is at least one active connection
 			if ( false === $form_settings_instance->find_one_active_connection() ) {
-				throw new Forminator_Addon_Zapier_Exception( __( 'No active Zapier connection found in this form', Forminator::DOMAIN ) );
+				throw new Forminator_Addon_Zapier_Exception( __( 'No active Zapier connection found in this form', 'forminator' ) );
 			}
 
 			$is_form_connected = true;

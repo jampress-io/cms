@@ -17,8 +17,8 @@ class Forminator_QForm_Result extends Forminator_Result {
 	 */
 	public function get_og_description( $entry ) {
 		$description = '';
-		$quiz        = Forminator_Quiz_Form_Model::model()->load( $entry->form_id );
-		if ( $quiz instanceof Forminator_Quiz_Form_Model ) {
+		$quiz        = Forminator_Quiz_Model::model()->load( $entry->form_id );
+		if ( $quiz instanceof Forminator_Quiz_Model ) {
 			if ( 'knowledge' === $quiz->quiz_type ) {
 				$description = $this->get_og_description_knowledge( $quiz, $entry );
 			} else {
@@ -37,7 +37,7 @@ class Forminator_QForm_Result extends Forminator_Result {
 	 * @return string
 	 */
 	public function get_og_title( $entry ) {
-		$quiz     = Forminator_Quiz_Form_Model::model()->load( $entry->form_id );
+		$quiz     = Forminator_Quiz_Model::model()->load( $entry->form_id );
 		$entry_id = $entry->entry_id;
 
 		/**
@@ -61,7 +61,7 @@ class Forminator_QForm_Result extends Forminator_Result {
 		 * @since 1.7
 		 *
 		 * @param string                     $title
-		 * @param Forminator_Quiz_Form_Model $quiz
+		 * @param Forminator_Quiz_Model $quiz
 		 * @param int                        $entry_id
 		 *
 		 * @return string
@@ -117,7 +117,7 @@ class Forminator_QForm_Result extends Forminator_Result {
 	 * @return string
 	 */
 	public function get_og_image( $entry ) {
-		$quiz     = Forminator_Quiz_Form_Model::model()->load( $entry->form_id );
+		$quiz     = Forminator_Quiz_Model::model()->load( $entry->form_id );
 		$entry_id = $entry->entry_id;
 
 		/**
@@ -141,7 +141,7 @@ class Forminator_QForm_Result extends Forminator_Result {
 		 * @since 1.7
 		 *
 		 * @param string                     $image
-		 * @param Forminator_Quiz_Form_Model $quiz
+		 * @param Forminator_Quiz_Model $quiz
 		 * @param int                        $entry_id
 		 *
 		 * @return string
@@ -152,7 +152,7 @@ class Forminator_QForm_Result extends Forminator_Result {
 	}
 
 	/**
-	 * @param Forminator_Quiz_Form_Model  $quiz
+	 * @param Forminator_Quiz_Model  $quiz
 	 * @param Forminator_Form_Entry_Model $entry
 	 *
 	 * @return string
@@ -196,7 +196,7 @@ class Forminator_QForm_Result extends Forminator_Result {
 		 * @since 1.5.2
 		 *
 		 * @param string                     $description
-		 * @param Forminator_Quiz_Form_Model $quiz
+		 * @param Forminator_Quiz_Model $quiz
 		 * @param int                        $entry_id
 		 * @param int                        $right      right answer
 		 * @param int                        $total      total answer
@@ -209,7 +209,7 @@ class Forminator_QForm_Result extends Forminator_Result {
 	}
 
 	/**
-	 * @param Forminator_Quiz_Form_Model  $quiz
+	 * @param Forminator_Quiz_Model  $quiz
 	 * @param Forminator_Form_Entry_Model $entry
 	 *
 	 * @return string
@@ -265,7 +265,7 @@ class Forminator_QForm_Result extends Forminator_Result {
 		 * @since 1.5.2
 		 *
 		 * @param string                     $description
-		 * @param Forminator_Quiz_Form_Model $quiz
+		 * @param Forminator_Quiz_Model $quiz
 		 * @param int                        $entry_id
 		 * @param array                      $result     result detail
 		 * @param string                     $quiz_title Quiz name
@@ -349,9 +349,9 @@ class Forminator_QForm_Result extends Forminator_Result {
 			return false;
 		}
 
-		$quiz = Forminator_Quiz_Form_Model::model()->load( $entry->form_id );
+		$quiz = Forminator_Quiz_Model::model()->load( $entry->form_id );
 
-		if ( ! $quiz instanceof Forminator_Quiz_Form_Model ) {
+		if ( ! $quiz instanceof Forminator_Quiz_Model ) {
 			return false;
 		}
 

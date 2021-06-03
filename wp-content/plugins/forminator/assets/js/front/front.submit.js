@@ -147,7 +147,8 @@
 						// get the recatpcha widget
 						var recaptcha_widget = $captcha_field.data('forminator-recapchta-widget'),
 							recaptcha_size = $captcha_field.data('size'),
-							$captcha_response = window.grecaptcha.getResponse(recaptcha_widget);
+							$captcha_response = window.grecaptcha.getResponse(recaptcha_widget),
+							$captcha_parent = $captcha_field.parent( '.forminator-col' );
 
 						if (recaptcha_size === 'invisible') {
 							if ($captcha_response.length === 0) {
@@ -169,8 +170,20 @@
 							if (!$captcha_field.hasClass("error")) {
 								$captcha_field.addClass("error");
 							}
+
 							$target_message.html('<label class="forminator-label--error"><span>' + window.ForminatorFront.cform.captcha_error + '</span></label>');
-							self.focus_to_element($target_message);
+
+							if ( ! self.settings.inline_validation ) {
+								self.focus_to_element($target_message);
+							} else {
+
+								if ( ! $captcha_parent.hasClass( 'forminator-has_error' ) && $captcha_field.data( 'size' ) !== 'invisible' ) {
+									$captcha_parent.addClass( 'forminator-has_error' )
+										.append( '<span class="forminator-error-message" aria-hidden="true">' + window.ForminatorFront.cform.captcha_error + '</span>' );
+									self.focus_to_element( $captcha_parent );
+								}
+
+							}
 
 							return false;
 						}
@@ -190,7 +203,8 @@
 							// get the recatpcha widget
 							var recaptcha_widget = $captcha_field.data('forminator-recapchta-widget'),
 								recaptcha_size = $captcha_field.data('size'),
-								$captcha_response = window.grecaptcha.getResponse(recaptcha_widget);
+								$captcha_response = window.grecaptcha.getResponse(recaptcha_widget),
+								$captcha_parent = $captcha_field.parent( '.forminator-col' );
 
 							if (recaptcha_size === 'invisible') {
 								if ($captcha_response.length === 0) {
@@ -212,8 +226,20 @@
 								if (!$captcha_field.hasClass("error")) {
 									$captcha_field.addClass("error");
 								}
+									
 								$target_message.html('<label class="forminator-label--error"><span>' + window.ForminatorFront.cform.captcha_error + '</span></label>');
-								self.focus_to_element($target_message);
+								
+								if ( ! self.settings.inline_validation ) {
+									self.focus_to_element($target_message);
+								} else {
+									
+									if ( ! $captcha_parent.hasClass( 'forminator-has_error' ) && $captcha_field.data( 'size' ) !== 'invisible' ) {
+										$captcha_parent.addClass( 'forminator-has_error' )
+											.append( '<span class="forminator-error-message" aria-hidden="true">' + window.ForminatorFront.cform.captcha_error + '</span>' );
+										self.focus_to_element( $captcha_parent );
+									}
+									
+								}
 
 								return false;
 							}
@@ -339,7 +365,7 @@
 										.prop("tabindex", "-1")
 										.addClass($label_class + ' forminator-show');
 									self.focus_to_element($target_message, $label_class === 'forminator-success');
-									$target_message.html('<p>' + data.message + '</p>');
+									$target_message.html( data.message );
 
 									if(!data.data.success && data.data.errors.length) {
 										var errors_html = '<ul class="forminator-screen-reader-only">';
@@ -365,7 +391,7 @@
 												.prop("tabindex", "-1")
 												.addClass($label_class + ' forminator-show');
 											self.focus_to_element($target_message, $label_class === 'forminator-success');
-											$target_message.html('<p>' + data.data.message + '</p>');
+											$target_message.html( data.data.message );
 										}
 
 										if(!data.data.success && typeof data.data.errors !== 'undefined' && data.data.errors.length) {
@@ -541,6 +567,7 @@
 
 				return false;
 			});
+
 		},
 
 		handle_submit_quiz: function( data ) {

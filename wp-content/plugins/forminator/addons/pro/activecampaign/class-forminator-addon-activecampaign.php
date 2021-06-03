@@ -21,7 +21,7 @@ final class Forminator_Addon_Activecampaign extends Forminator_Addon_Abstract {
 	protected $_min_forminator_version = '1.1';
 	protected $_short_title            = 'ActiveCampaign';
 	protected $_title                  = 'ActiveCampaign';
-	protected $_url                    = 'https://premium.wpmudev.org';
+	protected $_url                    = 'https://wpmudev.com';
 	protected $_full_path              = __FILE__;
 	protected $_position               = 8;
 
@@ -45,13 +45,13 @@ final class Forminator_Addon_Activecampaign extends Forminator_Addon_Abstract {
 	 */
 	public function __construct() {
 		// late init to allow translation
-		$this->_description                = __( 'Get awesome by your form.', Forminator::DOMAIN );
-		$this->_activation_error_message   = __( 'Sorry but we failed to activate Activecampaign Integration, don\'t hesitate to contact us', Forminator::DOMAIN );
-		$this->_deactivation_error_message = __( 'Sorry but we failed to deactivate Activecampaign Integration, please try again', Forminator::DOMAIN );
+		$this->_description                = __( 'Get awesome by your form.', 'forminator' );
+		$this->_activation_error_message   = __( 'Sorry but we failed to activate Activecampaign Integration, don\'t hesitate to contact us', 'forminator' );
+		$this->_deactivation_error_message = __( 'Sorry but we failed to deactivate Activecampaign Integration, please try again', 'forminator' );
 
 		$this->_update_settings_error_message = __(
 			'Sorry, we failed to update settings, please check your form and try again',
-			Forminator::DOMAIN
+			'forminator'
 		);
 
 		$this->_icon     = forminator_addon_activecampaign_assets_url() . 'icons/activecampaign.png';
@@ -85,7 +85,7 @@ final class Forminator_Addon_Activecampaign extends Forminator_Addon_Abstract {
 		try {
 			// check if its active
 			if ( ! $this->is_active() ) {
-				throw new Forminator_Addon_Activecampaign_Exception( __( 'ActiveCampaign is not active', Forminator::DOMAIN ) );
+				throw new Forminator_Addon_Activecampaign_Exception( __( 'ActiveCampaign is not active', 'forminator' ) );
 			}
 
 			// if user completed api setup
@@ -120,17 +120,17 @@ final class Forminator_Addon_Activecampaign extends Forminator_Addon_Abstract {
 		try {
 			$form_settings_instance = null;
 			if ( ! $this->is_connected() ) {
-				throw new Forminator_Addon_Activecampaign_Exception( __( ' ActiveCampaign is not connected', Forminator::DOMAIN ) );
+				throw new Forminator_Addon_Activecampaign_Exception( __( ' ActiveCampaign is not connected', 'forminator' ) );
 			}
 
 			$form_settings_instance = $this->get_addon_form_settings( $form_id );
 			if ( ! $form_settings_instance instanceof Forminator_Addon_Activecampaign_Form_Settings ) {
-				throw new Forminator_Addon_Activecampaign_Exception( __( 'Invalid Form Settings of ActiveCampaign', Forminator::DOMAIN ) );
+				throw new Forminator_Addon_Activecampaign_Exception( __( 'Invalid Form Settings of ActiveCampaign', 'forminator' ) );
 			}
 
 			// Mark as active when there is at least one active connection
 			if ( false === $form_settings_instance->find_one_active_connection() ) {
-				throw new Forminator_Addon_Activecampaign_Exception( __( 'No active ActiveCampaign connection found in this form', Forminator::DOMAIN ) );
+				throw new Forminator_Addon_Activecampaign_Exception( __( 'No active ActiveCampaign connection found in this form', 'forminator' ) );
 			}
 
 			$is_form_connected = true;
@@ -331,22 +331,22 @@ final class Forminator_Addon_Activecampaign extends Forminator_Addon_Abstract {
 
 		if ( $show_success ) {
 			$buttons['close'] = array(
-				'markup' => self::get_button_markup( esc_html__( 'Close', Forminator::DOMAIN ), 'sui-button-ghost forminator-addon-close' ),
+				'markup' => self::get_button_markup( esc_html__( 'Close', 'forminator' ), 'sui-button-ghost forminator-addon-close' ),
 			);
 		} else {
 			if ( $this->is_connected() ) {
 				$buttons['disconnect'] = array(
-					'markup' => self::get_button_markup( esc_html__( 'Disconnect', Forminator::DOMAIN ), 'sui-button-ghost forminator-addon-disconnect' ),
+					'markup' => self::get_button_markup( esc_html__( 'Disconnect', 'forminator' ), 'sui-button-ghost forminator-addon-disconnect' ),
 				);
 				$buttons['submit']     = array(
 					'markup' => '<div class="sui-actions-right">' .
-								self::get_button_markup( esc_html__( 'Save', Forminator::DOMAIN ), 'forminator-addon-connect' ) .
+								self::get_button_markup( esc_html__( 'Save', 'forminator' ), 'forminator-addon-connect' ) .
 								'</div>',
 				);
 			} else {
 				$buttons['submit'] = array(
 					'markup' => '<div class="sui-actions-right">' .
-								self::get_button_markup( esc_html__( 'CONNECT', Forminator::DOMAIN ), 'forminator-addon-connect' ) .
+								self::get_button_markup( esc_html__( 'CONNECT', 'forminator' ), 'forminator-addon-connect' ) .
 								'</div>',
 				);
 			}
@@ -379,12 +379,12 @@ final class Forminator_Addon_Activecampaign extends Forminator_Addon_Abstract {
 	 */
 	public function validate_api_url( $api_url ) {
 		if ( empty( $api_url ) ) {
-			throw new Forminator_Addon_Activecampaign_Exception( __( 'Please put a valid ActiveCampaign API URL', Forminator::DOMAIN ) );
+			throw new Forminator_Addon_Activecampaign_Exception( __( 'Please put a valid ActiveCampaign API URL', 'forminator' ) );
 		}
 
 		$api_url = wp_http_validate_url( $api_url );
 		if ( false === $api_url ) {
-			throw new Forminator_Addon_Activecampaign_Exception( __( 'Please put a valid ActiveCampaign API URL', Forminator::DOMAIN ) );
+			throw new Forminator_Addon_Activecampaign_Exception( __( 'Please put a valid ActiveCampaign API URL', 'forminator' ) );
 		}
 
 		return $api_url;
@@ -402,7 +402,7 @@ final class Forminator_Addon_Activecampaign extends Forminator_Addon_Abstract {
 	 */
 	public function validate_api_key( $api_key ) {
 		if ( empty( $api_key ) ) {
-			throw new Forminator_Addon_Activecampaign_Exception( __( 'Please put a valid ActiveCampaign API Key', Forminator::DOMAIN ) );
+			throw new Forminator_Addon_Activecampaign_Exception( __( 'Please put a valid ActiveCampaign API Key', 'forminator' ) );
 		}
 
 		return $api_key;
@@ -426,7 +426,7 @@ final class Forminator_Addon_Activecampaign extends Forminator_Addon_Abstract {
 		$account_request = $api->get_account();
 
 		if ( ! isset( $account_request->account ) || empty( $account_request->account ) ) {
-			throw new Forminator_Addon_Activecampaign_Exception( __( 'Failed to get ActiveCampaign account info.', Forminator::DOMAIN ) );
+			throw new Forminator_Addon_Activecampaign_Exception( __( 'Failed to get ActiveCampaign account info.', 'forminator' ) );
 		}
 
 		$this->connected_account = $account_request->account;
@@ -500,17 +500,17 @@ final class Forminator_Addon_Activecampaign extends Forminator_Addon_Abstract {
 		try {
 			$quiz_settings_instance = null;
 			if ( ! $this->is_connected() ) {
-				throw new Forminator_Addon_Activecampaign_Exception( __( 'ActiveCampaign is not connected', Forminator::DOMAIN ) );
+				throw new Forminator_Addon_Activecampaign_Exception( __( 'ActiveCampaign is not connected', 'forminator' ) );
 			}
 
 			$quiz_settings_instance = $this->get_addon_quiz_settings( $quiz_id );
 			if ( ! $quiz_settings_instance instanceof Forminator_Addon_Activecampaign_Quiz_Settings ) {
-				throw new Forminator_Addon_Activecampaign_Exception( __( 'Invalid Quiz Settings of ActiveCampaign', Forminator::DOMAIN ) );
+				throw new Forminator_Addon_Activecampaign_Exception( __( 'Invalid Quiz Settings of ActiveCampaign', 'forminator' ) );
 			}
 
 			// Mark as active when there is at least one active connection
 			if ( false === $quiz_settings_instance->find_one_active_connection() ) {
-				throw new Forminator_Addon_Activecampaign_Exception( __( 'No active ActiveCampaign connection found in this quiz', Forminator::DOMAIN ) );
+				throw new Forminator_Addon_Activecampaign_Exception( __( 'No active ActiveCampaign connection found in this quiz', 'forminator' ) );
 			}
 
 			$is_quiz_connected = true;
@@ -551,12 +551,12 @@ final class Forminator_Addon_Activecampaign extends Forminator_Addon_Abstract {
 			// initialize with null
 			$quiz_settings_instance = null;
 			if ( ! $this->is_connected() ) {
-				throw new Forminator_Addon_Activecampaign_Exception( __( ' ActiveCampaign is not connected', Forminator::DOMAIN ) );
+				throw new Forminator_Addon_Activecampaign_Exception( __( ' ActiveCampaign is not connected', 'forminator' ) );
 			}
 
 			$quiz_settings_instance = $this->get_addon_quiz_settings( $quiz_id );
 			if ( ! $quiz_settings_instance instanceof Forminator_Addon_Activecampaign_Quiz_Settings ) {
-				throw new Forminator_Addon_Activecampaign_Exception( __( 'Invalid Quiz Settings of ActiveCampaign', Forminator::DOMAIN ) );
+				throw new Forminator_Addon_Activecampaign_Exception( __( 'Invalid Quiz Settings of ActiveCampaign', 'forminator' ) );
 			}
 
 			$quiz_settings = $quiz_settings_instance->get_quiz_settings();

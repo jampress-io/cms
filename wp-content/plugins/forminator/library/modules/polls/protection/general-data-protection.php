@@ -12,8 +12,15 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Forminator_Polls_General_Data_Protection extends Forminator_General_Data_Protection {
 
+	/**
+	 * Module slug
+	 *
+	 * @var string
+	 */
+	protected static $module_slug = 'poll';
+
 	public function __construct() {
-		parent::__construct( __( 'Forminator Polls', Forminator::DOMAIN ) );
+		parent::__construct( __( 'Forminator Polls', 'forminator' ) );
 	}
 
 	/**
@@ -58,56 +65,30 @@ class Forminator_Polls_General_Data_Protection extends Forminator_General_Data_P
 		foreach ( $overridden_polls_privacy as $form_id => $retentions ) {
 			$retain_number = (int) $retentions['ip_address_retention_number'];
 			$retain_unit   = $retentions['ip_address_retention_unit'];
-			if ( empty( $retain_number ) ) {
-				// forever
-				continue;
-			}
-			$possible_units = array(
-				'days',
-				'weeks',
-				'months',
-				'years',
-			);
 
-			if ( ! in_array( $retain_unit, $possible_units, true ) ) {
+			$retain_time = $this->get_retain_time( $retain_number, $retain_unit );
+			if ( ! $retain_time ) {
 				continue;
 			}
 
-			$retain_time = strtotime( '-' . $retain_number . ' ' . $retain_unit, current_time( 'timestamp' ) );
-			$retain_time = date_i18n( 'Y-m-d H:i:s', $retain_time );
-
-			$entry_ids = Forminator_Form_Entry_Model::get_older_entry_ids_of_form_id( $form_id, $retain_time );
+			$entry_ids = Forminator_Form_Entry_Model::get_older_entry_ids( $retain_time, '', $form_id );
 
 			foreach ( $entry_ids as $entry_id ) {
 				$entry_model = new Forminator_Form_Entry_Model( $entry_id );
 				$this->anonymize_entry_model( $entry_model );
 			}
-
 		}
 
 		$retain_number = get_option( 'forminator_retain_votes_interval_number', 0 );
 		$retain_unit   = get_option( 'forminator_retain_votes_interval_unit', 'days' );
 
-		if ( empty( $retain_number ) ) {
+		$retain_time = $this->get_retain_time( $retain_number, $retain_unit );
+		if ( ! $retain_time ) {
 			return false;
 		}
-
-		$possible_units = array(
-			'days',
-			'weeks',
-			'months',
-			'years',
-		);
-
-		if ( ! in_array( $retain_unit, $possible_units, true ) ) {
-			return false;
-		}
-
-		$retain_time = strtotime( '-' . $retain_number . ' ' . $retain_unit, current_time( 'timestamp' ) );
-		$retain_time = date_i18n( 'Y-m-d H:i:s', $retain_time );
 
 		// todo : select only un-anonymized
-		$entry_ids = Forminator_Form_Entry_Model::get_older_entry_ids( 'poll', $retain_time );
+		$entry_ids = Forminator_Form_Entry_Model::get_older_entry_ids( $retain_time, 'poll' );
 
 		foreach ( $entry_ids as $entry_id ) {
 			$entry_model = new Forminator_Form_Entry_Model( $entry_id );
@@ -132,13 +113,13 @@ class Forminator_Polls_General_Data_Protection extends Forminator_General_Data_P
 		 * PROCESS OVERIDDEN POLL FIRST
 		 */
 		// get all ALL-Status poll
-		$polls = Forminator_Poll_Form_Model::model()->get_all_models( 'any' );
+		$polls = Forminator_Poll_Model::model()->get_all_models( 'any' );
 
 		// find overidden
 		$overidden_poll_ids = array(); // will be used to filter out global settings retention later
 		if ( isset( $polls['models'] ) && is_array( $polls['models'] ) ) {
 			foreach ( $polls['models'] as $poll ) {
-				/** @var Forminator_Poll_Form_Model $poll */
+				/** @var Forminator_Poll_Model $poll */
 				$settings = $poll->settings;
 				if ( isset( $settings['enable-submissions-retention'] ) ) {
 					$is_overidden = filter_var( $settings['enable-submissions-retention'], FILTER_VALIDATE_BOOLEAN );
@@ -150,43 +131,20 @@ class Forminator_Polls_General_Data_Protection extends Forminator_General_Data_P
 							$retain_number = intval( $settings['submissions-retention-number'] );
 						}
 
-						if ( $retain_number <= 0 ) {
-							// set to forever
-							continue;
-						}
-
 						$retain_unit = 'days';
 						if ( isset( $settings['submissions-retention-unit'] ) ) {
 							$retain_unit = $settings['submissions-retention-unit'];
 						}
 
-						$possible_units = array(
-							'days',
-							'weeks',
-							'months',
-							'years',
-						);
-
-						if ( ! in_array( $retain_unit, $possible_units, true ) ) {
-							// invalid unit
+						$retain_time = $this->get_retain_time( $retain_number, $retain_unit );
+						if ( ! $retain_time ) {
 							continue;
 						}
-
-						// start deleting
-						$retain_time = strtotime( '-' . $retain_number . ' ' . $retain_unit, current_time( 'timestamp' ) );
-						$retain_time = date_i18n( 'Y-m-d H:i:s', $retain_time );
-						$entry_ids   = Forminator_Form_Entry_Model::get_older_entry_ids_of_form_id( $poll->id, $retain_time );
-						foreach ( $entry_ids as $entry_id ) {
-							$entry_model = new Forminator_Form_Entry_Model( $entry_id );
-							Forminator_Form_Entry_Model::delete_by_entry( $entry_model->form_id, $entry_id );
-						}
-
+						$this->delete_older_entries( $poll->id, $retain_time );
 					}
-
 				}
 			}
 		}
-
 
 		/**
 		 * PROCESS FROM GLOBAL SETTINGS
@@ -194,25 +152,12 @@ class Forminator_Polls_General_Data_Protection extends Forminator_General_Data_P
 		$retain_number = get_option( 'forminator_retain_poll_submissions_interval_number', 0 );
 		$retain_unit   = get_option( 'forminator_retain_poll_submissions_interval_unit', 'days' );
 
-		if ( empty( $retain_number ) ) {
+		$retain_time = $this->get_retain_time( $retain_number, $retain_unit );
+		if ( ! $retain_time ) {
 			return false;
 		}
 
-		$possible_units = array(
-			'days',
-			'weeks',
-			'months',
-			'years',
-		);
-
-		if ( ! in_array( $retain_unit, $possible_units, true ) ) {
-			return false;
-		}
-
-		$retain_time = strtotime( '-' . $retain_number . ' ' . $retain_unit, current_time( 'timestamp' ) );
-		$retain_time = date_i18n( 'Y-m-d H:i:s', $retain_time );
-
-		$entry_ids = Forminator_Form_Entry_Model::get_older_entry_ids( 'poll', $retain_time );
+		$entry_ids = Forminator_Form_Entry_Model::get_older_entry_ids( $retain_time, 'poll' );
 
 		foreach ( $entry_ids as $entry_id ) {
 			$entry_model = new Forminator_Form_Entry_Model( $entry_id );
@@ -226,28 +171,4 @@ class Forminator_Polls_General_Data_Protection extends Forminator_General_Data_P
 
 	}
 
-	/**
-	 * Anon Entry model
-	 *
-	 * @since 1.0.6
-	 *
-	 * @param Forminator_Form_Entry_Model $entry_model
-	 */
-	private function anonymize_entry_model( Forminator_Form_Entry_Model $entry_model ) {
-		if ( isset( $entry_model->meta_data['_forminator_user_ip'] ) ) {
-			$meta_id    = $entry_model->meta_data['_forminator_user_ip']['id'];
-			$meta_value = $entry_model->meta_data['_forminator_user_ip']['value'];
-
-			if ( function_exists( 'wp_privacy_anonymize_data' ) ) {
-				$anon_value = wp_privacy_anonymize_data( 'ip', $meta_value );
-			} else {
-				$anon_value = '';
-			}
-
-			if ( $anon_value !== $meta_value ) {
-				$entry_model->update_meta( $meta_id, '_forminator_user_ip', $anon_value );
-			}
-
-		}
-	}
 }

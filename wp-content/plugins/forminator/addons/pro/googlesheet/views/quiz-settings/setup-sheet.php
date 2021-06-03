@@ -16,12 +16,12 @@ foreach ( $template_vars as $key => $val ) {
 
 <div class="integration-header">
 
-	<h3 class="sui-box-title" id="dialogTitle2"><?php echo esc_html( __( 'Create Spread Sheet', Forminator::DOMAIN ) ); ?></h3>
-	<p><?php esc_html_e( 'Create Spreadsheet that will be used to send submissions.', Forminator::DOMAIN ); ?></p>
+	<h3 class="sui-box-title" id="dialogTitle2"><?php echo esc_html( __( 'Create Spread Sheet', 'forminator' ) ); ?></h3>
+	<p><?php esc_html_e( 'Create Spreadsheet that will be used to send submissions.', 'forminator' ); ?></p>
 	<?php if ( ! empty( $vars['file_id'] ) ) : ?>
 		<span class="sui-notice sui-notice-info"><p>
-		<?php esc_html_e( 'You can open your current spread sheet', Forminator::DOMAIN ); ?>
-				<a target="_blank" href="https://docs.google.com/spreadsheets/d/<?php echo esc_attr( $vars['file_id'] ); ?>"><?php esc_html_e( 'here', Forminator::DOMAIN ); ?></a>.</p></span>
+		<?php esc_html_e( 'You can open your current spread sheet', 'forminator' ); ?>
+				<a target="_blank" href="https://docs.google.com/spreadsheets/d/<?php echo esc_attr( $vars['file_id'] ); ?>"><?php esc_html_e( 'here', 'forminator' ); ?></a>.</p></span>
 	<?php endif; ?>
 	<?php if ( ! empty( $vars['error_message'] ) ) : ?>
 		<span class="sui-notice sui-notice-error"><p><?php echo esc_html( $vars['error_message'] ); ?></p></span>
@@ -29,10 +29,10 @@ foreach ( $template_vars as $key => $val ) {
 </div>
 <form>
 	<div class="sui-form-field <?php echo esc_attr( ! empty( $vars['folder_id_error'] ) ? 'sui-form-field-error' : '' ); ?>">
-		<label class="sui-label"><?php esc_html_e( 'Drive Folder ID', Forminator::DOMAIN ); ?></label>
+		<label class="sui-label"><?php esc_html_e( 'Drive Folder ID', 'forminator' ); ?></label>
 		<input
 				class="sui-form-control"
-				name="folder_id" placeholder="<?php echo esc_attr( __( 'Folder ID', Forminator::DOMAIN ) ); ?>"
+				name="folder_id" placeholder="<?php echo esc_attr( __( 'Folder ID', 'forminator' ) ); ?>"
 				value="<?php echo esc_attr( $vars['folder_id'] ); ?>">
 		<?php if ( ! empty( $vars['folder_id_error'] ) ) : ?>
 			<span class="sui-error-message"><?php echo esc_html( $vars['folder_id_error'] ); ?></span>
@@ -40,21 +40,21 @@ foreach ( $template_vars as $key => $val ) {
 		<span class="sui-description">
 			<ol class="instructions" id="directory-instructions" style="display: block;">
 				<li>
-					<?php esc_html_e( 'It is optional, if Drive Folder ID omitted / empty, new spreadsheet will be created in your Google Drive home / root folder.', Forminator::DOMAIN ); ?>
+					<?php esc_html_e( 'It is optional, if Drive Folder ID omitted / empty, new spreadsheet will be created in your Google Drive home / root folder.', 'forminator' ); ?>
 				</li>
 				<li>
 					<?php
 					echo sprintf(/* translators: ... */
-						esc_html__( 'Go to your %1$s.', Forminator::DOMAIN ),
-						'<a href="https://drive.google.com/#my-drive" target="_blank">' . esc_html__( 'Drive account', Forminator::DOMAIN ) . '</a>'
+						esc_html__( 'Go to your %1$s.', 'forminator' ),
+						'<a href="https://drive.google.com/#my-drive" target="_blank">' . esc_html__( 'Drive account', 'forminator' ) . '</a>'
 					); //phpcs:ignore Standard.Category.SniffName.ErrorCode
 					?>
-					<?php esc_html_e( 'Navigate to or create a new directory where you want to create a new spreadsheet. Make sure you are viewing the destination directory.', Forminator::DOMAIN ); ?>
+					<?php esc_html_e( 'Navigate to or create a new directory where you want to create a new spreadsheet. Make sure you are viewing the destination directory.', 'forminator' ); ?>
 				</li>
 				<li>
 				<?php
 				echo sprintf(/* translators: ... */
-					esc_html__( 'The URL for the directory will be something similar to %1$s. The Directory ID would be the last part after %2$s, which is %3$s in this case.', Forminator::DOMAIN ),
+					esc_html__( 'The URL for the directory will be something similar to %1$s. The Directory ID would be the last part after %2$s, which is %3$s in this case.', 'forminator' ),
 					'<em>https://drive.google.com/#folders/0B6GD66ctHXdCOWZKNDRIRGJJXS3</em>',
 					'<em>/#folders/</em>',
 					'<strong>0B6GD66ctHXdCOWZKNDRIRGJJXS3</strong>'
@@ -66,10 +66,10 @@ foreach ( $template_vars as $key => $val ) {
 	</div>
 
 	<div class="sui-form-field <?php echo esc_attr( ! empty( $vars['file_name_error'] ) ? 'sui-form-field-error' : '' ); ?>">
-		<label class="sui-label"><?php esc_html_e( 'Spreadsheet File Name', Forminator::DOMAIN ); ?></label>
+		<label class="sui-label"><?php esc_html_e( 'Spreadsheet File Name', 'forminator' ); ?></label>
 		<input
 				class="sui-form-control"
-				name="file_name" placeholder="<?php echo esc_attr( __( 'File Name', Forminator::DOMAIN ) ); ?>"
+				name="file_name" placeholder="<?php echo esc_attr( __( 'File Name', 'forminator' ) ); ?>"
 				value="<?php echo esc_attr( $vars['file_name'] ); ?>">
 		<?php if ( ! empty( $vars['file_name_error'] ) ) : ?>
 			<span class="sui-error-message"><?php echo esc_html( $vars['file_name_error'] ); ?></span>

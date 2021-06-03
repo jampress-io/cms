@@ -1,9 +1,9 @@
 /* Social Sharing */
-.forminator-ui.forminator-quiz-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-quiz--social {
+.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-quiz--social {
 	border-top-color: rgba(0,0,0,0.12);
 }
 
-.forminator-ui.forminator-quiz-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-quiz--social .forminator-social--text {
+.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-quiz--social .forminator-social--text {
 	<?php if ( forminator_array_value_exists( $properties, 'nowrong-toggle-palette' ) ) { ?>
 		<?php if ( forminator_array_value_exists( $properties, 'nowrong-sshare-color' ) ) { ?>
 			color: <?php echo $properties['nowrong-sshare-color'] ?>;
@@ -39,7 +39,7 @@
 	<?php } ?>
 }
 
-.forminator-ui.forminator-quiz-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-quiz--social .forminator-social--icon {
+.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-quiz--result .forminator-quiz--social .forminator-social--icon {
 	<?php if ( forminator_array_value_exists( $properties, 'nowrong-toggle-typography' ) ) { ?>
 		<?php if ( forminator_array_value_exists( $properties, 'nowrong-social-size' ) ) { ?>
 			font-size: <?php echo $properties['nowrong-social-size'] ?>px;

@@ -32,13 +32,6 @@ abstract class Forminator_Admin_Page {
 	protected $folder = '';
 
 	/**
-	 * All registered content boxes
-	 *
-	 * @var array
-	 */
-	protected $content_boxes = array();
-
-	/**
 	 * @since 1.0
 	 *
 	 * @param string $page_slug  Page slug.
@@ -108,7 +101,6 @@ abstract class Forminator_Admin_Page {
 	 * @since 1.0
 	 */
 	public function render_page_hooks() {
-		add_action( 'load-' . $this->page_id, array( $this, 'register_content_boxes' ) );
 		add_action( 'load-' . $this->page_id, array( $this, 'before_render' ) );
 		add_action( 'load-' . $this->page_id, array( $this, 'trigger_before_render_action' ) );
 		add_filter( 'load-' . $this->page_id, array( $this, 'add_page_hooks' ) );
@@ -122,14 +114,6 @@ abstract class Forminator_Admin_Page {
 	 */
 	public function get_the_slug() {
 		return $this->page_slug;
-	}
-
-	/**
-	 * Used to register content boxes for the page
-	 *
-	 * @since 1.0
-	 */
-	public function register_content_boxes() {
 	}
 
 	/**
@@ -181,27 +165,20 @@ abstract class Forminator_Admin_Page {
 	 * @param $hook
 	 */
 	public function enqueue_scripts( $hook ) {
-		// Load jquery ui
-		forminator_admin_jquery_ui();
-
-		// Load shared-ui scripts
-		forminator_sui_scripts();
-
-		// Load admin fonts
-		forminator_admin_enqueue_fonts( FORMINATOR_VERSION );
-
-		// Load admin styles
-		forminator_admin_enqueue_styles( FORMINATOR_VERSION );
-
-		$forminator_data = new Forminator_Admin_Data();
-		$forminator_l10n = new Forminator_Admin_L10n();
-
 		// Load admin scripts
-		forminator_admin_enqueue_scripts(
+		wp_register_script(
+			'forminator-admin',
+			forminator_plugin_url() . 'build/main.js',
+			array(
+				'backbone',
+				'underscore',
+				'jquery',
+				'wp-color-picker',
+			),
 			FORMINATOR_VERSION,
-			$forminator_data->get_options_data(),
-			$forminator_l10n->get_l10n_strings()
+			true
 		);
+		forminator_common_admin_enqueue_scripts();
 	}
 
 	/**
@@ -222,20 +199,15 @@ abstract class Forminator_Admin_Page {
 	 * @since 1.0
 	 */
 	protected function render_header() {
-	?>
-
-		<header class="sui-header">
-			<?php
-			if ( $this->template_exists( $this->folder . '/header' ) ) {
-				$this->template( $this->folder . '/header' );
-			} else {
-				?>
+		if ( $this->template_exists( $this->folder . '/header' ) ) {
+			$this->template( $this->folder . '/header' );
+		} else {
+			?>
+			<header class="sui-header">
 				<h1 class="sui-header-title"><?php echo esc_html( get_admin_page_title() ); ?></h1>
-			<?php } ?>
-
-		</header>
-
-	<?php
+			</header>
+			<?php
+		}
 	}
 
 	/**
@@ -264,29 +236,29 @@ abstract class Forminator_Admin_Page {
 
 			<?php if ( ! $hide_footer ) : ?>
 				<ul class="sui-footer-nav">
-					<li><a href="https://premium.wpmudev.org/hub/" target="_blank"><?php esc_html_e( 'The Hub', Forminator::DOMAIN ); ?></a></li>
-					<li><a href="https://premium.wpmudev.org/projects/category/plugins/" target="_blank"><?php esc_html_e( 'Plugins', Forminator::DOMAIN ); ?></a></li>
-					<li><a href="https://premium.wpmudev.org/roadmap/" target="_blank"><?php esc_html_e( 'Roadmap', Forminator::DOMAIN ); ?></a></li>
-					<li><a href="https://premium.wpmudev.org/hub/support/" target="_blank"><?php esc_html_e( 'Support', Forminator::DOMAIN ); ?></a></li>
-					<li><a href="https://premium.wpmudev.org/docs/" target="_blank"><?php esc_html_e( 'Docs', Forminator::DOMAIN ); ?></a></li>
-					<li><a href="https://premium.wpmudev.org/hub/community/" target="_blank"><?php esc_html_e( 'Community', Forminator::DOMAIN ); ?></a></li>
-					<li><a href="https://premium.wpmudev.org/academy/" target="_blank"><?php esc_html_e( 'Academy', Forminator::DOMAIN ); ?></a></li>
-					<li><a href="https://premium.wpmudev.org/terms-of-service/" target="_blank"><?php esc_html_e( 'Terms of Service', Forminator::DOMAIN ); ?></a></li>
-					<li><a href="https://incsub.com/privacy-policy/" target="_blank"><?php esc_html_e( 'Privacy Policy', Forminator::DOMAIN ); ?></a></li>
+					<li><a href="https://wpmudev.com/hub2/" target="_blank"><?php esc_html_e( 'The Hub', 'forminator' ); ?></a></li>
+					<li><a href="https://wpmudev.com/projects/category/plugins/" target="_blank"><?php esc_html_e( 'Plugins', 'forminator' ); ?></a></li>
+					<li><a href="https://wpmudev.com/roadmap/" target="_blank"><?php esc_html_e( 'Roadmap', 'forminator' ); ?></a></li>
+					<li><a href="https://wpmudev.com/hub/support/" target="_blank"><?php esc_html_e( 'Support', 'forminator' ); ?></a></li>
+					<li><a href="https://wpmudev.com/docs/" target="_blank"><?php esc_html_e( 'Docs', 'forminator' ); ?></a></li>
+					<li><a href="https://wpmudev.com/hub2/community/" target="_blank"><?php esc_html_e( 'Community', 'forminator' ); ?></a></li>
+					<li><a href="https://wpmudev.com/academy/" target="_blank"><?php esc_html_e( 'Academy', 'forminator' ); ?></a></li>
+					<li><a href="https://wpmudev.com/terms-of-service/" target="_blank"><?php esc_html_e( 'Terms of Service', 'forminator' ); ?></a></li>
+					<li><a href="https://incsub.com/privacy-policy/" target="_blank"><?php esc_html_e( 'Privacy Policy', 'forminator' ); ?></a></li>
 				</ul>
 			<?php endif; ?>
 
 		<?php } else { ?>
 
 			<ul class="sui-footer-nav">
-				<li><a href="https://profiles.wordpress.org/wpmudev#content-plugins" target="_blank"><?php esc_html_e( 'Free Plugins', Forminator::DOMAIN ); ?></a></li>
-				<li><a href="https://premium.wpmudev.org/features/" target="_blank"><?php esc_html_e( 'Membership', Forminator::DOMAIN ); ?></a></li>
-				<li><a href="https://premium.wpmudev.org/roadmap/" target="_blank"><?php esc_html_e( 'Roadmap', Forminator::DOMAIN ); ?></a></li>
-				<li><a href="https://wordpress.org/support/plugin/forminator" target="_blank"><?php esc_html_e( 'Support', Forminator::DOMAIN ); ?></a></li>
-				<li><a href="https://premium.wpmudev.org/docs/" target="_blank"><?php esc_html_e( 'Docs', Forminator::DOMAIN ); ?></a></li>
-				<li><a href="https://premium.wpmudev.org/hub-welcome/" target="_blank"><?php esc_html_e( 'The Hub', Forminator::DOMAIN ); ?></a></li>
-				<li><a href="https://premium.wpmudev.org/terms-of-service/" target="_blank"><?php esc_html_e( 'Terms of Service', Forminator::DOMAIN ); ?></a></li>
-				<li><a href="https://incsub.com/privacy-policy/" target="_blank"><?php esc_html_e( 'Privacy Policy', Forminator::DOMAIN ); ?></a></li>
+				<li><a href="https://profiles.wordpress.org/wpmudev#content-plugins" target="_blank"><?php esc_html_e( 'Free Plugins', 'forminator' ); ?></a></li>
+				<li><a href="https://wpmudev.com/features/" target="_blank"><?php esc_html_e( 'Membership', 'forminator' ); ?></a></li>
+				<li><a href="https://wpmudev.com/roadmap/" target="_blank"><?php esc_html_e( 'Roadmap', 'forminator' ); ?></a></li>
+				<li><a href="https://wordpress.org/support/plugin/forminator" target="_blank"><?php esc_html_e( 'Support', 'forminator' ); ?></a></li>
+				<li><a href="https://wpmudev.com/docs/" target="_blank"><?php esc_html_e( 'Docs', 'forminator' ); ?></a></li>
+				<li><a href="https://wpmudev.com/hub-welcome/" target="_blank"><?php esc_html_e( 'The Hub', 'forminator' ); ?></a></li>
+				<li><a href="https://wpmudev.com/terms-of-service/" target="_blank"><?php esc_html_e( 'Terms of Service', 'forminator' ); ?></a></li>
+				<li><a href="https://incsub.com/privacy-policy/" target="_blank"><?php esc_html_e( 'Privacy Policy', 'forminator' ); ?></a></li>
 			</ul>
 
 		<?php } ?>
@@ -295,15 +267,15 @@ abstract class Forminator_Admin_Page {
 			<ul class="sui-footer-social">
 				<li><a href="https://www.facebook.com/wpmudev" target="_blank">
 					<i class="sui-icon-social-facebook" aria-hidden="true"></i>
-					<span class="sui-screen-reader-text"><?php esc_html_e( 'Facebook', Forminator::DOMAIN ); ?></span>
+					<span class="sui-screen-reader-text"><?php esc_html_e( 'Facebook', 'forminator' ); ?></span>
 				</a></li>
 				<li><a href="https://twitter.com/wpmudev" target="_blank">
 					<i class="sui-icon-social-twitter" aria-hidden="true"></i>
-					<span class="sui-screen-reader-text"><?php esc_html_e( 'Twitter', Forminator::DOMAIN ); ?></span>
+					<span class="sui-screen-reader-text"><?php esc_html_e( 'Twitter', 'forminator' ); ?></span>
 				</a></li>
 				<li><a href="https://www.instagram.com/wpmu_dev/" target="_blank">
 					<i class="sui-icon-instagram" aria-hidden="true"></i>
-					<span class="sui-screen-reader-text"><?php esc_html_e( 'Instagram', Forminator::DOMAIN ); ?></span>
+					<span class="sui-screen-reader-text"><?php esc_html_e( 'Instagram', 'forminator' ); ?></span>
 				</a></li>
 			</ul>
 		<?php endif; ?>
@@ -396,132 +368,6 @@ abstract class Forminator_Admin_Page {
 		$file = forminator_plugin_dir() . "admin/views/$path.php";
 
 		return is_file( $file );
-	}
-
-	/**
-	 * Add a box to the page
-	 *
-	 * @since 1.0
-	 *
-	 * @param        $box_id
-	 * @param        $title
-	 * @param        $class
-	 * @param string $header_callback
-	 * @param string $main_callback
-	 * @param string $footer_callback
-	 * @param array  $args
-	 */
-	public function add_box(
-		$box_id,
-		$title,
-		$class,
-		$header_callback = '',
-		$main_callback = '',
-		$footer_callback = '',
-		$args = array()
-	) {
-		$args = wp_parse_args( $args, array() );
-
-		if ( ! isset( $this->content_boxes[ $this->page_slug ] ) ) {
-			$this->content_boxes[ $this->page_slug ] = array();
-		}
-
-		$box = array(
-			'id'              => $box_id,
-			'title'           => $title,
-			'class'           => $class,
-			'header_callback' => $header_callback,
-			'main_callback'   => $main_callback,
-			'footer_callback' => $footer_callback,
-			'args'            => $args,
-		);
-
-		$box = apply_filters(
-			'forminator_add_box',
-			$box,
-			$this->page_slug,
-			$this->page_id
-		);
-
-		$box = apply_filters(
-			'forminator_add_box_' . $box_id,
-			$box,
-			$this->page_slug,
-			$this->page_id
-		);
-
-		if ( $box ) {
-			$this->content_boxes[ $this->page_slug ][ $box_id ] = $box;
-		}
-	}
-
-	/**
-	 * Check if content box exist
-	 *
-	 * @since 1.0
-	 *
-	 * @param $box_id
-	 *
-	 * @return bool
-	 */
-	protected function box_exist( $box_id ) {
-		return ! empty( $this->content_boxes[ $this->page_slug ][ $box_id ] );
-	}
-
-	/**
-	 * Print content box
-	 *
-	 * @since 1.0
-	 *
-	 * @param $box_id
-	 */
-	protected function do_content_box( $box_id ) {
-		if ( ! isset( $this->content_boxes[ $this->page_slug ][ $box_id ] ) ) {
-			return;
-		}
-
-		do_action_ref_array( 'forminator_admin_print_content_box' . $this->page_slug, array( &$this ) );
-
-		$box_data = $this->content_boxes[ $this->page_slug ][ $box_id ];
-		$args     = array(
-			'title'           => $box_data['title'],
-			'id'              => $box_id,
-			'class'           => $box_data['class'],
-			'header_callback' => $box_data['header_callback'],
-			'main_callback'   => $box_data['main_callback'],
-			'footer_callback' => $box_data['footer_callback'],
-			'args'            => $box_data['args'],
-		);
-
-		$this->template( 'boxes/content-box', $args );
-	}
-
-	/**
-	 * Print popup box
-	 *
-	 * @since 1.0
-	 *
-	 * @param $box_id
-	 */
-	protected function do_popup_box( $box_id ) {
-		if ( ! isset( $this->content_boxes[ $this->page_slug ][ $box_id ] ) ) {
-			return;
-		}
-
-		do_action_ref_array( 'forminator_admin_print_popup_box' . $this->page_slug, array( &$this ) );
-
-		$box_data = $this->content_boxes[ $this->page_slug ][ $box_id ];
-		$args     = array(
-			'title'           => $box_data['title'],
-			'id'              => $box_id,
-			'class'           => $box_data['class'],
-			'header_callback' => $box_data['header_callback'],
-			'main_callback'   => $box_data['main_callback'],
-			'footer_callback' => $box_data['footer_callback'],
-			'args'            => $box_data['args'],
-		);
-
-		$this->template( 'boxes/popup-box', $args );
 	}
 
 	/**

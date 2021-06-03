@@ -53,7 +53,7 @@ class Forminator_Html extends Forminator_Field {
 	public function __construct() {
 		parent::__construct();
 
-		$this->name = __( 'HTML', Forminator::DOMAIN );
+		$this->name = __( 'HTML', 'forminator' );
 	}
 
 	/**
@@ -64,7 +64,7 @@ class Forminator_Html extends Forminator_Field {
 	 */
 	public function defaults() {
 		return array(
-			'field_label' => __( 'HTML', Forminator::DOMAIN ),
+			'field_label' => __( 'HTML', 'forminator' ),
 		);
 	}
 

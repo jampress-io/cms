@@ -37,7 +37,7 @@ class Forminator_Addon_Activecampaign_Quiz_Settings extends Forminator_Addon_Qui
 
 		$this->_update_quiz_settings_error_message = __(
 			'The update to your settings for this quiz failed, check the quiz input and try again.',
-			Forminator::DOMAIN
+			'forminator'
 		);
 	}
 
@@ -123,14 +123,14 @@ class Forminator_Addon_Activecampaign_Quiz_Settings extends Forminator_Addon_Qui
 		$buttons = array();
 		if ( $this->pick_name_is_completed( array( 'multi_id' => $multi_id ) ) ) {
 			$buttons['disconnect']['markup'] = Forminator_Addon_Abstract::get_button_markup(
-				esc_html__( 'Deactivate', Forminator::DOMAIN ),
+				esc_html__( 'Deactivate', 'forminator' ),
 				'sui-button-ghost sui-tooltip sui-tooltip-top-center forminator-addon-form-disconnect',
-				esc_html__( 'Deactivate this ActiveCampaign Integration from this Quiz.', Forminator::DOMAIN )
+				esc_html__( 'Deactivate this ActiveCampaign Integration from this Quiz.', 'forminator' )
 			);
 		}
 
 		$buttons['next']['markup'] = '<div class="sui-actions-right">' .
-									Forminator_Addon_Abstract::get_button_markup( esc_html__( 'Next', Forminator::DOMAIN ), 'forminator-addon-next' ) .
+									Forminator_Addon_Abstract::get_button_markup( esc_html__( 'Next', 'forminator' ), 'forminator-addon-next' ) .
 									'</div>';
 
 		return array(
@@ -182,7 +182,7 @@ class Forminator_Addon_Activecampaign_Quiz_Settings extends Forminator_Addon_Qui
 		$template = forminator_addon_activecampaign_dir() . 'views/quiz-settings/select-list.php';
 
 		if ( ! isset( $submitted_data['multi_id'] ) ) {
-			return $this->get_force_closed_wizard( __( 'Please pick valid connection', Forminator::DOMAIN ) );
+			return $this->get_force_closed_wizard( __( 'Please pick valid connection', 'forminator' ) );
 		}
 
 		$multi_id = $submitted_data['multi_id'];
@@ -216,7 +216,7 @@ class Forminator_Addon_Activecampaign_Quiz_Settings extends Forminator_Addon_Qui
 			}
 
 			if ( empty( $lists ) ) {
-				throw new Forminator_Addon_Activecampaign_Exception( __( 'No lists found on your ActiveCampaign account. Please create one.', Forminator::DOMAIN ) );
+				throw new Forminator_Addon_Activecampaign_Exception( __( 'No lists found on your ActiveCampaign account. Please create one.', 'forminator' ) );
 			}
 
 			$template_params['lists'] = $lists;
@@ -263,14 +263,14 @@ class Forminator_Addon_Activecampaign_Quiz_Settings extends Forminator_Addon_Qui
 		$buttons = array();
 		if ( $this->pick_name_is_completed( array( 'multi_id' => $multi_id ) ) ) {
 			$buttons['disconnect']['markup'] = Forminator_Addon_Abstract::get_button_markup(
-				esc_html__( 'Deactivate', Forminator::DOMAIN ),
+				esc_html__( 'Deactivate', 'forminator' ),
 				'sui-button-ghost sui-tooltip sui-tooltip-top-center forminator-addon-form-disconnect',
-				esc_html__( 'Deactivate this ActiveCampaign Integration from this Quiz.', Forminator::DOMAIN )
+				esc_html__( 'Deactivate this ActiveCampaign Integration from this Quiz.', 'forminator' )
 			);
 		}
 
 		$buttons['next']['markup'] = '<div class="sui-actions-right">' .
-									Forminator_Addon_Abstract::get_button_markup( esc_html__( 'Next', Forminator::DOMAIN ), 'forminator-addon-next' ) .
+									Forminator_Addon_Abstract::get_button_markup( esc_html__( 'Next', 'forminator' ), 'forminator-addon-next' ) .
 									'</div>';
 
 		return array(
@@ -324,7 +324,7 @@ class Forminator_Addon_Activecampaign_Quiz_Settings extends Forminator_Addon_Qui
 		$template = forminator_addon_activecampaign_dir() . 'views/quiz-settings/map-fields.php';
 
 		if ( ! isset( $submitted_data['multi_id'] ) ) {
-			return $this->get_force_closed_wizard( __( 'Please pick valid connection', Forminator::DOMAIN ) );
+			return $this->get_force_closed_wizard( __( 'Please pick valid connection', 'forminator' ) );
 		}
 
 		$multi_id = $submitted_data['multi_id'];
@@ -345,7 +345,7 @@ class Forminator_Addon_Activecampaign_Quiz_Settings extends Forminator_Addon_Qui
 
 		$quiz_questions = $this->get_quiz_fields();
 		$quiz_fields    = array(
-			'quiz-name'       => __( 'Quiz Name', Forminator::DOMAIN ),
+			'quiz-name'       => __( 'Quiz Name', 'forminator' ),
 		);
 		foreach ( $quiz_questions as $quiz_question ) {
 			// collect element ids
@@ -353,11 +353,11 @@ class Forminator_Addon_Activecampaign_Quiz_Settings extends Forminator_Addon_Qui
 			$quiz_fields[ $quiz_question['slug'] ] = $quiz_question['title'];
 		}
 		if ( 'knowledge' === $this->quiz->quiz_type ) {
-			$quiz_fields['correct-answers'] = __( 'Correct Answers', Forminator::DOMAIN );
-			$quiz_fields['total-answers']   = __( 'Total Answers', Forminator::DOMAIN );
+			$quiz_fields['correct-answers'] = __( 'Correct Answers', 'forminator' );
+			$quiz_fields['total-answers']   = __( 'Total Answers', 'forminator' );
 			array_push( $forminator_quiz_element_ids,'quiz-name','correct-answers', 'total-answers' );
 		} elseif ( 'nowrong' === $this->quiz->quiz_type ) {
-			$quiz_fields['result-answers'] = __( 'Result Answer', Forminator::DOMAIN );
+			$quiz_fields['result-answers'] = __( 'Result Answer', 'forminator' );
 			array_push( $forminator_quiz_element_ids,'quiz-name', 'result-answers' );
 		}
 
@@ -377,11 +377,11 @@ class Forminator_Addon_Activecampaign_Quiz_Settings extends Forminator_Addon_Qui
 		$has_errors = false;
 
 		$fields = array(
-			'email'      => __( 'Email Address', Forminator::DOMAIN ),
-			'first_name' => __( 'First Name', Forminator::DOMAIN ),
-			'last_name'  => __( 'Last Name', Forminator::DOMAIN ),
-			'phone'      => __( 'Phone', Forminator::DOMAIN ),
-			'orgname'    => __( 'Organization Name', Forminator::DOMAIN ),
+			'email'      => __( 'Email Address', 'forminator' ),
+			'first_name' => __( 'First Name', 'forminator' ),
+			'last_name'  => __( 'Last Name', 'forminator' ),
+			'phone'      => __( 'Phone', 'forminator' ),
+			'orgname'    => __( 'Organization Name', 'forminator' ),
 		);
 
 		$list_id = $this->get_multi_id_quiz_settings_value( $multi_id, 'list_id', 0 );
@@ -411,7 +411,7 @@ class Forminator_Addon_Activecampaign_Quiz_Settings extends Forminator_Addon_Qui
 
 			try {
 				if ( empty( $fields_map ) ) {
-					throw new Forminator_Addon_Activecampaign_Exception( __( 'Please assign fields.', Forminator::DOMAIN ) );
+					throw new Forminator_Addon_Activecampaign_Exception( __( 'Please assign fields.', 'forminator' ) );
 				}
 
 				$input_exceptions = new Forminator_Addon_Activecampaign_Quiz_Settings_Exception();
@@ -426,7 +426,7 @@ class Forminator_Addon_Activecampaign_Quiz_Settings extends Forminator_Addon_Qui
 						if ( ! in_array( $element_id, $forminator_field_element_ids, true ) ) {
 							$input_exceptions->add_input_exception(
 								/* translators: %s: title */
-								sprintf( __( 'Please assign valid field for %s', Forminator::DOMAIN ), $title ),
+								sprintf( __( 'Please assign valid field for %s', 'forminator' ), $title ),
 								$key . '_error'
 							);
 							continue;
@@ -454,14 +454,14 @@ class Forminator_Addon_Activecampaign_Quiz_Settings extends Forminator_Addon_Qui
 		$buttons = array();
 		if ( $this->pick_name_is_completed( array( 'multi_id' => $multi_id ) ) ) {
 			$buttons['disconnect']['markup'] = Forminator_Addon_Abstract::get_button_markup(
-				esc_html__( 'Deactivate', Forminator::DOMAIN ),
+				esc_html__( 'Deactivate', 'forminator' ),
 				'sui-button-ghost sui-tooltip sui-tooltip-top-center forminator-addon-form-disconnect',
-				esc_html__( 'Deactivate this ActiveCampaign Integration from this Quiz.', Forminator::DOMAIN )
+				esc_html__( 'Deactivate this ActiveCampaign Integration from this Quiz.', 'forminator' )
 			);
 		}
 
 		$buttons['next']['markup'] = '<div class="sui-actions-right">' .
-									Forminator_Addon_Abstract::get_button_markup( esc_html__( 'Next', Forminator::DOMAIN ), 'forminator-addon-next' ) .
+									Forminator_Addon_Abstract::get_button_markup( esc_html__( 'Next', 'forminator' ), 'forminator-addon-next' ) .
 									'</div>';
 
 		return array(
@@ -525,7 +525,7 @@ class Forminator_Addon_Activecampaign_Quiz_Settings extends Forminator_Addon_Qui
 		$template = forminator_addon_activecampaign_dir() . 'views/quiz-settings/setup-options.php';
 
 		if ( ! isset( $submitted_data['multi_id'] ) ) {
-			return $this->get_force_closed_wizard( __( 'Please pick valid connection', Forminator::DOMAIN ) );
+			return $this->get_force_closed_wizard( __( 'Please pick valid connection', 'forminator' ) );
 		}
 
 		$multi_id = $submitted_data['multi_id'];
@@ -616,7 +616,7 @@ class Forminator_Addon_Activecampaign_Quiz_Settings extends Forminator_Addon_Qui
 				// possible different type intended
 				// phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict
 				if ( ! empty( $double_opt_form_id ) && ! in_array( $double_opt_form_id, array_keys( $forms ) ) ) {
-					$input_exceptions->add_input_exception( __( 'Please pick valid ActiveCampaign Quiz', Forminator::DOMAIN ), 'double_opt_form_id_error' );
+					$input_exceptions->add_input_exception( __( 'Please pick valid ActiveCampaign Quiz', 'forminator' ), 'double_opt_form_id_error' );
 				}
 
 				if ( $input_exceptions->input_exceptions_is_available() ) {
@@ -651,14 +651,14 @@ class Forminator_Addon_Activecampaign_Quiz_Settings extends Forminator_Addon_Qui
 		$buttons = array();
 		if ( $this->pick_name_is_completed( array( 'multi_id' => $multi_id ) ) ) {
 			$buttons['disconnect']['markup'] = Forminator_Addon_Abstract::get_button_markup(
-				esc_html__( 'Deactivate', Forminator::DOMAIN ),
+				esc_html__( 'Deactivate', 'forminator' ),
 				'sui-button-ghost sui-tooltip sui-tooltip-top-center forminator-addon-form-disconnect',
-				esc_html__( 'Deactivate this ActiveCampaign Integration from this Quiz.', Forminator::DOMAIN )
+				esc_html__( 'Deactivate this ActiveCampaign Integration from this Quiz.', 'forminator' )
 			);
 		}
 
 		$buttons['next']['markup'] = '<div class="sui-actions-right">' .
-									Forminator_Addon_Abstract::get_button_markup( esc_html__( 'Save', Forminator::DOMAIN ), 'sui-button-primary forminator-addon-finish' ) .
+									Forminator_Addon_Abstract::get_button_markup( esc_html__( 'Save', 'forminator' ), 'sui-button-primary forminator-addon-finish' ) .
 									'</div>';
 
 		return array(

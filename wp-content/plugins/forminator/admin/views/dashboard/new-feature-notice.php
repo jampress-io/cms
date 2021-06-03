@@ -37,15 +37,15 @@ if ( ! FORMINATOR_PRO ) {
 
 						<div class="sui-box-header sui-block-content-center">
 
-							<button data-a11y-dialog-hide="forminator-new-feature" style="z-index: 2" class="sui-dialog-close forminator-dismiss-new-feature" aria-label="<?php esc_html_e( 'Close this dialog window', Forminator::DOMAIN ); ?>"></button>
+							<button data-a11y-dialog-hide="forminator-new-feature" style="z-index: 2" class="sui-dialog-close forminator-dismiss-new-feature" aria-label="<?php esc_html_e( 'Close this dialog window', 'forminator' ); ?>"></button>
 
 							<?php //if ( FORMINATOR_PRO ) { ?>
 
-								<h2 class="sui-box-title"><?php esc_html_e( 'New! Capture leads on quizzes', Forminator::DOMAIN ); ?></h2>
+								<h2 class="sui-box-title"><?php esc_html_e( 'New! Capture leads on quizzes', 'forminator' ); ?></h2>
 
-								<p class="sui-description"><?php printf( esc_html__( 'That\'s right! You can %scapture participants data%s (such as name, email, etc.) on your quizzes with this release.', Forminator::DOMAIN ), '<strong>', '</strong>' ); ?></p>
+								<p class="sui-description"><?php printf( esc_html__( 'That\'s right! You can %scapture participants data%s (such as name, email, etc.) on your quizzes with this release.', 'forminator' ), '<strong>', '</strong>' ); ?></p>
 
-								<p class="sui-description"><?php printf( esc_html__( 'While creating a quiz, you\'ll see a new option to collect leads and enabling that will add a new tab called "Leads" into the quiz editor where you can configure your lead generation from settings.', Forminator::DOMAIN ), '<strong>', '</strong>' ); ?></p>
+								<p class="sui-description"><?php printf( esc_html__( 'While creating a quiz, you\'ll see a new option to collect leads and enabling that will add a new tab called "Leads" into the quiz editor where you can configure your lead generation from settings.', 'forminator' ), '<strong>', '</strong>' ); ?></p>
 
 							<?php //} else { ?>
 
@@ -57,7 +57,7 @@ if ( ! FORMINATOR_PRO ) {
 
 							<div class="sui-box-footer sui-block-content-center" sui-space-bottom="60">
 
-								<button class="sui-button forminator-dismiss-new-feature" type="button" data-a11y-dialog-hide="forminator-new-feature"><?php esc_html_e( 'Got It', Forminator::DOMAIN ); ?></button>
+								<button class="sui-button forminator-dismiss-new-feature" type="button" data-a11y-dialog-hide="forminator-new-feature"><?php esc_html_e( 'Got It', 'forminator' ); ?></button>
 
 							</div>
 
@@ -65,7 +65,7 @@ if ( ! FORMINATOR_PRO ) {
 
 							<div class="sui-box-footer sui-block-content-center" sui-space-bottom="60">
 
-								<button class="sui-button forminator-dismiss-new-feature" type="button" data-a11y-dialog-hide="forminator-new-feature"><?php esc_html_e( 'Got It', Forminator::DOMAIN ); ?></button>
+								<button class="sui-button forminator-dismiss-new-feature" type="button" data-a11y-dialog-hide="forminator-new-feature"><?php esc_html_e( 'Got It', 'forminator' ); ?></button>
 
 							</div>
 

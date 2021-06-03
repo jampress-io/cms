@@ -53,7 +53,7 @@ class Forminator_Postdata extends Forminator_Field {
 	public function __construct() {
 		parent::__construct();
 
-		$this->name = __( 'Post Data', Forminator::DOMAIN );
+		$this->name = __( 'Post Data', 'forminator' );
 	}
 
 	/**
@@ -609,7 +609,7 @@ class Forminator_Postdata extends Forminator_Field {
 			if ( empty( $data ) ) {
 				$postdata_validation_message     = apply_filters(
 					'forminator_postdata_field_validation_message',
-					( ! empty( $setting_required_message ) ? $setting_required_message : __( 'This field is required. Please fill in post data.', Forminator::DOMAIN ) ),
+					( ! empty( $setting_required_message ) ? $setting_required_message : __( 'This field is required. Please fill in post data.', 'forminator' ) ),
 					$id
 				);
 				$this->validation_message[ $id ] = $postdata_validation_message;
@@ -620,7 +620,7 @@ class Forminator_Postdata extends Forminator_Field {
 
 					$postdata_post_title_validation_message          = apply_filters(
 						'forminator_postdata_field_post_title_validation_message',
-						( ! empty( $setting_required_message ) ? $setting_required_message : __( 'This field is required. Please enter the post title.', Forminator::DOMAIN ) ),
+						( ! empty( $setting_required_message ) ? $setting_required_message : __( 'This field is required. Please enter the post title.', 'forminator' ) ),
 						$id
 					);
 					$this->validation_message[ $id . '-post-title' ] = $postdata_post_title_validation_message;
@@ -628,7 +628,7 @@ class Forminator_Postdata extends Forminator_Field {
 				if ( ! empty( $post_content ) && empty( $content ) ) {
 					$postdata_post_content_validation_message          = apply_filters(
 						'forminator_postdata_field_post_content_validation_message',
-						( ! empty( $setting_required_message ) ? $setting_required_message : __( 'This field is required. Please enter the post content.', Forminator::DOMAIN ) ),
+						( ! empty( $setting_required_message ) ? $setting_required_message : __( 'This field is required. Please enter the post content.', 'forminator' ) ),
 						$id
 					);
 					$this->validation_message[ $id . '-post-content' ] = $postdata_post_content_validation_message;
@@ -636,7 +636,7 @@ class Forminator_Postdata extends Forminator_Field {
 				if ( ! empty( $post_excerpt ) && empty( $excerpt ) ) {
 					$postdata_post_excerpt_validation_message          = apply_filters(
 						'forminator_postdata_field_post_excerpt_validation_message',
-						( ! empty( $setting_required_message ) ? $setting_required_message : __( 'This field is required. Please enter the post excerpt.', Forminator::DOMAIN ) ),
+						( ! empty( $setting_required_message ) ? $setting_required_message : __( 'This field is required. Please enter the post excerpt.', 'forminator' ) ),
 						$id
 					);
 					$this->validation_message[ $id . '-post-excerpt' ] = $postdata_post_excerpt_validation_message;
@@ -644,7 +644,7 @@ class Forminator_Postdata extends Forminator_Field {
 				if ( ! empty( $post_image ) && empty( $image ) ) {
 					$postdata_post_image_validation_message          = apply_filters(
 						'forminator_postdata_field_post_image_validation_message',
-						( ! empty( $setting_required_message ) ? $setting_required_message : __( 'This field is required. Please upload a post image.', Forminator::DOMAIN ) ),
+						( ! empty( $setting_required_message ) ? $setting_required_message : __( 'This field is required. Please upload a post image.', 'forminator' ) ),
 						$id
 					);
 					$this->validation_message[ $id . '-post-image' ] = $postdata_post_image_validation_message;
@@ -656,7 +656,7 @@ class Forminator_Postdata extends Forminator_Field {
 						if ( ! empty( $post_category ) && empty( $category ) ) {
 							$postdata_post_category_validation_message             = apply_filters(
 								'forminator_postdata_field_' . $cat['value'] . '_validation_message',
-								( ! empty( $setting_required_message ) ? $setting_required_message : sprintf( /* translators: ... */ __( 'This field is required. Please select a %s.', Forminator::DOMAIN ), $cat['label'] ) ),
+								( ! empty( $setting_required_message ) ? $setting_required_message : sprintf( /* translators: ... */ __( 'This field is required. Please select a %s.', 'forminator' ), $cat['label'] ) ),
 								$id
 							);
 							$this->validation_message[ $id . '-' . $cat['value'] ] = $postdata_post_category_validation_message;
@@ -686,7 +686,7 @@ class Forminator_Postdata extends Forminator_Field {
 							$this->validation_message[ $id . '-post-title' ] = apply_filters(
 								// nr = not required
 								'forminator_postdata_field_post_title_nr_validation_message',
-								__( 'At least one of these fields is required: Post Title, Post Excerpt or Post Content.', Forminator::DOMAIN ),
+								__( 'At least one of these fields is required: Post Title, Post Excerpt or Post Content.', 'forminator' ),
 								$id
 							);
 						}
@@ -694,7 +694,7 @@ class Forminator_Postdata extends Forminator_Field {
 							$this->validation_message[ $id . '-post-content' ] = apply_filters(
 								// nr = not required
 								'forminator_postdata_field_post_content_nr_validation_message',
-								__( 'At least one of these fields is required: Post Title, Post Excerpt or Post Content.', Forminator::DOMAIN ),
+								__( 'At least one of these fields is required: Post Title, Post Excerpt or Post Content.', 'forminator' ),
 								$id
 							);
 						}
@@ -702,7 +702,7 @@ class Forminator_Postdata extends Forminator_Field {
 							$this->validation_message[ $id . '-post-excerpt' ] = apply_filters(
 								// nr = not required
 								'forminator_postdata_field_post_excerpt_nr_validation_message',
-								__( 'At least one of these fields is required: Post Title, Post Excerpt or Post Content.', Forminator::DOMAIN ),
+								__( 'At least one of these fields is required: Post Title, Post Excerpt or Post Content.', 'forminator' ),
 								$id
 							);
 						}
@@ -1025,7 +1025,7 @@ class Forminator_Postdata extends Forminator_Field {
 
 				$required_message = apply_filters(
 					'forminator_postdata_field_post_title_validation_message',
-					( ! empty( $setting_required_message ) ? $setting_required_message : __( 'This field is required. Please enter the post title.', Forminator::DOMAIN ) ),
+					( ! empty( $setting_required_message ) ? $setting_required_message : __( 'This field is required. Please enter the post title.', 'forminator' ) ),
 					$id,
 					$field
 				);
@@ -1038,7 +1038,7 @@ class Forminator_Postdata extends Forminator_Field {
 
 				$required_message = apply_filters(
 					'forminator_postdata_field_post_content_validation_message',
-					( ! empty( $setting_required_message ) ? $setting_required_message : __( 'This field is required. Please enter the post content.', Forminator::DOMAIN ) ),
+					( ! empty( $setting_required_message ) ? $setting_required_message : __( 'This field is required. Please enter the post content.', 'forminator' ) ),
 					$id,
 					$field
 				);
@@ -1051,7 +1051,7 @@ class Forminator_Postdata extends Forminator_Field {
 
 				$required_message = apply_filters(
 					'forminator_postdata_field_post_excerpt_validation_message',
-					( ! empty( $setting_required_message ) ? $setting_required_message : __( 'This field is required. Please enter the post excerpt.', Forminator::DOMAIN ) ),
+					( ! empty( $setting_required_message ) ? $setting_required_message : __( 'This field is required. Please enter the post excerpt.', 'forminator' ) ),
 					$id,
 					$field
 				);
@@ -1064,7 +1064,7 @@ class Forminator_Postdata extends Forminator_Field {
 
 				$required_message = apply_filters(
 					'forminator_postdata_field_post_image_validation_message',
-					( ! empty( $setting_required_message ) ? $setting_required_message : __( 'This field is required. Please upload a post image.', Forminator::DOMAIN ) ),
+					( ! empty( $setting_required_message ) ? $setting_required_message : __( 'This field is required. Please upload a post image.', 'forminator' ) ),
 					$id,
 					$field
 				);
@@ -1085,7 +1085,7 @@ class Forminator_Postdata extends Forminator_Field {
 
 						$required_message = apply_filters(
 							'forminator_postdata_field_' . $category['value'] . '_validation_message',
-							( ! empty( $setting_required_message ) ? $setting_required_message : sprintf( /* translators: ... */ __( 'This field is required. Please select a %s.', Forminator::DOMAIN ), $category['singular'] ) ),
+							( ! empty( $setting_required_message ) ? $setting_required_message : sprintf( /* translators: ... */ __( 'This field is required. Please select a %s.', 'forminator' ), $category['singular'] ) ),
 							$id,
 							$field
 						);

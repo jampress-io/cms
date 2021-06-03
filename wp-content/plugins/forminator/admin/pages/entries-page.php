@@ -49,16 +49,16 @@ class Forminator_Entries_Page extends Forminator_Admin_Page {
 	 */
 	public function populate_modules() {
 		$modules[] = array(
-			'name'  => __( 'Forms', Forminator::DOMAIN ),
-			'model' => Forminator_Custom_Form_Model::model(),
+			'name'  => __( 'Forms', 'forminator' ),
+			'model' => Forminator_Form_Model::model(),
 		);
 		$modules[] = array(
-			'name'  => __( 'Polls', Forminator::DOMAIN ),
-			'model' => Forminator_Poll_Form_Model::model(),
+			'name'  => __( 'Polls', 'forminator' ),
+			'model' => Forminator_Poll_Model::model(),
 		);
 		$modules[] = array(
-			'name'  => __( 'Quizzes', Forminator::DOMAIN ),
-			'model' => Forminator_Quiz_Form_Model::model(),
+			'name'  => __( 'Quizzes', 'forminator' ),
+			'model' => Forminator_Quiz_Model::model(),
 		);
 
 		$this->modules = apply_filters( 'forminator_entries_page_modules', $modules );
@@ -128,14 +128,14 @@ class Forminator_Entries_Page extends Forminator_Admin_Page {
 			}
 		} else {
 			switch ( $this->get_current_form_type() ) {
-				case Forminator_Custom_Form_Model::model()->get_post_type():
+				case Forminator_Form_Model::model()->get_post_type():
 					$entries_renderer = new Forminator_CForm_Renderer_Entries( 'custom-form/entries' );
 					break;
-				case Forminator_Poll_Form_Model::model()->get_post_type():
+				case Forminator_Poll_Model::model()->get_post_type():
 					$entries_renderer = new Forminator_Poll_Renderer_Entries( 'poll/entries' );
 					break;
-				case Forminator_Quiz_Form_Model::model()->get_post_type():
-					$entries_renderer = new Forminator_Quizz_Renderer_Entries( 'quiz/entries' );
+				case Forminator_Quiz_Model::model()->get_post_type():
+					$entries_renderer = new Forminator_Quiz_Renderer_Entries( 'quiz/entries' );
 					break;
 				default:
 					$entries_renderer = null;
@@ -145,7 +145,7 @@ class Forminator_Entries_Page extends Forminator_Admin_Page {
 			if ( $entries_renderer instanceof Forminator_Admin_Page ) {
 				ob_start();
 				// render the entries page
-				$entries_renderer->render();
+				$entries_renderer->render_page_content();
 				$this->entries_page = ob_get_clean();
 			}
 		}
@@ -197,12 +197,12 @@ class Forminator_Entries_Page extends Forminator_Admin_Page {
 
 		$empty_option = '';
 
-		if ( $form_type === Forminator_Custom_Form_Model::model()->get_post_type() ) {
-			$empty_option = __( 'Choose Form', Forminator::DOMAIN );
-		} elseif ( $form_type === Forminator_Poll_Form_Model::model()->get_post_type() ) {
-			$empty_option = __( 'Choose Poll', Forminator::DOMAIN );
-		} elseif ( $form_type === Forminator_Quiz_Form_Model::model()->get_post_type() ) {
-			$empty_option = __( 'Choose Quiz', Forminator::DOMAIN );
+		if ( $form_type === Forminator_Form_Model::model()->get_post_type() ) {
+			$empty_option = __( 'Choose Form', 'forminator' );
+		} elseif ( $form_type === Forminator_Poll_Model::model()->get_post_type() ) {
+			$empty_option = __( 'Choose Poll', 'forminator' );
+		} elseif ( $form_type === Forminator_Quiz_Model::model()->get_post_type() ) {
+			$empty_option = __( 'Choose Quiz', 'forminator' );
 		}
 
 		$html .= '<option value="" ' . selected( 0, $form_id, false ) . '>' . $empty_option . '</option>';
@@ -232,13 +232,13 @@ class Forminator_Entries_Page extends Forminator_Admin_Page {
 		switch ( $form_type ) {
 			case 'forminator_forms':
 				//TODO: lazy load this
-				$forms = Forminator_Custom_Form_Model::model()->get_models( 99 );
+				$forms = Forminator_Form_Model::model()->get_models( 99 );
 				break;
 			case 'forminator_polls':
-				$forms = Forminator_Poll_Form_Model::model()->get_models( 99 );
+				$forms = Forminator_Poll_Model::model()->get_models( 99 );
 				break;
 			case 'forminator_quizzes':
-				$forms = Forminator_Quiz_Form_Model::model()->get_models( 99 );
+				$forms = Forminator_Quiz_Model::model()->get_models( 99 );
 				break;
 			default:
 				$forms = array();
@@ -303,12 +303,12 @@ class Forminator_Entries_Page extends Forminator_Admin_Page {
 		        '%s': [moment().startOf('month'), moment().endOf('month')],
 		        '%s': [moment().subtract(1,'month').startOf('month'), moment().subtract(1,'month').endOf('month')]
 			};",
-				__( 'Today', Forminator::DOMAIN ),
-				__( 'Yesterday', Forminator::DOMAIN ),
-				__( 'Last 7 Days', Forminator::DOMAIN ),
-				__( 'Last 30 Days', Forminator::DOMAIN ),
-				__( 'This Month', Forminator::DOMAIN ),
-				__( 'Last Month', Forminator::DOMAIN )
+				__( 'Today', 'forminator' ),
+				__( 'Yesterday', 'forminator' ),
+				__( 'Last 7 Days', 'forminator' ),
+				__( 'Last 30 Days', 'forminator' ),
+				__( 'This Month', 'forminator' ),
+				__( 'Last Month', 'forminator' )
 			);
 
 		/**
@@ -364,10 +364,7 @@ class Forminator_Entries_Page extends Forminator_Admin_Page {
 	public function enqueue_scripts( $hook ) {
 		parent::enqueue_scripts( $hook );
 
-		forminator_print_forms_admin_styles( FORMINATOR_VERSION );
-		forminator_print_polls_admin_styles( FORMINATOR_VERSION );
-		forminator_print_front_styles( FORMINATOR_VERSION );
-
-		forminator_print_front_scripts( FORMINATOR_VERSION );
+		forminator_print_front_styles();
+		forminator_print_front_scripts();
 	}
 }

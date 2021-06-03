@@ -72,11 +72,11 @@
 		init: function () {
 			var self = this;
 
-			if (this.$el.find('input[name=form_id]').length > 0) {
-				this.form_id = this.$el.find('input[name=form_id]').val();
+			if (this.$el.find('input[name="form_id"]').length > 0) {
+				this.form_id = this.$el.find('input[name="form_id"]').val();
 			}
-			if (this.$el.find('input[name=form_type]').length > 0) {
-				this.template_type = this.$el.find('input[name=form_type]').val();
+			if (this.$el.find('input[name="form_type"]').length > 0) {
+				this.template_type = this.$el.find('input[name="form_type"]').val();
 			}
 
 			$(this.forminator_loader_selector).remove();
@@ -101,7 +101,10 @@
 			//selective activation based on type of form
 			switch (this.settings.form_type) {
 				case  'custom-form':
-					this.init_custom_form();
+					$( this.element ).each( function() {
+						self.init_custom_form( this );
+					});
+
 					break;
 				case  'poll':
 					this.init_poll_form();
@@ -148,24 +151,23 @@
 			this.small_form();
 
 		},
-		init_custom_form: function () {
+		init_custom_form: function ( form_selector ) {
 
 			var self = this;
 
 			//initiate validator
-
-			this.init_intlTelInput_validation();
+			this.init_intlTelInput_validation( form_selector );
 
 			if (this.settings.inline_validation) {
 
-				$(this.element).forminatorFrontValidate({
+				$( form_selector ).forminatorFrontValidate({
 					rules: self.settings.rules,
 					messages: self.settings.messages
 				});
 			}
 
 			// initiate calculator
-			$(this.element).forminatorFrontCalculate({
+			$( form_selector ).forminatorFrontCalculate({
 				forminatorFields: self.settings.forminator_fields,
 				maxExpand: self.settings.max_nested_formula,
 				generalMessages: self.settings.general_messages,
@@ -173,20 +175,20 @@
 			});
 
 			// initiate merge tags
-			$(this.element).forminatorFrontMergeTags({
+			$( form_selector ).forminatorFrontMergeTags({
 				forminatorFields: self.settings.forminator_fields,
 			});
 
 			//initiate pagination
-			this.init_pagination();
+			this.init_pagination( form_selector );
 
 			// initiate payment if exist
-			var first_payment = $(this.element).find('div[data-is-payment="true"], input[data-is-payment="true"]').first();
+			var first_payment = $( form_selector ).find('div[data-is-payment="true"], input[data-is-payment="true"]').first();
 
 			if ( first_payment.length ) {
 				var payment_type = first_payment.data('paymentType');
 				if (payment_type === 'stripe') {
-					$(this.element).forminatorFrontPayment({
+					$( form_selector ).forminatorFrontPayment({
 						type: payment_type,
 						paymentEl: first_payment,
 						paymentRequireSsl: self.settings.payment_require_ssl,
@@ -197,54 +199,63 @@
 					});
 				}
 				if (payment_type === 'paypal') {
-					$(this.element).forminatorFrontPayPal({
+
+					$( form_selector ).forminatorFrontPayPal({
 						type: payment_type,
-						paymentEl: this.settings.paypal_config,
+						paymentEl: self.settings.paypal_config,
 						paymentRequireSsl: self.settings.payment_require_ssl,
 						generalMessages: self.settings.general_messages,
 						has_loader: self.settings.has_loader,
 						loader_label: self.settings.loader_label,
 					});
 
-                    // Enable inline validation if paypal is used to prevent checkout if form has errors
-                    if ( ! this.settings.inline_validation ) {
-                        $( this.element ).forminatorFrontValidate({
-                            rules: self.settings.rules,
-                            messages: self.settings.messages
-                        });
-                    }
+					// Enable inline validation if paypal is used to prevent checkout if form has errors
+					if ( ! self.settings.inline_validation ) {
+						$( form_selector ).forminatorFrontValidate({
+							rules: self.settings.rules,
+							messages: self.settings.messages
+						});
+					}
 				}
 			}
 
 			//initiate condition
-			$(this.element).forminatorFrontCondition(this.settings.conditions, this.settings.calendar);
+			$( form_selector ).forminatorFrontCondition(this.settings.conditions, this.settings.calendar);
 
 			//initiate forminator ui scripts
-			this.init_fui();
+			this.init_fui( form_selector );
 
 			//initiate datepicker
-			$(this.element).find('.forminator-datepicker').forminatorFrontDatePicker(this.settings.calendar);
+			$( form_selector ).find('.forminator-datepicker').forminatorFrontDatePicker(this.settings.calendar);
 
 			// Handle responsive captcha
-			this.responsive_captcha();
+			this.responsive_captcha( form_selector );
 
 			// Handle field counter
-			this.field_counter();
+			this.field_counter( form_selector );
 
 			// Handle number input
-			this.field_number();
+			this.field_number( form_selector );
 
 			// Handle time fields
 			this.field_time();
 
 			// Handle upload field change
-			$(this.element).find('.forminator-multi-upload').forminatorFrontMultiFile( this.$el );
+			$( form_selector ).find('.forminator-multi-upload').forminatorFrontMultiFile( this.$el );
 
-			this.upload_field();
+			this.upload_field( form_selector );
+
+			self.maybeRemoveDuplicateFields( form_selector );
 
 			// Handle function on resize
 			$(window).on('resize', function () {
-				self.responsive_captcha();
+				self.responsive_captcha( form_selector );
+			});
+
+			// Handle function on load
+			$( window ).on( 'load', function () {
+				// Repeat the function here, just in case our scripts gets loaded late
+				self.maybeRemoveDuplicateFields( form_selector );
 			});
 
 			if( 'undefined' !== typeof self.settings.hasLeads ) {
@@ -261,7 +272,7 @@
 					});
 				}
 				if( 'end' === self.settings.form_placement ) {
-					$(this.element).css({
+					$( form_selector ).css({
 						'height': 0,
 						'opacity': 0,
 						'overflow': 'hidden',
@@ -463,9 +474,9 @@
 			}
 		},
 
-		init_intlTelInput_validation: function () {
+		init_intlTelInput_validation: function ( form_selector ) {
 
-			var form        = $(this.element),
+			var form        = $( form_selector ),
 				is_material = form.is('.forminator-design--material'),
 				fields      = form.find('.forminator-field--phone');
 
@@ -512,9 +523,9 @@
 
 		},
 
-		init_fui: function () {
+		init_fui: function ( form_selector ) {
 
-			var form        = $( this.element ),
+			var form        = $( form_selector ),
 				input       = form.find( '.forminator-input' ),
 				textarea    = form.find( '.forminator-textarea' ),
 				select      = form.find( '.forminator-select' ),
@@ -584,8 +595,8 @@
 			}
 		},
 
-		responsive_captcha: function () {
-			$(this.element).find('.forminator-g-recaptcha').each(function () {
+		responsive_captcha: function ( form_selector ) {
+			$( form_selector ).find('.forminator-g-recaptcha').each(function () {
 				if ($(this).is(':visible')) {
 					var width = $(this).parent().width(),
 					    scale = 1;
@@ -600,9 +611,9 @@
 			});
 		},
 
-		init_pagination: function () {
+		init_pagination: function ( form_selector ) {
 			var self      = this,
-			    num_pages = $(this.element).find(".forminator-pagination").length,
+			    num_pages = $( form_selector ).find(".forminator-pagination").length,
 			    hash      = window.location.hash,
 			    hashStep  = false,
 			    step      = 0;
@@ -767,7 +778,7 @@
 				});
 			}
 
-			form.find('.forminator-select + .select2, .forminator-time + .select2').each(function () {
+			form.find('select.forminator-select2 + .forminator-select').each(function () {
 
 				var $select = $(this);
 
@@ -806,8 +817,8 @@
 			}
 		},
 
-		field_counter: function () {
-			var form = $(this.element),
+		field_counter: function ( form_selector ) {
+			var form = $( form_selector ),
 				submit_button = form.find('.forminator-button-submit');
 
 			form.find('.forminator-input, .forminator-textarea').each(function () {
@@ -855,7 +866,7 @@
 			});
 		},
 
-		field_number: function () {
+		field_number: function ( form_selector ) {
 			// var form = $(this.element);
 			// form.find('input[type=number]').on('change keyup', function () {
 			// 	if( ! $(this).val().match(/^\d+$/) ){
@@ -863,7 +874,7 @@
 			// 		$(this).val(sanitized);
 			// 	}
 			// });
-			var form = $(this.element);
+			var form = $( form_selector );
 			form.find('input[type=number]').each(function () {
 				$(this).keypress(function (e) {
 					var i;
@@ -881,16 +892,10 @@
 			});
 
 			form.find('.forminator-currency').each(function () {
-				var decimals = $(this).data('decimals'),
-					decimal_point = $(this).data('decimal-point'),
-					decimal_separator = $(this).data('decimal-separator');
-				if( '' !== decimal_point && '' !== decimal_separator ) {
-					$( this ).number( true, decimals, decimal_separator, decimal_point );
-				} else {
-					$( this ).change(function (e) {
-						this.value = parseFloat( this.value ).toFixed( decimals );
-					});
-				}
+				var decimals = $( this ).data('decimals');
+				$( this ).change( function (e) {
+					this.value = parseFloat( this.value ).toFixed( decimals );
+				});
 			});
 
 
@@ -963,10 +968,10 @@
 			});
 		},
 
-		upload_field: function () {
+		upload_field: function ( form_selector ) {
 
 			var self = this,
-			    form = $(this.element)
+			    form = $( form_selector )
 			;
 			// Toggle file remove button
 			this.toggle_file_input();
@@ -1025,6 +1030,29 @@
 			});
 		},
 
+        // Remove duplicate fields created by other plugins/themes
+		maybeRemoveDuplicateFields: function ( form_selector ) {
+            var form = $( form_selector );
+
+            // Check for Neira Lite theme
+            if ( $( document ).find( "link[id='neira-lite-style-css']" ).length ) {
+                var duplicateSelect  = form.find( '.forminator-select-container' ).next( '.chosen-container' ),
+                    duplicateSelect2 = form.find( 'select.forminator-select2 + .forminator-select' ).next( '.chosen-container' ),
+                    duplicateAddress = form.find( '.forminator-select' ).next( '.chosen-container' )
+                ;
+
+                if ( 0 !== duplicateSelect.length ) {
+                    duplicateSelect.remove();
+                }
+                if ( 0 !== duplicateSelect2.length ) {
+                    duplicateSelect2.remove();
+                }
+                if ( 0 !== duplicateAddress.length ) {
+                    duplicateAddress.remove();
+                }
+            }
+		},
+
 		renderCaptcha: function (captcha_field) {
 			var self = this;
 			//render captcha only if not rendered
@@ -1041,6 +1069,12 @@
 					data.callback = function (token) {
 						$(self.element).trigger('submit.frontSubmit');
 					};
+				} else {
+					data.callback = function () {
+						$(captcha_field).parent( '.forminator-col' )
+							.removeClass( 'forminator-has_error' )
+							.remove( '.forminator-error-message' );
+					};
 				}
 
 				if (data.sitekey !== "") {
@@ -1048,8 +1082,19 @@
 					var widget = window.grecaptcha.render(captcha_field, data);
 					// mark as rendered
 					$(captcha_field).data('forminator-recapchta-widget', widget);
+					this.addCaptchaAria( captcha_field );
 					this.responsive_captcha();
 				}
+			}
+		},
+
+		addCaptchaAria: function ( captcha_field ) {
+			var gRecaptchaResponse = $( captcha_field ).find( '.g-recaptcha-response' );
+
+			if ( 0 !== gRecaptchaResponse.length ) {
+				gRecaptchaResponse.attr( "aria-hidden", "true" );
+				gRecaptchaResponse.attr( "aria-label", "do not use" );
+				gRecaptchaResponse.attr( "aria-readonly", "true" );
 			}
 		},
 
@@ -1171,7 +1216,7 @@ var forminator_render_captcha = function () {
 		// find closest form
 		var thisCaptcha = jQuery(this),
 			form 		= thisCaptcha.closest('form');
-		
+
 		if (form.length > 0) {
 			window.setTimeout( function() {
 				var forminatorFront = form.data( 'forminatorFront' );

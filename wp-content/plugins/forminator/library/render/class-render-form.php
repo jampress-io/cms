@@ -8,6 +8,39 @@
 abstract class Forminator_Render_Form {
 
 	/**
+	 * Class instance
+	 *
+	 * @var Forminator_Render_Form|null
+	 */
+	protected static $instance = null;
+
+	/**
+	 * @var array
+	 */
+	protected $forms_properties = array();
+
+	/**
+	 * Styles to be enqueued
+	 *
+	 * @var array
+	 */
+	protected $styles = array();
+
+	/**
+	 * Scripts to be enqueued
+	 *
+	 * @var array
+	 */
+	protected $scripts = array();
+
+	/**
+	 * Script to be printed
+	 *
+	 * @var array
+	 */
+	protected $script = '';
+
+	/**
 	 * Model data
 	 *
 	 * @var Forminator_Base_Form_Model
@@ -43,13 +76,6 @@ abstract class Forminator_Render_Form {
 	protected $is_preview = false;
 
 	/**
-	 * Action to be used to load ajax
-	 *
-	 * @var string
-	 */
-	protected $ajax_load_action = 'forminator_load_module';
-
-	/**
 	 * Last submitted data
 	 * useful when rendering via ajax and need older data for markup
 	 *
@@ -79,6 +105,20 @@ abstract class Forminator_Render_Form {
 	protected $_page_id = 0;
 
 	/**
+	 * Return class instance
+	 *
+	 * @since 1.0
+	 * @return Forminator_Render_Form
+	 */
+	public static function get_instance() {
+		if ( is_null( self::$instance ) ) {
+			self::$instance = new static();
+		}
+
+		return self::$instance;
+	}
+
+	/**
 	 * Forminator_Render_Form constructor.
 	 *
 	 * @since 1.0
@@ -94,6 +134,43 @@ abstract class Forminator_Render_Form {
 	 * @since 1.0
 	 */
 	public function init() {
+		add_shortcode( 'forminator_' . static::$module_slug, array( $this, 'render_shortcode' ) );
+	}
+
+	/**
+	 * Render shortcode
+	 *
+	 * @since 1.0
+	 *
+	 * @param array $atts
+	 *
+	 * @return string
+	 */
+	public function render_shortcode( $atts = array() ) {
+		//use already created instance if already available
+		$view = new static();
+		if ( ! isset( $atts['id'] ) ) {
+			return $view->message_required();
+		}
+
+		$is_preview = isset( $atts['is_preview'] ) ? $atts['is_preview'] : false;
+		$is_preview = filter_var( $is_preview, FILTER_VALIDATE_BOOLEAN );
+
+		if ( $is_preview === false && forminator_is_page_builder_preview() ) {
+			$is_preview = true;
+		}
+
+		$is_preview = apply_filters( 'forminator_render_shortcode_is_preview', $is_preview );
+
+		$preview_data = isset( $atts['preview_data'] ) ? $atts['preview_data'] : array();
+
+		ob_start();
+
+		$view->display( $atts['id'], $is_preview, $preview_data );
+		$lead_data = ! empty( static::$lead_data ) ? static::$lead_data : array();
+		$view->ajax_loader( $is_preview, $preview_data, $lead_data );
+
+		return ob_get_clean();
 	}
 
 	/**
@@ -137,7 +214,7 @@ abstract class Forminator_Render_Form {
 	 * @param bool $hide If true, display: none will be added on the form markup and later removed with JS
 	 * @param bool $is_preview
 	 */
-	public function render( $id, $hide = true, $is_preview = false ) {
+	public function render( $id, $hide = true, $is_preview = false, $render_id = 0 ) {
 		$form_type        = $this->get_form_type();
 		$form_fields      = $this->get_fields();
 		$form_settings    = $this->get_form_settings();
@@ -146,7 +223,7 @@ abstract class Forminator_Render_Form {
 
 		do_action( 'forminator_before_form_render', $id, $form_type, $post_id, $form_fields, $form_settings );
 
-		$this->get_form( $id, true, $hide );
+		$this->get_form( $id, true, $hide, $render_id );
 
 		do_action( 'forminator_after_form_render', $id, $form_type, $post_id, $form_fields, $form_settings );
 	}
@@ -161,7 +238,7 @@ abstract class Forminator_Render_Form {
 	 *
 	 * @return mixed|void
 	 */
-	public function get_form( $id, $render = true, $hide = true ) {
+	public function get_form( $id, $render = true, $hide = true, $render_id_ajax = 0 ) {
 
 		$html          = '';
 		$forminator_ui = '';
@@ -184,7 +261,11 @@ abstract class Forminator_Render_Form {
 			self::$render_ids[ $id ] = 0;
 		}
 
-		$render_id = self::$render_ids[ $id ];
+		if ( isset( $form_settings['use_ajax_load'] ) && empty( $form_settings['use_ajax_load'] ) ) {
+			$render_id = self::$render_ids[ $id ];
+		} else {
+			$render_id = $render_id_ajax;
+		}
 
 		$forminator_ui = 'forminator-ui ';
 
@@ -269,7 +350,6 @@ abstract class Forminator_Render_Form {
 			'<form
 				id="forminator-module-%s"
 				class="%sforminator-%s forminator-%s-%s %s %s %s"
-				action=""
 				method="post"
 				data-forminator-render="%s"
 				data-form-id="%s"
@@ -317,7 +397,7 @@ abstract class Forminator_Render_Form {
 			$html .= $this->render_form_authentication();
 		}
 
-		$html .= $this->get_submit( $id, false );
+		$html .= $this->get_submit( $id, false, $render_id );
 
 		$html .= sprintf( '</form>' );
 
@@ -428,7 +508,7 @@ abstract class Forminator_Render_Form {
 			$design_class = 'forminator-quiz--' . $form_design;
 		} else {
 
-			if ( 'clean' === $form_design ) {
+			if ( 'none' === $form_design ) {
 				$design_class = '';
 			} else {
 				$design_class = 'forminator-design--' . $form_design;
@@ -497,7 +577,7 @@ abstract class Forminator_Render_Form {
 
 			$html   .= '<div class="forminator-col">';
 
-				$html   .= '<div id="submit" class="forminator-field">';
+				$html   .= '<div class="forminator-field">';
 
 					$html .= '<button class="forminator-button forminator-button-submit">';
 
@@ -531,7 +611,189 @@ abstract class Forminator_Render_Form {
 	 * @return string
 	 */
 	public function get_submit_button_text() {
-		return __( "Submit", Forminator::DOMAIN );
+		return __( "Submit", 'forminator' );
+	}
+
+	/**
+	 * Return Form ID required message
+	 *
+	 * @since 1.0
+	 * @return mixed
+	 */
+	public function message_required() {
+		return esc_html__( "Module ID attribute is required!", 'forminator' );
+	}
+
+	/**
+	 * Return Module ID not found message
+	 *
+	 * @since 1.0
+	 * @return string
+	 */
+	public function message_not_found() {
+		return esc_html__( 'Module ID not found!', 'forminator' );
+	}
+
+	/**
+	 * Get module ID
+	 *
+	 * @since 1.11
+	 *
+	 * @return string
+	 */
+	public function get_module_id() {
+		if ( is_object( $this->model ) ) {
+			return $this->model->id;
+		}
+
+		return $this->model['id'];
+	}
+
+	/**
+	 * Check if form should be displayed
+	 *
+	 * @since 1.6.1
+	 *
+	 * @param $is_preview
+	 *
+	 * @return bool
+	 */
+	public function is_displayable( $is_preview ) {
+		$id     = $this->get_module_id();
+		$status = $this->model->status;
+
+		if ( $this->model instanceof Forminator_Form_Model && isset( $this->lead_model->status ) ) {
+			$status = $this->lead_model->status;
+		}
+		$class = 'Forminator_' . forminator_get_prefix( static::$module_slug, '', true ) . '_Model';
+
+		if ( $this->model instanceof $class && ( $is_preview || $class::STATUS_PUBLISH === $status ) ) {
+			$this->generate_render_id( $id );
+
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * Ajax submit
+	 * Check if the form is ajax submit
+	 *
+	 * @since 1.0
+	 * @return bool
+	 */
+	public function is_ajax_submit() {
+		$settings = $this->get_form_settings();
+
+		if ( ! isset( $settings['enable-ajax'] ) || empty( $settings['enable-ajax'] ) ) {
+			return false;
+		}
+
+		return filter_var( $settings['enable-ajax'], FILTER_VALIDATE_BOOLEAN );
+	}
+
+	/**
+	 * Return styles template path
+	 *
+	 * @since 1.0
+	 * @return bool|string
+	 */
+	public function styles_template_path( $theme ) {
+		if ( 'none' === $theme ) {
+			return realpath( forminator_plugin_dir() . '/assets/js/front/templates/common/vanilla.html' );
+		}
+
+		return realpath( forminator_plugin_dir() . '/assets/js/front/templates/' . static::$module_slug . '/main.html' );
+	}
+
+	/**
+	 * Get specific template if exists, otherwise get global one
+	 *
+	 * @param string $theme Design theme.
+	 * @param string $filename Filename.
+	 * @return string
+	 */
+	public static function get_template( $theme, $filename ) {
+		$path      = forminator_plugin_dir() . '/assets/js/front/templates/' . static::$module_slug . '/';
+		$full_path = realpath( $path . $theme . '/' . $filename );
+		if ( file_exists( $full_path ) ) {
+			return $theme . '/' . $filename;
+		} else {
+			return 'global/' . $filename;
+		}
+	}
+
+	/**
+	 * Get Properties styles of each rendered modules
+	 *
+	 * @return array
+	 */
+	public function get_styles_properties() {
+		$properties = array();
+		if ( ! empty( $this->forms_properties ) ) {
+			// avoid same custom style printed
+			$style_rendered = array();
+			foreach ( $this->forms_properties as $form_properties ) {
+				if ( ! in_array( $form_properties['id'], $style_rendered, true ) ) {
+					$properties[]     = $form_properties;
+					$style_rendered[] = $form_properties['id'];
+				}
+			}
+		}
+
+		return $properties;
+	}
+
+	/**
+	 * Get custom CSS.
+	 *
+	 * @param array $properties Module properties.
+	 * @return string
+	 */
+	protected static function get_custom_css( $properties ) {
+		$slug   = forminator_get_prefix( static::$module_slug, 'custom-' );
+		$prefix = '.forminator-ui.forminator-' . $slug . '-' . $properties['form_id'];
+		if ( method_exists( __CLASS__, 'get_css_prefix' ) ) {
+			$prefix = static::get_css_prefix( $prefix );
+		}
+
+		$custom_css = forminator_prepare_css(
+			$properties['custom_css'],
+			$prefix,
+			false,
+			true,
+			'forminator-' . $slug
+		);
+
+		return $custom_css;
+	}
+
+	/**
+	 * Initiate `forminatorFront` front javascript for rendered module(s)
+	 *
+	 * @since 1.0
+	 */
+	public function forminator_render_front_scripts() {
+		?>
+		<script type="text/javascript">
+			jQuery(document).ready(function () {
+				<?php
+				if ( ! empty( $this->forms_properties ) ) {
+					foreach ( $this->forms_properties as $form_properties ) {
+						if ( ! empty( $form_properties['rendered'] ) ) {
+							$options = $this->get_front_init_options( $form_properties );
+							?>
+							jQuery('#forminator-module-<?php echo esc_attr( $form_properties['id'] ); ?>[data-forminator-render="<?php echo esc_attr( $form_properties['render_id'] ); ?>"]')
+								.forminatorFront(<?php echo wp_json_encode( $options ); ?>);
+							<?php
+						}
+					}
+				}
+				?>
+			});
+		</script>
+		<?php
 	}
 
 	/**
@@ -687,7 +949,93 @@ abstract class Forminator_Render_Form {
 	 * @return array
 	 */
 	public function get_form_settings() {
+		if ( is_object( $this->model ) ) {
+			return $this->model->settings;
+		}
+
+		if ( is_array( $this->model ) ) {
+			return $this->model['settings'];
+		}
+
 		return array();
+	}
+
+	/**
+	 * Check has lead
+     *
+	 * @param array $form_settings
+	 *
+	 * @return bool
+	 */
+	public function has_lead( $form_settings = null ) {
+		if ( is_null( $form_settings ) ) {
+			$form_settings = $this->get_form_settings();
+		}
+
+		if ( isset( $form_settings['hasLeads'] ) && $form_settings['hasLeads'] ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Check has lead skip
+	 *
+	 * @return bool
+	 */
+	public function has_skip_form( $form_settings = null ) {
+		if ( is_null( $form_settings ) ) {
+			$form_settings = $this->get_form_settings();
+		}
+
+	    if ( isset( $form_settings['skip-form'] ) && $form_settings['skip-form'] ) {
+		    return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Check has lead
+	 *
+	 * @param array $form_settings
+	 * @return bool
+	 */
+	public function get_leads_id( $form_settings = null ) {
+		if ( is_null( $form_settings ) ) {
+			$form_settings = $this->get_form_settings();
+		}
+		$leads_id = 0;
+
+		if ( $this->has_lead( $form_settings ) && isset( $form_settings['leadsId'] ) ) {
+			$leads_id = $form_settings['leadsId'];
+		}
+
+		return $leads_id;
+	}
+
+	/**
+	 * Check has lead
+	 *
+     * @param array $form_settings
+	 * @return bool
+	 */
+	public function get_form_placement( $form_settings = null ) {
+		$placement = '';
+		if ( is_null( $form_settings ) ) {
+			$form_settings = $this->get_form_settings();
+		}
+
+		if ( $this->has_lead( $form_settings ) && ! isset( $form_settings['form-placement'] ) ) {
+			$placement = 'beginning';
+		}
+
+		if ( $this->has_lead( $form_settings ) && isset( $form_settings['form-placement'] ) ) {
+			$placement = $form_settings['form-placement'];
+		}
+
+		return $placement;
 	}
 
 	/**
@@ -725,7 +1073,7 @@ abstract class Forminator_Render_Form {
 	 * @return string
 	 */
 	public function get_form_type() {
-		return '';
+		return forminator_get_prefix( static::$module_slug, 'custom-' );
 	}
 
 	/**
@@ -816,10 +1164,18 @@ abstract class Forminator_Render_Form {
 	 * @since 1.6.1
 	 *
 	 * @param $force
+	 * @param int   $quiz_id Quiz ID - uses only for Form Lead.
 	 *
 	 * @return bool
 	 */
-	public function is_ajax_load( $force = false ) {
+	public function is_ajax_load( $force = false, $quiz_id = null ) {
+
+		if ( ! empty( $quiz_id ) ) {
+			$this->lead_model = Forminator_Quiz_Model::model()->load( $quiz_id );
+			if ( ! $force ) {
+				return isset( $this->lead_model->settings['use_ajax_load'] ) ? $this->lead_model->settings['use_ajax_load'] : false;
+			}
+        }
 
 		// somehow, it could be incompatible model,
 		// lets return as false when it happens
@@ -865,7 +1221,7 @@ abstract class Forminator_Render_Form {
 		}
 
 		$ajax_options = array(
-			'action'           => $this->ajax_load_action,
+			'action'           => 'forminator_load_' . static::$module_slug,
 			'type'             => $this->model->get_post_type(),
 			'id'               => $id,
 			'render_id'        => self::$render_ids[ $id ],
@@ -955,6 +1311,7 @@ abstract class Forminator_Render_Form {
 		$has_lead          = isset( $data['has_lead'] ) ? $data['has_lead'] : false;
 		$leads_id          = isset( $data['leads_id'] ) ? $data['leads_id'] : 0;
 		$lead_preview_data = isset( $data['lead_preview_data'] ) ? $data['lead_preview_data'] : 0;
+		$render_id		   = isset( $data['render_id'] ) ? $data['render_id'] : 0;
 
 		$is_preview = filter_var( $is_preview, FILTER_VALIDATE_BOOLEAN );
 
@@ -996,7 +1353,7 @@ abstract class Forminator_Render_Form {
 			wp_send_json_error( new WP_Error( 'invalid_module' ) );
 		}
 
-		$response = $view->ajax_display( $id, $is_preview, $preview_data, true, $last_submit_data, $extra );
+		$response = $view->ajax_display( $id, $is_preview, $preview_data, true, $last_submit_data, $extra, 0, $render_id );
 
 		if ( $has_lead ) {
 			$lead_view = Forminator_CForm_Front::get_instance();
@@ -1015,7 +1372,26 @@ abstract class Forminator_Render_Form {
 	}
 
 	/**
-	 * Display ajax render
+	 * Get Front class based on module post type
+	 *
+	 * @param string $type Post type.
+	 * @return string
+	 */
+	public static function get_front_class( $type ) {
+		$class = '';
+		if ( 'forminator_forms' === $type ) {
+			$class = 'Forminator_CForm_Front';
+		} elseif ( 'forminator_polls' === $type ) {
+			$class = 'Forminator_Poll_Front';
+		} elseif ( 'forminator_quizzes' === $type ) {
+			$class = 'Forminator_QForm_Front';
+		}
+
+		return $class;
+	}
+
+	/**
+	 * Ajax response for displaying module
 	 *
 	 * @since 1.6.1
 	 * @since 1.6.2 add $extra args
@@ -1026,10 +1402,227 @@ abstract class Forminator_Render_Form {
 	 * @param bool  $hide
 	 * @param array $last_submit_data
 	 * @param array $extra extra config to display
+	 * @param array $quiz_id
 	 *
 	 * @return array
 	 */
-	abstract public function ajax_display( $id, $is_preview = false, $data = false, $hide = true, $last_submit_data = array(), $extra = array() );
+	public function ajax_display( $id, $is_preview = false, $data = false, $hide = true, $last_submit_data = array(), $extra = array(), $quiz_id = 0 ) {
+		// The first module and preview for it.
+		$id = isset( $id ) ? intval( $id ) : null;
+
+		if ( ( is_null( $id ) || $id <= 0 ) && $is_preview && $data ) {
+			$settings   = [];
+			$class      = 'Forminator_' . forminator_get_prefix( static::$module_slug, '', true ) . '_Model';
+			$form_model = new $class();
+
+			if ( isset( $data['settings'] ) ) {
+				// Sanitize settings.
+				$settings = forminator_sanitize_field( $data['settings'] );
+				$form_model->set_var_in_array( 'name', 'formName', $settings );
+			} else {
+				$form_model->set_var_in_array( 'name', 'formName', $data, 'forminator_sanitize_field' );
+			}
+			$form_model->settings = $settings;
+
+			$form_model = $this->set_form_model_data( $form_model, $data );
+
+			// Sanitize admin email message.
+			if ( isset( $data['settings']['admin-email-editor'] ) ) {
+				$form_model->settings['admin-email-editor'] = $data['settings']['admin-email-editor'];
+			}
+
+			$form_model->settings['version'] = '1.0';
+
+			$status             = $class::STATUS_PUBLISH;
+			$form_model->status = $status;
+
+			$this->model     = $form_model;
+			$this->model->id = $id;
+		} elseif ( $data && ! empty( $data ) ) {
+			$class       = 'Forminator_' . forminator_get_prefix( static::$module_slug, '', true ) . '_Model';
+			$this->model = $class::model()->load_preview( $id, $data );
+			// its preview!
+			if ( is_object( $this->model ) ) {
+				$this->model->id = $id;
+			}
+		} else {
+			$this->model = Forminator_Base_Form_Model::get_model( $id );
+		}
+
+		$is_ajax_load = $this->is_ajax_load( $is_preview, $quiz_id );
+
+		$response = array(
+			'html'         => '',
+			'style'        => '',
+			'styles'       => array(),
+			'scripts'      => array(),
+			'script'       => '',
+			'callback'     => '',
+			'is_ajax_load' => false,
+		);
+
+		if ( ! $this->is_displayable( $is_preview ) ) {
+			return $response;
+		}
+
+		if ( ! $is_ajax_load ) {
+			// return nothing.
+			return $response;
+		}
+
+		// setup extra param.
+		if ( isset( $extra ) && is_array( $extra ) ) {
+			if ( isset( $extra['_wp_http_referer'] ) ) {
+				$this->_wp_http_referer = $extra['_wp_http_referer'];
+			}
+			if ( isset( $extra['page_id'] ) ) {
+				$this->_page_id = $extra['page_id'];
+			}
+		}
+
+		if ( ! empty( $last_submit_data ) && is_array( $last_submit_data ) ) {
+			$_POST = $last_submit_data;
+		}
+
+		$response['is_ajax_load'] = true;
+		$response['html']         = $this->get_html( $hide, $is_preview );
+
+		$properties = isset( $this->forms_properties[0] ) ? $this->forms_properties[0] : array();
+
+		if ( $is_preview ) {
+			ob_start();
+			$this->print_styles();
+			$styles            = ob_get_clean();
+			$response['style'] = $styles;
+		}
+
+		$response['options'] = $this->get_front_init_options( $properties );
+
+		$this->enqueue_form_scripts( $is_preview, $is_ajax_load );
+
+		$response['styles']  = $this->styles;
+		$response['scripts'] = $this->scripts;
+		$response['script']  = $this->script;
+
+		if ( $this->can_track_views() ) {
+			$form_view = Forminator_Form_Views_Model::get_instance();
+			$post_id   = $this->get_post_id();
+			if ( ! $this->is_admin ) {
+				$form_view->save_view( $id, $post_id, '' );
+			}
+		}
+
+		return $response;
+	}
+
+	/**
+	 * Return front-end styles
+	 *
+	 * @param obj|null $model Model obj.
+	 * @param bool     $echo Optional. Echo or return.
+	 * @return string
+	 */
+	public function generate_styles( $model = null, $echo = true ) {
+
+		if ( empty( $this->model ) && ! empty( $model ) ) {
+			$this->model = $model;
+
+			$this->set_forms_properties();
+		}
+
+		$style_properties = $this->get_styles_properties();
+
+		if ( ! empty( $style_properties ) ) {
+
+			foreach ( $style_properties as $style_property ) {
+
+				if ( empty( $style_property['settings'] ) ) {
+					continue;
+				}
+
+				$properties = $style_property['settings'];
+				if ( method_exists( $this, 'get_pp_field_properties' ) ) {
+					$paypal_properties = $this->get_pp_field_properties();
+				}
+
+				// Merge paypal properties to styles ( width & height are used in the styles ).
+				if ( ! empty( $paypal_properties ) ) {
+					$properties = array_merge( $properties, $paypal_properties );
+				}
+
+				// use this to properly check font settings is enabled.
+				$properties['fonts_settings'] = array();
+				if ( isset( $style_property['fonts_settings'] ) ) {
+					$properties['fonts_settings'] = $style_property['fonts_settings'];
+				}
+
+				// If we don't have a form_id use $model->id.
+				if ( ! isset( $properties['form_id'] ) ) {
+					if ( ! isset( $style_property ['id'] ) ) {
+						continue;
+					}
+					$properties['form_id'] = $style_property['id'];
+				}
+
+				ob_start();
+
+				if ( isset( $properties['custom_css'] ) && isset( $properties['form_id'] ) ) {
+					$properties['custom_css'] = static::get_custom_css( $properties );
+				}
+
+				$theme = $this->get_form_design();
+				if ( 'quiz' !== static::$module_slug && ! in_array( $theme, array( 'bold', 'flat', 'material' ), true ) ) {
+					$theme = 'default';
+				}
+
+				/** @noinspection PhpIncludeInspection */
+				include $this->styles_template_path( $theme );
+				$styles         = ob_get_clean();
+				$trimmed_styles = trim( $styles );
+
+				if ( isset( $properties['form_id'] ) && strlen( $trimmed_styles ) > 0 ) {
+					$styles = wp_strip_all_tags( $trimmed_styles );
+					if ( $echo ) {
+						?>
+						<style type="text/css"
+							   id="forminator-module-styles-<?php echo esc_attr( $properties['form_id'] ); ?>">
+							<?php echo $styles; // phpcs:ignore ?>
+						</style>
+						<?php
+					} else {
+						return $styles;
+					}
+				}
+			}
+		}
+		return '';
+	}
+
+	/**
+	 * Generate CSS file.
+	 *
+	 * @param int $id Module ID.
+	 */
+	public static function regenerate_css_file( $id ) {
+		$model       = Forminator_Base_Form_Model::get_model( $id );
+		$front_class = self::get_front_class( $model->raw->post_type );
+		if ( ! $front_class ) {
+			return;
+		}
+		$obj      = new $front_class();
+		$styles   = $obj->generate_styles( $model, false );
+		$filename = Forminator_Assets_Enqueue::get_css_upload( $id, 'dir' );
+		file_put_contents( $filename, $styles );
+	}
+
+	/**
+	 * Return font specific front-end styles
+	 *
+	 * @since 1.0
+	 */
+	public function print_styles() {
+		$this->generate_styles();
+	}
 
 	/**
 	 * Generate nonce field

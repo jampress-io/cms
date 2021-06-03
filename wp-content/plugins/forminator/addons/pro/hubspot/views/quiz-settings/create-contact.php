@@ -28,9 +28,9 @@ $custom_field_map = isset( $vars['custom_fields_map'] ) ? array_filter( $vars['c
 ?>
 <div class="integration-header">
 
-	<h3 id="dialogTitle2" class="sui-box-title"><?php echo esc_html( __( 'Create Contact', Forminator::DOMAIN ) ); ?></h3>
+	<h3 id="dialogTitle2" class="sui-box-title"><?php echo esc_html( __( 'Create Contact', 'forminator' ) ); ?></h3>
 
-	<p class="sui-description" style="max-width: 400px; margin: 20px auto 0; line-height: 22px;"><?php esc_html_e( 'Let\'s start with choosing a HubSpot list and matching up your quiz lead fields with the default HubSpot contact fields to make sure weâ€™re sending data to the right place.', Forminator::DOMAIN ); ?></p>
+	<p class="sui-description" style="max-width: 400px; margin: 20px auto 0; line-height: 22px;"><?php esc_html_e( 'Let\'s start with choosing a HubSpot list and matching up your quiz lead fields with the default HubSpot contact fields to make sure weâ€™re sending data to the right place.', 'forminator' ); ?></p>
 
 	<?php if ( ! empty( $vars['error_message'] ) ) : ?>
 		<span class="sui-notice sui-notice-error"><p><?php echo esc_html( $vars['error_message'] ); ?></p></span>
@@ -43,8 +43,8 @@ $custom_field_map = isset( $vars['custom_fields_map'] ) ? array_filter( $vars['c
 	<div tabindex="0" role="group" class="sui-form-field<?php echo esc_attr( ! empty( $vars['list_id_error'] ) ? ' sui-form-field-error' : '' ); ?>"<?php echo empty( $vars['lists'] ) ? ' disabled="disabled"' : ''; ?>>
 
 		<label for="hubspot-list-id" id="hubspot-list-id-label" class="sui-label">
-			<?php esc_html_e( 'HubSpot List (optional)', Forminator::DOMAIN ); ?>
-			<span class="sui-label-note"><?php esc_html_e( 'Static list only', Forminator::DOMAIN ); ?></span>
+			<?php esc_html_e( 'HubSpot List (optional)', 'forminator' ); ?>
+			<span class="sui-label-note"><?php esc_html_e( 'Static list only', 'forminator' ); ?></span>
 		</label>
 
 		<select id="hubspot-list-id" class="<?php echo esc_attr( $list_selector_class ); ?>" aria-labelledby="hubspot-list-id-label" aria-describedby="hubspot-list-id-desc hubspot-list-id-error" name="list_id">
@@ -53,7 +53,7 @@ $custom_field_map = isset( $vars['custom_fields_map'] ) ? array_filter( $vars['c
 			// Select a list.
 			if ( ! empty( $vars['lists'] ) ) { ?>
 
-				<option value=""><?php esc_html_e( 'Select a list', Forminator::DOMAIN ); ?></option>
+				<option value=""><?php esc_html_e( 'Select a list', 'forminator' ); ?></option>
 
 				<?php
 				foreach ( $vars['lists'] as $list_id => $list_name ) : ?>
@@ -64,7 +64,7 @@ $custom_field_map = isset( $vars['custom_fields_map'] ) ? array_filter( $vars['c
 				<?php
 				// Empty notice.
 			} else { ?>
-				<option value=""><?php esc_html_e( 'No static lists found on your HubSpot account', Forminator::DOMAIN ); ?></option>
+				<option value=""><?php esc_html_e( 'No static lists found on your HubSpot account', 'forminator' ); ?></option>
 			<?php } ?>
 
 		</select>
@@ -77,21 +77,21 @@ $custom_field_map = isset( $vars['custom_fields_map'] ) ? array_filter( $vars['c
 			?>
 		</span>
 
-		<span id="hubspot-list-id-desc" class="sui-description"><?php esc_html_e( 'You can optionally add the contact to a static HubSpot list. Leave it empty to create a contact without adding it to a list.', Forminator::DOMAIN ); ?></span>
+		<span id="hubspot-list-id-desc" class="sui-description"><?php esc_html_e( 'You can optionally add the contact to a static HubSpot list. Leave it empty to create a contact without adding it to a list.', 'forminator' ); ?></span>
 
 	</div>
 
 	<div tabindex="0" role="group" class="sui-form-field" style="margin-bottom: 0;">
 
-		<label for="hubspot-list-id" id="hubspot-list-id-label" class="sui-label"><?php esc_html_e( 'Field Mapping', Forminator::DOMAIN ); ?></label>
+		<label for="hubspot-list-id" id="hubspot-list-id-label" class="sui-label"><?php esc_html_e( 'Field Mapping', 'forminator' ); ?></label>
 
 		<table class="sui-table" style="margin-top: 5px; margin-bottom: 0;">
 
 			<thead>
 
 			<tr>
-				<th><?php esc_html_e( 'HubSpot Fields', Forminator::DOMAIN ); ?></th>
-				<th><?php esc_html_e( 'Forminator Fields', Forminator::DOMAIN ); ?></th>
+				<th><?php esc_html_e( 'HubSpot Fields', 'forminator' ); ?></th>
+				<th><?php esc_html_e( 'Forminator Fields', 'forminator' ); ?></th>
 			</tr>
 
 			</thead>
@@ -129,7 +129,7 @@ $custom_field_map = isset( $vars['custom_fields_map'] ) ? array_filter( $vars['c
 							?>
                             <div class="sui-form-field <?php echo esc_attr( ! empty( $current_error ) ? 'sui-form-field-error' : '' ); ?>"<?php echo ( ! empty( $current_error ) ) ? ' style="padding-top: 5px;"' : ''; ?>>
                                 <select class="sui-select" name="fields_map[<?php echo esc_attr( $key ); ?>]">
-                                    <option value=""><?php esc_html_e( 'None', Forminator::DOMAIN ); ?></option>
+                                    <option value=""><?php esc_html_e( 'None', 'forminator' ); ?></option>
 									<?php if ( ! empty( $forminator_fields ) ) :
 										foreach ( $forminator_fields as $forminator_field ) : ?>
                                             <option value="<?php echo esc_attr( $forminator_field['element_id'] ); ?>"
@@ -162,7 +162,7 @@ $custom_field_map = isset( $vars['custom_fields_map'] ) ? array_filter( $vars['c
                         <td>
                             <div class="sui-form-field">
                                 <select class="sui-select" name=custom_property[]">
-                                    <option value=""><?php esc_html_e( 'None', Forminator::DOMAIN ); ?></option>
+                                    <option value=""><?php esc_html_e( 'None', 'forminator' ); ?></option>
 									<?php if ( ! empty( $vars['properties'] ) ) {
 										foreach ( $vars['properties'] as $p => $prop ) { ?>
                                             <option value="<?php echo esc_html( $p ); ?>" <?php selected( $custom, $p ); ?>><?php echo esc_html( $prop ); ?></option>
@@ -176,7 +176,7 @@ $custom_field_map = isset( $vars['custom_fields_map'] ) ? array_filter( $vars['c
 
                                 <div class="sui-form-field">
                                     <select class="sui-select" name="custom_field[]">
-                                        <option value=""><?php esc_html_e( 'None', Forminator::DOMAIN ); ?></option>
+                                        <option value=""><?php esc_html_e( 'None', 'forminator' ); ?></option>
 										<?php
 										if ( ! empty( $forminator_fields ) ) :
 											foreach ( $forminator_fields as $forminator_field ) : ?>
@@ -207,7 +207,7 @@ $custom_field_map = isset( $vars['custom_fields_map'] ) ? array_filter( $vars['c
                     <td>
                         <div class="sui-form-field">
                             <select class="sui-select" name=custom_property[]">
-                                <option value=""><?php esc_html_e( 'None', Forminator::DOMAIN ); ?></option>
+                                <option value=""><?php esc_html_e( 'None', 'forminator' ); ?></option>
 								<?php if ( ! empty( $vars['properties'] ) ) {
 									foreach ( $vars['properties'] as $p => $prop ) { ?>
                                         <option value="<?php echo esc_html( $p ); ?>"><?php echo esc_html( $prop ); ?></option>
@@ -222,7 +222,7 @@ $custom_field_map = isset( $vars['custom_fields_map'] ) ? array_filter( $vars['c
 
                             <div class="sui-form-field">
                                 <select class="sui-select" name="custom_field[]">
-                                    <option value=""><?php esc_html_e( 'None', Forminator::DOMAIN ); ?></option>
+                                    <option value=""><?php esc_html_e( 'None', 'forminator' ); ?></option>
 									<?php
 									if ( ! empty( $forminator_fields ) ) :
 										foreach ( $forminator_fields as $forminator_field ) : ?>
@@ -252,7 +252,7 @@ $custom_field_map = isset( $vars['custom_fields_map'] ) ? array_filter( $vars['c
                 <td>
                     <div class="sui-button sui-button-ghost add-hubspot-field">
                         <i class="sui-icon-plus" aria-hidden="true"></i>
-						<?php esc_html_e( 'Add Additional field', Forminator::DOMAIN ); ?>
+						<?php esc_html_e( 'Add Additional field', 'forminator' ); ?>
                     </div>
                 </td>
                 <td></td>

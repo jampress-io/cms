@@ -6,19 +6,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Author: Hoang Ngo
  */
-class Forminator_Custom_Form_Model extends Forminator_Base_Form_Model {
-
-	protected $post_type = 'forminator_forms';
+class Forminator_Form_Model extends Forminator_Base_Form_Model {
 
 	/**
-	 * @param int|string $class_name
+	 * Module slug
 	 *
-	 * @since 1.0
-	 * @return Forminator_Custom_Form_Model
+	 * @var string
 	 */
-	public static function model( $class_name = __CLASS__ ) { // phpcs:ignore
-		return parent::model( $class_name );
-	}
+	protected static $module_slug = 'form';
+
+	protected $post_type = 'forminator_forms';
 
 	/**
 	 * Get field
@@ -162,80 +159,19 @@ class Forminator_Custom_Form_Model extends Forminator_Base_Form_Model {
 	}
 
 	/**
-	 * Count all form types
+	 * Prepare data for preview
 	 *
-	 * @since 1.14
+	 * @param object $form_model Model.
+	 * @param array  $data Passed data.
 	 *
-	 * @param string $status Post status.
-	 *
-	 * @return int
+	 * @return object
 	 */
-	public function count_all( $status = '' ) {
-		if ( empty( $status ) ) {
-			$cache_key     = 'forminator_form_total_entries';
-			$cache_group   = 'forminator_form_total_entries';
-		} else {
-			$cache_key     = 'forminator_form_total_entries_' . $status;
-			$cache_group   = 'forminator_form_total_entries_' . $status;
-		}
-		$entries_cache = wp_cache_get( $cache_group, $cache_key );
-
-		if ( $entries_cache ) {
-			return $entries_cache;
-		} else {
-
-			if ( empty( $status ) ) {
-				$status = 'any';
-			}
-
-			$args    = array(
-				'post_type'   => $this->post_type,
-				'post_status' => $status,
-				'fields'      => 'ids',
-				'numberposts' => -1,
-			);
-			$posts   = get_posts( $args );
-			$entries = count( $posts );
-
-			wp_cache_set( $cache_group, $entries, $cache_key );
-
-			return $entries;
-		}
-
-	}
-
-	/**
-	 * Load preview
-	 *
-	 * @since 1.0
-	 *
-	 * @param $id
-	 * @param $data
-	 *
-	 * @return bool|Forminator_Custom_Form_Model
-	 */
-	public function load_preview( $id, $data ) {
-		$form_model = $this->load( $id, true );
-
-		// If bool, abort
-		if ( is_bool( $form_model ) ) {
-			return false;
-		}
-
-		$form_model->clear_fields();
-		$form_model->set_var_in_array( 'name', 'formName', $data );
-
+	public static function prepare_data_for_preview( $form_model, $data ) {
 		//build the field
 		$fields = array();
 		if ( isset( $data['wrappers'] ) ) {
 			$fields = $data['wrappers'];
 			unset( $data['wrappers'] );
-		}
-
-		//build the settings
-		if ( isset( $data['settings'] ) ) {
-			$settings             = $data['settings'];
-			$form_model->settings = $settings;
 		}
 
 		if ( ! empty( $fields ) ) {
@@ -266,15 +202,15 @@ class Forminator_Custom_Form_Model extends Forminator_Base_Form_Model {
 			'error'      => '',
 		);
 
-		if ( isset( $form_settings['logged-users'] ) && ! empty( $form_settings['logged-users'] ) ) {
+		if ( ! empty( $form_settings['logged-users'] ) ) {
 			if ( filter_var( $form_settings['logged-users'], FILTER_VALIDATE_BOOLEAN ) && ! is_user_logged_in() ) {
 				$can_show = array(
 					'can_submit' => false,
-					'error'      => __( 'Only logged in users can submit this form.', Forminator::DOMAIN ),
+					'error'      => __( 'Only logged in users can submit this form.', 'forminator' ),
 				);
 			}
 		}
-		if ( $can_show ) {
+		if ( $can_show['can_submit'] ) {
 			if ( isset( $form_settings['form-expire'] ) ) {
 				if ( 'submits' === $form_settings['form-expire'] ) {
 					if ( isset( $form_settings['expire_submits'] ) && ! empty( $form_settings['expire_submits'] ) ) {
@@ -283,7 +219,7 @@ class Forminator_Custom_Form_Model extends Forminator_Base_Form_Model {
 						if ( $total_entries >= $submits ) {
 							$can_show = array(
 								'can_submit' => false,
-								'error'      => __( 'You reached the maximum allowed submissions for this form.', Forminator::DOMAIN ),
+								'error'      => __( 'You reached the maximum allowed submissions for this form.', 'forminator' ),
 							);
 						}
 					}
@@ -294,11 +230,21 @@ class Forminator_Custom_Form_Model extends Forminator_Base_Form_Model {
 						if ( $current_date > $expire_date ) {
 							$can_show = array(
 								'can_submit' => false,
-								'error'      => __( 'Unfortunately this form expired.', Forminator::DOMAIN ),
+								'error'      => __( 'Unfortunately this form expired.', 'forminator' ),
 							);
 						}
 					}
 				}
+			}
+		}
+
+		if ( $can_show['can_submit'] ) {
+			// disable submit if status is draft.
+			if ( self::STATUS_DRAFT === $this->status ) {
+				$can_show = array(
+					'can_submit' => false,
+					'error'      => __( 'This form is not published.', 'forminator' ),
+				);
 			}
 		}
 
@@ -348,178 +294,6 @@ class Forminator_Custom_Form_Model extends Forminator_Base_Form_Model {
 	}
 
 	/**
-	 * Export model
-	 *
-	 * Add filter to include `integrations`
-	 *
-	 * @since 1.4
-	 * @return array
-	 */
-	public function to_exportable_data() {
-
-		if ( ! Forminator::is_import_export_feature_enabled() ) {
-			return array();
-		}
-
-		if ( Forminator::is_export_integrations_feature_enabled() ) {
-			add_filter( 'forminator_form_model_to_exportable_data', array( $this, 'export_integrations_data' ), 1, 1 );
-		}
-
-		$exportable_data = parent::to_exportable_data();
-
-		// avoid filter executed on next cycle
-		remove_filter( 'forminator_form_model_to_exportable_data', array( $this, 'export_integrations_data' ), 1 );
-
-		return $exportable_data;
-	}
-
-	/**
-	 * Export integrations Form setting
-	 *
-	 * @since 1.4
-	 *
-	 * @param $exportable_data
-	 *
-	 * @return array
-	 */
-	public function export_integrations_data( $exportable_data ) {
-		$model_id                = $this->id;
-		$exportable_integrations = array();
-
-		$connected_addons = forminator_get_addons_instance_connected_with_form( $model_id );
-
-		foreach ( $connected_addons as $connected_addon ) {
-			try {
-				$form_settings = $connected_addon->get_addon_form_settings( $model_id );
-				if ( $form_settings instanceof Forminator_Addon_Form_Settings_Abstract ) {
-					$exportable_integrations[ $connected_addon->get_slug() ] = $form_settings->to_exportable_data();
-				}
-			} catch ( Exception $e ) {
-				forminator_addon_maybe_log( $connected_addon->get_slug(), 'failed to get to_exportable_data', $e->getMessage() );
-			}
-		}
-
-		/**
-		 * Filter integrations data to export
-		 *
-		 * @since 1.4
-		 *
-		 * @param array $exportable_integrations
-		 * @param array $exportable_data all exportable data from model, useful
-		 */
-		$exportable_integrations         = apply_filters( 'forminator_form_model_export_integrations_data', $exportable_integrations, $model_id );
-		$exportable_data['integrations'] = $exportable_integrations;
-
-		return $exportable_data;
-	}
-
-	/**
-	 * Import Model
-	 *
-	 * add filter `forminator_import_model`
-	 *
-	 * @since 1.4
-	 *
-	 * @param        $import_data
-	 * @param string $module
-	 *
-	 * @return Forminator_Base_Form_Model|WP_Error
-	 */
-	public static function create_from_import_data( $import_data, $module = __CLASS__ ) {
-		if ( Forminator::is_import_integrations_feature_enabled() ) {
-			add_filter( 'forminator_import_model', array( 'Forminator_Custom_Form_Model', 'import_integrations_data' ), 1, 3 );
-		}
-
-		$model = parent::create_from_import_data( $import_data, $module );
-
-		// avoid filter executed on next cycle
-		remove_filter( 'forminator_import_model', array( 'Forminator_Custom_Form_Model', 'import_integrations_data' ), 1 );
-
-		return $model;
-	}
-
-	/**
-	 * Import Integrations data model
-	 *
-	 * @since 1.4
-	 *
-	 * @param $model
-	 * @param $import_data
-	 * @param $module
-	 *
-	 * @return Forminator_Custom_Form_Model
-	 */
-	public static function import_integrations_data( $model, $import_data, $module ) {
-		// return what it is
-		if ( is_wp_error( $model ) ) {
-			return $model;
-		}
-
-		// make sure its custom form
-		if ( __CLASS__ !== $module ) {
-			return $model;
-		}
-
-		if ( ! isset( $import_data['integrations'] ) || empty( $import_data['integrations'] ) || ! is_array( $import_data['integrations'] ) ) {
-			return $model;
-		}
-
-		/** @var Forminator_Custom_Form_Model $model */
-
-		$integrations_data = $import_data['integrations'];
-		foreach ( $integrations_data as $slug => $integrations_datum ) {
-			try {
-				$addon = forminator_get_addon( $slug );
-				if ( $addon instanceof Forminator_Addon_Abstract ) {
-					$form_settings = $addon->get_addon_form_settings( $model->id );
-					if ( $form_settings instanceof Forminator_Addon_Form_Settings_Abstract ) {
-						$form_settings->import_data( $integrations_datum );
-					}
-				}
-			} catch ( Exception $e ) {
-				forminator_addon_maybe_log( $slug, 'failed to get import form settings', $e->getMessage() );
-			}
-		}
-
-		return $model;
-
-	}
-
-	/**
-	 * Get status of prevent_store
-	 *
-	 * @since 1.5
-	 *
-	 * @param int $id
-	 * @param array $settings
-	 *
-	 * @return boolean
-	 */
-	public function is_prevent_store( $id = null, $settings = array() ) {
-		$form_id       = ! empty( $id ) ? $id : (int) $this->id;
-		$form_settings = ! empty( $settings ) ? $settings : $this->settings;
-
-		// default is always store
-		$is_prevent_store = false;
-
-		$is_prevent_store = isset( $form_settings['store'] ) ? $form_settings['store'] : $is_prevent_store;
-		$is_prevent_store = filter_var( $is_prevent_store, FILTER_VALIDATE_BOOLEAN );
-
-		/**
-		 * Filter is_prevent_store flag of a custom form
-		 *
-		 * @since 1.5
-		 *
-		 * @param bool  $is_prevent_store
-		 * @param int   $form_id
-		 * @param array $form_settings
-		 */
-		$is_prevent_store = apply_filters( 'forminator_custom_form_is_prevent_store', $is_prevent_store, $form_id, $form_settings );
-
-		return $is_prevent_store;
-	}
-
-	/**
 	 * Get first captcha field in form if available
 	 *
 	 * @since 1.5.3
@@ -560,7 +334,7 @@ class Forminator_Custom_Form_Model extends Forminator_Base_Form_Model {
 		}
 
 		// If Stripe field exist & submit is AJAX we fall back to hide to force page reload when form submitted
-		if ( $this->has_stripe_or_paypal( $this->fields ) && $this->is_ajax_submit() ) {
+		if ( self::has_stripe_or_paypal( $this ) && $this->is_ajax_submit() ) {
 			$submission_behaviour = 'behaviour-hide';
 		}
 
@@ -590,75 +364,6 @@ class Forminator_Custom_Form_Model extends Forminator_Base_Form_Model {
 		}
 
 		return filter_var( $form_settings['enable-ajax'], FILTER_VALIDATE_BOOLEAN );
-	}
-
-	/**
-	 * Flag if module should be loaded via ajax
-	 *
-	 * @since 1.6.1
-	 *
-	 * @param bool $force
-	 *
-	 * @return bool
-	 */
-	public function is_ajax_load( $force = false ) {
-		$form_id        = (int) $this->id;
-		$form_settings  = $this->settings;
-		$global_enabled = parent::is_ajax_load( $force );
-
-		$enabled = isset( $form_settings['use_ajax_load'] ) ? $this->settings['use_ajax_load'] : false;
-		$enabled = filter_var( $enabled, FILTER_VALIDATE_BOOLEAN );
-
-		$enabled = $global_enabled || $enabled;
-
-		/**
-		 * Filter is ajax load for Custom Form
-		 *
-		 * @since 1.6.1
-		 *
-		 * @param bool  $enabled
-		 * @param bool  $global_enabled
-		 * @param int   $form_id
-		 * @param array $form_settings
-		 *
-		 * @return bool
-		 */
-		$enabled = apply_filters( 'forminator_custom_form_is_ajax_load', $enabled, $global_enabled, $form_id, $form_settings );
-
-		return $enabled;
-	}
-
-	/**
-	 * Flag to use `DONOTCACHEPAGE`
-	 *
-	 * @since 1.6.1
-	 * @return bool
-	 */
-	public function is_use_donotcachepage_constant() {
-		$form_id        = (int) $this->id;
-		$form_settings  = $this->settings;
-		$global_enabled = parent::is_use_donotcachepage_constant();
-
-		$enabled = isset( $form_settings['use_donotcachepage'] ) ? $this->settings['use_donotcachepage'] : false;
-		$enabled = filter_var( $enabled, FILTER_VALIDATE_BOOLEAN );
-
-		$enabled = $global_enabled || $enabled;
-
-		/**
-		 * Filter use `DONOTCACHEPAGE` Custom Form
-		 *
-		 * @since 1.6.1
-		 *
-		 * @param bool  $enabled
-		 * @param bool  $global_enabled
-		 * @param int   $form_id
-		 * @param array $form_settings
-		 *
-		 * @return bool
-		 */
-		$enabled = apply_filters( 'forminator_custom_form_is_use_donotcachepage_constant', $enabled, $global_enabled, $form_id, $form_settings );
-
-		return $enabled;
 	}
 
 	/**
@@ -758,7 +463,9 @@ class Forminator_Custom_Form_Model extends Forminator_Base_Form_Model {
 	 * @since 1.9.3
 	 * @return bool
 	 */
-	public function has_stripe_or_paypal( $fields ) {
+	public static function has_stripe_or_paypal( $form ) {
+		$fields = isset( $form->fields ) ? $form->fields : array();
+
 		foreach ( $fields as $field ) {
 			$field = $field->to_formatted_array();
 			if ( isset( $field['type'] ) && ( 'stripe' === $field['type'] || 'paypal' === $field['type'] ) ) {

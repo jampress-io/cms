@@ -25,7 +25,7 @@ class Forminator_CForm_User_Signups {
 
 		$this->meta     = maybe_unserialize( $signup->meta );
 		$this->entry    = new Forminator_Form_Entry_Model( $this->meta['entry_id'] );
-		$this->form     = Forminator_Custom_Form_Model::model()->load( $this->meta['form_id'] );
+		$this->form     = Forminator_Form_Model::model()->load( $this->meta['form_id'] );
 		$this->settings = $this->form->settings;
 		// Don't use null coalescing operator for PHP version 5.6.*
 		$this->submitted_data = isset( $this->meta['submitted_data'] ) ? $this->meta['submitted_data'] : array();
@@ -306,12 +306,12 @@ class Forminator_CForm_User_Signups {
 			//User already exists
 			$signup->set_as_activated();
 
-			return new WP_Error( 'user_already_exists', __( 'That username is already activated.', Forminator::DOMAIN ), $signup );
+			return new WP_Error( 'user_already_exists', __( 'That username is already activated.', 'forminator' ), $signup );
 		}
 
 		if ( email_exists( $signup->user_data['user_email'] ) ) {
 			//Email already exists
-			return new WP_Error( 'email_already_exists', __( 'Sorry, that email address is already used!', Forminator::DOMAIN ), $signup );
+			return new WP_Error( 'email_already_exists', __( 'Sorry, that email address is already used!', 'forminator' ), $signup );
 		}
 
 		if ( forminator_is_main_site() ) {
@@ -332,7 +332,7 @@ class Forminator_CForm_User_Signups {
 
 		$user_id = $forminator_user_registration->create_user( $user_data, $signup->form, $signup->entry, $signup->submitted_data, $is_user_signon );
 		if ( ! $user_id ) {
-			return new WP_Error( 'create_user', __( 'Could not create user', Forminator::DOMAIN ), $signup );
+			return new WP_Error( 'create_user', __( 'Could not create user', 'forminator' ), $signup );
 		}
 
 		$signup->set_as_activated();

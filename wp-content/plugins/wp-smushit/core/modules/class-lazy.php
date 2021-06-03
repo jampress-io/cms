@@ -75,13 +75,8 @@ class Lazy extends Abstract_Module {
 			return;
 		}
 
-		// If native compat is enabled, and we are on WordPress 5.5 - disable Smush lazy load.
-		if ( isset( $this->options['native'] ) && $this->options['native'] ) {
-			global $wp_version;
-			if ( version_compare( $wp_version, '5.4.999', '>' ) ) {
-				return;
-			}
-		}
+		// Disable WordPress native lazy load.
+		add_filter( 'wp_lazy_loading_enabled', '__return_false' );
 
 		// Load js file that is required in public facing pages.
 		add_action( 'wp_head', array( $this, 'add_inline_styles' ) );
@@ -223,7 +218,9 @@ class Lazy extends Abstract_Module {
 		);
 
 		$this->add_masonry_support();
-		$this->add_avada_support();
+		if ( defined( 'WP_SMUSH_LAZY_LOAD_AVADA' ) && WP_SMUSH_LAZY_LOAD_AVADA ) {
+			$this->add_avada_support();
+		}
 		$this->add_soliloquy_support();
 	}
 
@@ -500,13 +497,24 @@ class Lazy extends Abstract_Module {
 
 			// Add .no-lazyload class.
 			$class = Helpers\Parser::get_attribute( $new_image, 'class' );
+
 			if ( $class ) {
 				Helpers\Parser::remove_attribute( $new_image, 'class' );
 				$class .= ' no-lazyload';
 			} else {
 				$class = 'no-lazyload';
 			}
+
 			Helpers\Parser::add_attribute( $new_image, 'class', $class );
+
+			/**
+			 * Filters the no-lazyload image.
+			 *
+			 * @since 3.8.5
+			 *
+			 * @param string $text The image that can be filtered.
+			 */
+			$new_image = apply_filters( 'wp_smush_filter_no_lazyload_image', $new_image );
 
 			$content = str_replace( $image, $new_image, $content );
 		}

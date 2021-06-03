@@ -13,7 +13,7 @@
  *
  * @since 1.1
  */
-abstract class Forminator_Addon_Form_Hooks_Abstract {
+abstract class Forminator_Addon_Form_Hooks_Abstract extends Forminator_Addon_Hooks_Abstract {
 
 	/**
 	 * Addon Instance
@@ -52,7 +52,7 @@ abstract class Forminator_Addon_Form_Hooks_Abstract {
 	 * Custom Form Model
 	 *
 	 * @since 1.2
-	 * @var Forminator_Custom_Form_Model
+	 * @var Forminator_Form_Model
 	 */
 	protected $custom_form;
 
@@ -83,10 +83,10 @@ abstract class Forminator_Addon_Form_Hooks_Abstract {
 	public function __construct( Forminator_Addon_Abstract $addon, $form_id ) {
 		$this->addon       = $addon;
 		$this->form_id     = $form_id;
-		$this->custom_form = Forminator_Custom_Form_Model::model()->load( $this->form_id );
+		$this->custom_form = Forminator_Form_Model::model()->load( $this->form_id );
 		if ( ! $this->custom_form ) {
 			/* translators: ... */
-			throw new Forminator_Addon_Exception( sprintf( __( 'Form with id %d could not be found', Forminator::DOMAIN ), $this->form_id ) );
+			throw new Forminator_Addon_Exception( sprintf( __( 'Form with id %d could not be found', 'forminator' ), $this->form_id ) );
 		}
 
 		$this->_submit_form_error_message = __( 'Failed to submit form because of an addon, please check your form and try again' );

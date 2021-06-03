@@ -8,8 +8,7 @@
 
 	/* STATE: Default */
 
-	.forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--material .forminator-signature .forminator-signature--placeholder,
-	.et-db #et-boc .et_pb_module .forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--material .forminator-signature .forminator-signature--placeholder {
+	.forminator-ui#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-signature .forminator-signature--placeholder {
 		<?php if ( forminator_array_value_exists( $properties, 'cform-esign-placeholder-font-size' ) ) { ?>
 			font-size: <?php echo $properties['cform-esign-placeholder-font-size'] ?>px;
 		<?php } else { ?>
@@ -39,10 +38,8 @@
 
 	/* STATE: Default */
 
-	.forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--material .forminator-field-signature:not(.forminator-is_hover):not(.forminator-is_filled) .forminator-label,
-	.et-db #et-boc .et_pb_module .forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--material .forminator-field-signature:not(.forminator-is_hover):not(.forminator-is_filled) .forminator-label,
-	.forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--material .forminator-signature .forminator-signature--placeholder,
-	.et-db #et-boc .et_pb_module .forminator-ui.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--material .forminator-signature .forminator-signature--placeholder {
+	.forminator-ui#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-signature .forminator-signature--placeholder,
+	.forminator-ui#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-field-signature:not(.forminator-is_hover):not(.forminator-is_filled) .forminator-label {
 		font-size: 16px;
 		font-weight: 400;
 	}

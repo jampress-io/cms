@@ -300,7 +300,6 @@
 				return;
 			}
 
-
 			this.frontInitCalled = true;
 			var id               = this.settings.id;
 			var render_id        = this.settings.render_id;
@@ -308,12 +307,12 @@
 			var lead_options     = this.leadFrontOptions || null;
 
 			if (options) {
-				$('#forminator-module-' + id + '[data-forminator-render=' + render_id + ']')
+				$('#forminator-module-' + id + '[data-forminator-render="' + render_id + '"]')
 					.forminatorFront(options);
 			}
 			if ( 'undefined' !== typeof this.settings.has_lead && lead_options) {
 				var leads_id = this.settings.leads_id;
-				$('#forminator-module-' + leads_id + '[data-forminator-render=' + render_id + ']')
+				$('#forminator-module-' + leads_id + '[data-forminator-render="' + render_id + '"]')
 					.forminatorFront(lead_options);
 			}
 

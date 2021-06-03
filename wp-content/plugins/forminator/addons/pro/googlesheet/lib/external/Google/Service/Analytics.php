@@ -2018,17 +2018,17 @@ class Forminator_Google_Service_Analytics_DataGa_Resource extends Forminator_Goo
    * @param string $ids Unique table ID for retrieving Analytics data. Table ID is
    * of the form ga:XXXX, where XXXX is the Analytics view (profile) ID.
    * @param string $startDate Start date for fetching Analytics data. Requests can
-   * specify a start date formatted as YYYY-MM-DD, or as a relative date (e.g.,
+   * specify a start date formatted as YYYY-MM-DD, or as a relative date (e.g.
    * today, yesterday, or 7daysAgo). The default value is 7daysAgo.
    * @param string $endDate End date for fetching Analytics data. Request can
    * should specify an end date formatted as YYYY-MM-DD, or as a relative date
-   * (e.g., today, yesterday, or 7daysAgo). The default value is yesterday.
-   * @param string $metrics A comma-separated list of Analytics metrics. E.g.,
+   * (e.g. today, yesterday, or 7daysAgo). The default value is yesterday.
+   * @param string $metrics A comma-separated list of Analytics metrics. E.g.
    * 'ga:sessions,ga:pageviews'. At least one metric must be specified.
    * @param array $optParams Optional parameters.
    *
    * @opt_param string dimensions A comma-separated list of Analytics dimensions.
-   * E.g., 'ga:browser,ga:city'.
+   * E.g. 'ga:browser,ga:city'.
    * @opt_param string filters A comma-separated list of dimension or metric
    * filters to be applied to Analytics data.
    * @opt_param bool include-empty-rows The response will include empty rows if
@@ -2069,18 +2069,18 @@ class Forminator_Google_Service_Analytics_DataMcf_Resource extends Forminator_Go
    * @param string $ids Unique table ID for retrieving Analytics data. Table ID is
    * of the form ga:XXXX, where XXXX is the Analytics view (profile) ID.
    * @param string $startDate Start date for fetching Analytics data. Requests can
-   * specify a start date formatted as YYYY-MM-DD, or as a relative date (e.g.,
+   * specify a start date formatted as YYYY-MM-DD, or as a relative date (e.g.
    * today, yesterday, or 7daysAgo). The default value is 7daysAgo.
    * @param string $endDate End date for fetching Analytics data. Requests can
-   * specify a start date formatted as YYYY-MM-DD, or as a relative date (e.g.,
+   * specify a start date formatted as YYYY-MM-DD, or as a relative date (e.g.
    * today, yesterday, or 7daysAgo). The default value is 7daysAgo.
    * @param string $metrics A comma-separated list of Multi-Channel Funnels
-   * metrics. E.g., 'mcf:totalConversions,mcf:totalConversionValue'. At least one
+   * metrics. E.g. 'mcf:totalConversions,mcf:totalConversionValue'. At least one
    * metric must be specified.
    * @param array $optParams Optional parameters.
    *
    * @opt_param string dimensions A comma-separated list of Multi-Channel Funnels
-   * dimensions. E.g., 'mcf:source,mcf:medium'.
+   * dimensions. E.g. 'mcf:source,mcf:medium'.
    * @opt_param string filters A comma-separated list of dimension or metric
    * filters to be applied to the Analytics data.
    * @opt_param int max-results The maximum number of entries to include in this
@@ -2115,12 +2115,12 @@ class Forminator_Google_Service_Analytics_DataRealtime_Resource extends Forminat
    *
    * @param string $ids Unique table ID for retrieving real time data. Table ID is
    * of the form ga:XXXX, where XXXX is the Analytics view (profile) ID.
-   * @param string $metrics A comma-separated list of real time metrics. E.g.,
+   * @param string $metrics A comma-separated list of real time metrics. E.g.
    * 'rt:activeUsers'. At least one metric must be specified.
    * @param array $optParams Optional parameters.
    *
    * @opt_param string dimensions A comma-separated list of real time dimensions.
-   * E.g., 'rt:medium,rt:city'.
+   * E.g. 'rt:medium,rt:city'.
    * @opt_param string filters A comma-separated list of dimension or metric
    * filters to be applied to real time data.
    * @opt_param int max-results The maximum number of entries to include in this

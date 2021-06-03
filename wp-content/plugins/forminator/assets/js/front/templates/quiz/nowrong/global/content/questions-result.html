@@ -1,5 +1,5 @@
 /* ELEMENT: Quiz Question (Result) */
-.forminator-ui.forminator-quiz-<?php echo $properties['form_id'] ?> .forminator-question--result {
+.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-question--result {
 	<?php if ( forminator_array_value_exists( $properties, 'knowledge-toggle-palette' ) ) { ?>
 		<?php if ( forminator_array_value_exists( $properties, 'knowledge-phrasing-color' ) ) { ?>
 			color: <?php echo $properties['knowledge-phrasing-color'] ?>;

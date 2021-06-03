@@ -24,7 +24,13 @@ $this->do_meta_boxes( 'summary' );
 <div class="sui-row-with-sidenav">
 	<?php $this->show_tabs(); ?>
 	<div>
-		<?php $this->do_meta_boxes( $this->get_current_tab() ); ?>
+		<?php if ( 'tutorials' === $this->get_current_tab() && $this->should_render() ) : ?>
+			<div id="smush-box-tutorials"></div>
+			<?php
+		else :
+			$this->do_meta_boxes( $this->get_current_tab() );
+		endif;
+		?>
 	</div>
 </div><!-- end row -->
 
@@ -80,7 +86,7 @@ $this->do_meta_boxes( 'summary' );
 					'utm_medium'   => 'plugin',
 					'utm_campaign' => 'smush_footer_upsell_notice',
 				),
-				esc_url( 'https://premium.wpmudev.org' )
+				esc_url( 'https://wpmudev.com' )
 			);
 			?>
 			<h3><?php esc_html_e( 'Your All-in-One WordPress Platform', 'wp-smushit' ); ?></h3>
@@ -100,22 +106,19 @@ $this->do_meta_boxes( 'summary' );
 		<li><a href="https://profiles.wordpress.org/wpmudev#content-plugins" target="_blank">
 				<?php esc_html_e( 'Free Plugins', 'wp-smushit' ); ?>
 			</a></li>
-		<li><a href="https://premium.wpmudev.org/features/" target="_blank">
-				<?php esc_html_e( 'Membership', 'wp-smushit' ); ?>
-			</a></li>
-		<li><a href="https://premium.wpmudev.org/roadmap/" target="_blank">
+		<li><a href="https://wpmudev.com/roadmap/" target="_blank">
 				<?php esc_html_e( 'Roadmap', 'wp-smushit' ); ?>
 			</a></li>
 		<li><a href="https://wordpress.org/support/plugin/wp-smushit" target="_blank">
 				<?php esc_html_e( 'Support', 'wp-smushit' ); ?>
 			</a></li>
-		<li><a href="https://premium.wpmudev.org/docs/" target="_blank">
+		<li><a href="https://wpmudev.com/docs/" target="_blank">
 				<?php esc_html_e( 'Docs', 'wp-smushit' ); ?>
 			</a></li>
-		<li><a href="https://premium.wpmudev.org/hub-welcome/" target="_blank">
+		<li><a href="https://wpmudev.com/hub-welcome/" target="_blank">
 				<?php esc_html_e( 'The Hub', 'wp-smushit' ); ?>
 			</a></li>
-		<li><a href="https://premium.wpmudev.org/terms-of-service/" target="_blank">
+		<li><a href="https://wpmudev.com/terms-of-service/" target="_blank">
 				<?php esc_html_e( 'Terms of Service', 'wp-smushit' ); ?>
 			</a></li>
 		<li><a href="https://incsub.com/privacy-policy/" target="_blank">
@@ -130,28 +133,28 @@ $this->do_meta_boxes( 'summary' );
 	</div>
 
 	<ul class="sui-footer-nav">
-		<li><a href="https://premium.wpmudev.org/hub/" target="_blank">
+		<li><a href="https://wpmudev.com/hub2/" target="_blank">
 				<?php esc_html_e( 'The Hub', 'wp-smushit' ); ?>
 			</a></li>
-		<li><a href="https://premium.wpmudev.org/projects/category/plugins/" target="_blank">
+		<li><a href="https://wpmudev.com/projects/category/plugins/" target="_blank">
 				<?php esc_html_e( 'Plugins', 'wp-smushit' ); ?>
 			</a></li>
-		<li><a href="https://premium.wpmudev.org/roadmap/" target="_blank">
+		<li><a href="https://wpmudev.com/roadmap/" target="_blank">
 				<?php esc_html_e( 'Roadmap', 'wp-smushit' ); ?>
 			</a></li>
-		<li><a href="https://premium.wpmudev.org/hub/support/" target="_blank">
+		<li><a href="https://wpmudev.com/hub2/support/" target="_blank">
 				<?php esc_html_e( 'Support', 'wp-smushit' ); ?>
 			</a></li>
-		<li><a href="https://premium.wpmudev.org/docs/" target="_blank">
+		<li><a href="https://wpmudev.com/docs/" target="_blank">
 				<?php esc_html_e( 'Docs', 'wp-smushit' ); ?>
 			</a></li>
-		<li><a href="https://premium.wpmudev.org/hub/community/" target="_blank">
+		<li><a href="https://wpmudev.com/hub2/community/" target="_blank">
 				<?php esc_html_e( 'Community', 'wp-smushit' ); ?>
 			</a></li>
-		<li><a href="https://premium.wpmudev.org/academy/" target="_blank">
+		<li><a href="https://wpmudev.com/academy/" target="_blank">
 				<?php esc_html_e( 'Academy', 'wp-smushit' ); ?>
 			</a></li>
-		<li><a href="https://premium.wpmudev.org/terms-of-service/" target="_blank">
+		<li><a href="https://wpmudev.com/terms-of-service/" target="_blank">
 				<?php esc_html_e( 'Terms of Service', 'wp-smushit' ); ?>
 			</a></li>
 		<li><a href="https://incsub.com/privacy-policy/" target="_blank">

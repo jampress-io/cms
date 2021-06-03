@@ -4,7 +4,7 @@
  * Version: 1
  * Description: Simple Addon forminator.
  * Author: WPMU DEV
- * Author URI: http://premium.wpmudev.org
+ * Author URI: http://wpmudev.com
  * Text Domain: external_forminator
  * Domain Path: /languages/
  */

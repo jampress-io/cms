@@ -22,18 +22,18 @@ $last_submission         = forminator_get_latest_entry_time( 'custom-forms' );
 			<?php } ?>
 
 			<?php if ( 1 === $total_modules ) { ?>
-				<span class="sui-summary-sub"><?php esc_html_e( 'Active Module', Forminator::DOMAIN ); ?></span>
+				<span class="sui-summary-sub"><?php esc_html_e( 'Active Module', 'forminator' ); ?></span>
 			<?php } else { ?>
-				<span class="sui-summary-sub"><?php esc_html_e( 'Active Modules', Forminator::DOMAIN ); ?></span>
+				<span class="sui-summary-sub"><?php esc_html_e( 'Active Modules', 'forminator' ); ?></span>
 			<?php } ?>
 
 			<?php if ( $total_modules > 0 ) { ?>
 				<span class="sui-summary-detail"><strong><?php echo esc_html( $last_submission ); ?></strong></span>
 			<?php } else { ?>
-				<span class="sui-summary-detail"><strong><?php esc_html_e( 'Never', Forminator::DOMAIN ); ?></strong></span>
+				<span class="sui-summary-detail"><strong><?php esc_html_e( 'Never', 'forminator' ); ?></strong></span>
 			<?php } ?>
 
-			<span class="sui-summary-sub"><?php esc_html_e( 'Last Submission', Forminator::DOMAIN ); ?></span>
+			<span class="sui-summary-sub"><?php esc_html_e( 'Last Submission', 'forminator' ); ?></span>
 
 		</div>
 
@@ -44,7 +44,7 @@ $last_submission         = forminator_get_latest_entry_time( 'custom-forms' );
 		<ul class="sui-list">
 
 			<li>
-				<span class="sui-list-label"><?php esc_html_e( 'Form Submissions', Forminator::DOMAIN ); ?></span>
+				<span class="sui-list-label"><?php esc_html_e( 'Form Submissions', 'forminator' ); ?></span>
 				<?php if ( $forms_total_submissions > 0 ) { ?>
 					<span class="sui-list-detail"><?php echo esc_html( $forms_total_submissions ); ?></span>
 				<?php } else { ?>
@@ -53,7 +53,7 @@ $last_submission         = forminator_get_latest_entry_time( 'custom-forms' );
 			</li>
 
 			<li>
-				<span class="sui-list-label"><?php esc_html_e( 'Poll Submissions', Forminator::DOMAIN ); ?></span>
+				<span class="sui-list-label"><?php esc_html_e( 'Poll Submissions', 'forminator' ); ?></span>
 				<?php if ( $poll_total_submissions > 0 ) { ?>
 					<span class="sui-list-detail"><?php echo esc_html( $poll_total_submissions ); ?></span>
 				<?php } else { ?>
@@ -62,7 +62,7 @@ $last_submission         = forminator_get_latest_entry_time( 'custom-forms' );
 			</li>
 
 			<li>
-				<span class="sui-list-label"><?php esc_html_e( 'Quiz Submissions', Forminator::DOMAIN ); ?></span>
+				<span class="sui-list-label"><?php esc_html_e( 'Quiz Submissions', 'forminator' ); ?></span>
 				<?php if ( $quiz_total_submissions > 0 ) { ?>
 					<span class="sui-list-detail"><?php echo esc_html( $quiz_total_submissions ); ?></span>
 				<?php } else { ?>

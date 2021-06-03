@@ -13,8 +13,8 @@ foreach ( $template_vars as $key => $val ) {
 
 ?>
 <div class="integration-header">
-	<h3 class="sui-box-title" id="dialogTitle2"><?php echo esc_html( __( 'Setup Name', Forminator::DOMAIN ) ); ?></h3>
-	<span class="sui-description" style="margin-top: 20px;"><?php esc_html_e( 'Setup friendly name for this integration, so it will be easily identified by you.', Forminator::DOMAIN ); ?></span>
+	<h3 class="sui-box-title" id="dialogTitle2"><?php echo esc_html( __( 'Setup Name', 'forminator' ) ); ?></h3>
+	<span class="sui-description" style="margin-top: 20px;"><?php esc_html_e( 'Setup friendly name for this integration, so it will be easily identified by you.', 'forminator' ); ?></span>
 	<?php if ( ! empty( $vars['error_message'] ) ) : ?>
 		<div class="sui-notice sui-notice-error">
 			<p><?php echo esc_html( $vars['error_message'] ); ?></p>
@@ -23,10 +23,10 @@ foreach ( $template_vars as $key => $val ) {
 </div>
 <form>
 	<div class="sui-form-field <?php echo esc_attr( ! empty( $vars['name_error'] ) ? 'sui-form-field-error' : '' ); ?>">
-		<label class="sui-label"><?php esc_html_e( 'Name', Forminator::DOMAIN ); ?></label>
+		<label class="sui-label"><?php esc_html_e( 'Name', 'forminator' ); ?></label>
 		<input
 				class="sui-form-control"
-				name="name" placeholder="<?php echo esc_attr( __( 'Friendly Name', Forminator::DOMAIN ) ); ?>"
+				name="name" placeholder="<?php echo esc_attr( __( 'Friendly Name', 'forminator' ) ); ?>"
 				value="<?php echo esc_attr( $vars['name'] ); ?>">
 		<?php if ( ! empty( $vars['name_error'] ) ) : ?>
 			<span class="sui-error-message"><?php echo esc_html( $vars['name_error'] ); ?></span>

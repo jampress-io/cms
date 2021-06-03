@@ -5,10 +5,11 @@ namespace WP_Defender\Controller;
 use Calotes\Component\Request;
 use Calotes\Component\Response;
 use Calotes\Helper\HTTP;
+use WP_Defender\Component\Config\Config_Hub_Helper;
 use WP_Defender\Controller2;
 use WP_Defender\Traits\Formats;
 use WP_Defender\Traits\User;
-use \WP_Defender\Model\Notification as Model_Notification;
+use WP_Defender\Model\Notification as Model_Notification;
 
 class Notification extends Controller2 {
 	use User, Formats;
@@ -81,6 +82,8 @@ class Notification extends Controller2 {
 				__( 'You are now unsubscribed from <strong>%s</strong>.', 'wpdef' ),
 				$m->title
 			);
+		} else {
+			return null;
 		}
 		?>
 		<div class="notice notice-success" style="position:relative;">
@@ -242,6 +245,7 @@ class Notification extends Controller2 {
 				$model,
 				$this->dump_routes_and_nonces()
 			);
+			Config_Hub_Helper::set_clear_active_flag();
 
 			return new Response(
 				true,
@@ -284,6 +288,7 @@ class Notification extends Controller2 {
 		);
 		$this->save_reports( $data['reports'] );
 		$this->save_notifications( $data['notifications'] );
+		Config_Hub_Helper::set_clear_active_flag();
 
 		return new Response(
 			true,
@@ -576,6 +581,10 @@ class Notification extends Controller2 {
 		wp_enqueue_script( 'def-momentjs', defender_asset_url( '/assets/js/vendor/moment/moment.min.js' ) );
 		wp_enqueue_script( 'def-notification' );
 		$this->enqueue_main_assets();
+		wp_enqueue_style(
+			'def-select2',
+			defender_asset_url( '/assets/css/select2.min.css' )
+		);
 	}
 
 	/**

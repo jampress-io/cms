@@ -1,6 +1,6 @@
 <?php if ( forminator_array_value_exists( $properties, 'form-padding' ) ) { ?>
 
-	.forminator-custom-form-<?php echo $properties['form_id'] ?> {
+	#forminator-module-<?php echo $properties['form_id'] ?>:not(.select2-dropdown) {
 		<?php if ( forminator_array_value_exists( $properties, 'form-padding-top' ) ) { ?>
 			padding-top: <?php echo $properties['form-padding-top'] ?>px;
 		<?php } else { ?>
@@ -25,7 +25,7 @@
 
 <?php } else { ?>
 
-	.forminator-custom-form-<?php echo $properties['form_id'] ?> {
+	#forminator-module-<?php echo $properties['form_id'] ?>:not(.select2-dropdown) {
 		padding-top: 0;
 		padding-right: 0;
 		padding-bottom: 0;

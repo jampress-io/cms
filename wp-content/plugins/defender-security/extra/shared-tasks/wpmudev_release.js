@@ -87,7 +87,7 @@ module.exports = function (grunt, loader) {
 				grunt.log.subhead('Prepared a release package for ' + version);
 				grunt.log.writeln('The releasable archive is in builds/' + name + '-' + version + ('full' !== type ? '-free' : '') + '.zip');
 				if ('full' === type) {
-					var msg = 'Upload the archive to https://premium.wpmudev.org/wp-admin/edit.php?post_type=project&page=projects-manage&manage_files=';
+					var msg = 'Upload the archive to https://wpmudev.com/wp-admin/edit.php?post_type=project&page=projects-manage&manage_files=';
 					msg += loader.environment.get_wdp_id();
 					grunt.log.ok(msg.green.bold);
 				}

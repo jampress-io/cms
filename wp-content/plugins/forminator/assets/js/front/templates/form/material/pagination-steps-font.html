@@ -1,6 +1,6 @@
 <?php if ( forminator_array_value_exists( $properties, 'form-font-family' ) ) { ?>
 
-	.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--material .forminator-pagination-steps .forminator-step .forminator-step-label {
+	#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-pagination-steps .forminator-step .forminator-step-label {
 		<?php if ( forminator_array_value_exists( $properties, 'cform-timeline-font-size' ) ) { ?>
 			font-size: <?php echo $properties['cform-timeline-font-size'] ?>px;
 		<?php } else { ?>
@@ -24,7 +24,7 @@
 		<?php } ?>
 	}
 
-	.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--material .forminator-pagination-steps .forminator-step .forminator-step-dot {
+	#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-pagination-steps .forminator-step .forminator-step-dot {
 		<?php if ( forminator_array_value_exists( $properties, 'cform-timeline-font-size' ) ) { ?>
 			font-size: <?php echo ($properties['cform-timeline-font-size'] + 1) ?>px;
 		<?php } else { ?>
@@ -50,13 +50,13 @@
 
 <?php } else { ?>
 
-	.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--material .forminator-pagination-steps .forminator-step .forminator-step-label {
+	#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-pagination-steps .forminator-step .forminator-step-label {
 		font-size: 12px;
 		font-family: inherit;
 		font-weight: 500;
 	}
 
-	.forminator-custom-form-<?php echo $properties['form_id'] ?>.forminator-design--material .forminator-pagination-steps .forminator-step .forminator-step-dot {
+	#forminator-module-<?php echo $properties['form_id'] ?>.forminator-design--<?php echo $theme; ?> .forminator-pagination-steps .forminator-step .forminator-step-dot {
 		font-size: 13px;
 		font-family: inherit;
 		font-weight: 500;

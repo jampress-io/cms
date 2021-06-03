@@ -1,5 +1,5 @@
 /* ELEMENT: Quiz Answers (Container) */
-.forminator-ui.forminator-quiz-<?php echo $properties['form_id'] ?> .forminator-answer .forminator-answer--design {
+.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-answer .forminator-answer--design {
 	<?php if ( forminator_array_value_exists( $properties, 'nowrong-toggle-palette' ) ) { ?>
 		<?php if ( forminator_array_value_exists( $properties, 'nowrong-answer-background-static' ) ) { ?>
 			background-color: <?php echo $properties['nowrong-answer-background-static'] ?>;
@@ -11,9 +11,9 @@
 	<?php } ?>
 }
 
-.forminator-ui.forminator-quiz-<?php echo $properties['form_id'] ?> .forminator-answer .forminator-answer--design:hover,
-.forminator-ui.forminator-quiz-<?php echo $properties['form_id'] ?> .forminator-answer .forminator-answer--design:focus,
-.forminator-ui.forminator-quiz-<?php echo $properties['form_id'] ?> .forminator-answer .forminator-answer--design:active {
+.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-answer .forminator-answer--design:hover,
+.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-answer .forminator-answer--design:focus,
+.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-answer .forminator-answer--design:active {
 	<?php if ( forminator_array_value_exists( $properties, 'nowrong-toggle-palette' ) ) { ?>
 		<?php if ( forminator_array_value_exists( $properties, 'nowrong-answer-background-hover' ) ) { ?>
 			background-color: <?php echo $properties['nowrong-answer-background-hover'] ?>;
@@ -25,7 +25,7 @@
 	<?php } ?>
 }
 
-.forminator-ui.forminator-quiz-<?php echo $properties['form_id'] ?> .forminator-answer input:checked + .forminator-answer--design {
+.forminator-ui.forminator-quiz#forminator-module-<?php echo $properties['form_id'] ?> .forminator-answer input:checked + .forminator-answer--design {
 	<?php if ( forminator_array_value_exists( $properties, 'nowrong-toggle-palette' ) ) { ?>
 		<?php if ( forminator_array_value_exists( $properties, 'nowrong-answer-background-active' ) ) { ?>
 			background-color: <?php echo $properties['nowrong-answer-background-active'] ?>;

@@ -63,7 +63,7 @@ class Forminator_Currency extends Forminator_Field {
 	public function __construct() {
 		parent::__construct();
 
-		$this->name = __( 'Currency', Forminator::DOMAIN );
+		$this->name = __( 'Currency', 'forminator' );
 	}
 
 	/**
@@ -81,8 +81,8 @@ class Forminator_Currency extends Forminator_Field {
 				'limit_min'    => 1,
 				'limit_max'    => 150,
 				'currency'     => 'USD',
-				'field_label'  => __( 'Currency', Forminator::DOMAIN ),
-				'placeholder'  => __( 'E.g., 10', Forminator::DOMAIN ),
+				'field_label'  => __( 'Currency', 'forminator' ),
+				'placeholder'  => __( 'E.g. 10', 'forminator' ),
 			)
 		);
 	}
@@ -162,40 +162,12 @@ class Forminator_Currency extends Forminator_Field {
 		$max                 = esc_html( self::get_property( 'limit_max', $field, false ) );
 		$currency            = self::get_property( 'currency', $field, 'USD' );
 		$precision           = self::get_property( 'precision', $field, 2 );
-		$separators          = self::get_property( 'separators', $field, 'blank' );
 		$step                = $this->create_step_string( $precision );
 
 		// Check if Pre-fill parameter used
 		if ( $this->has_prefill( $field ) ) {
 			// We have pre-fill parameter, use its value or $value
 			$value = $this->get_prefill( $field, $value );
-		}
-
-		switch ( $separators ) {
-			case 'blank' :
-				$thousands_sep = '';
-				$dec_point     = '.';
-				break;
-			case 'comma_dot' :
-				$thousands_sep = '.';
-				$dec_point     = ',';
-				break;
-			case 'dot_comma' :
-				$thousands_sep = ',';
-				$dec_point     = '.';
-				break;
-			case 'space_comma' :
-				$thousands_sep = ',';
-				$dec_point     = ' ';
-				break;
-			case 'custom' :
-				$thousands_sep = self::get_property( 'decimal-separators', $field, '.' );
-				$dec_point     = self::get_property( 'thousand-separators', $field, ',' );
-				break;
-			default:
-				$thousands_sep = '';
-				$dec_point     = ',';
-				break;
 		}
 
 		$number_attr = array(
@@ -290,7 +262,7 @@ class Forminator_Currency extends Forminator_Field {
 		$messages = '"' . $this->get_id( $field ) . '": {' . "\n";
 
 		if ( $this->is_required( $field ) ) {
-			$required_validation_message = self::get_property( 'required_message', $field, __( 'This field is required. Please enter number.', Forminator::DOMAIN ) );
+			$required_validation_message = self::get_property( 'required_message', $field, __( 'This field is required. Please enter number.', 'forminator' ) );
 			$required_validation_message = apply_filters(
 				'forminator_field_currency_required_validation_message',
 				$required_validation_message,
@@ -301,7 +273,7 @@ class Forminator_Currency extends Forminator_Field {
 
 		$number_validation_message = apply_filters(
 			'forminator_field_currency_number_validation_message',
-			__( 'This is not valid number.', Forminator::DOMAIN ),
+			__( 'This is not valid number.', 'forminator' ),
 			$field
 		);
 		$messages                 .= '"number": "' . forminator_addcslashes( $number_validation_message ) . '",' . "\n";
@@ -310,7 +282,7 @@ class Forminator_Currency extends Forminator_Field {
 			$min_validation_message = self::get_property( 'limit_min_message', $field );
 			$min_validation_message = apply_filters(
 				'forminator_field_currency_min_validation_message',
-				$custom_message && $min_validation_message ? $min_validation_message : __( 'Please enter a value greater than or equal to {0}.', Forminator::DOMAIN ),
+				$custom_message && $min_validation_message ? $min_validation_message : __( 'Please enter a value greater than or equal to {0}.', 'forminator' ),
 				$field
 			);
 			$messages              .= '"min": "' . forminator_addcslashes( $min_validation_message ) . '",' . "\n";
@@ -319,7 +291,7 @@ class Forminator_Currency extends Forminator_Field {
 			$max_validation_message = self::get_property( 'limit_max_message', $field );
 			$max_validation_message = apply_filters(
 				'forminator_field_currency_max_validation_message',
-				$custom_message && $max_validation_message ? $max_validation_message : __( 'Please enter a value less than or equal to {0}.', Forminator::DOMAIN ),
+				$custom_message && $max_validation_message ? $max_validation_message : __( 'Please enter a value less than or equal to {0}.', 'forminator' ),
 				$field
 			);
 			$messages              .= '"max": "' . forminator_addcslashes( $max_validation_message ) . '",' . "\n";
@@ -344,23 +316,16 @@ class Forminator_Currency extends Forminator_Field {
 		$max            = self::get_property( 'limit_max', $field, $data );
 		$min            = self::get_property( 'limit_min', $field, $data );
 		$custom_message = self::get_property( 'limit_message', $field, false, 'bool' );
-		$separators     = self::get_property( 'separators', $field, 'blank' );
-
-		$dec_point      = ',';
 		$max            = trim( $max );
 		$min            = trim( $min );
-		$regex = '/\d{1,3}(\.\d{3})*(\.\d\d)?|\.\d\d/';
+
 		$max_len = strlen( $max );
 		$min_len = strlen( $min );
-
-		if ( 'custom' === $separators ) {
-			$dec_point = self::get_property( 'thousand-separators', $field, ',' );
-		}
 
 		if ( $this->is_required( $field ) ) {
 
 			if ( empty( $data ) && '0' !== $data ) {
-				$required_validation_message     = self::get_property( 'required_message', $field, __( 'This field is required. Please enter number.', Forminator::DOMAIN ) );
+				$required_validation_message     = self::get_property( 'required_message', $field, __( 'This field is required. Please enter number.', 'forminator' ) );
 				$this->validation_message[ $id ] = apply_filters(
 					'forminator_field_currency_required_field_validation_message',
 					$required_validation_message,
@@ -371,10 +336,10 @@ class Forminator_Currency extends Forminator_Field {
 				);
 			}
 		}
-		if ( ! empty( $data ) && ! preg_match( $regex, $data ) ) {
+		if ( ! is_numeric( $data ) && ! empty( $data ) ) {
 			$this->validation_message[ $id ] = apply_filters(
 				'forminator_field_currency_numeric_validation_message',
-				__( 'Only numbers allowed.', Forminator::DOMAIN ),
+				__( 'Only numbers allowed.', 'forminator' ),
 				$id,
 				$field,
 				$data,
@@ -386,9 +351,9 @@ class Forminator_Currency extends Forminator_Field {
 				$min  = intval( $min );
 				$max  = intval( $max );
 				//Note : do not compare max or min if that settings field is blank string ( not zero )
-				if ( $min_len !== 0 && $this->float_value( $data, $dec_point ) < $min ) {
+				if ( $min_len !== 0 && $data < $min ) {
 					$min_validation_message          = self::get_property( 'limit_min_message', $field );
-					$min_validation_message          = $custom_message && $min_validation_message ? $min_validation_message : __( 'The number should be less than %1$d and greater than %2$d.', Forminator::DOMAIN );
+					$min_validation_message          = $custom_message && $min_validation_message ? $min_validation_message : __( 'The number should be less than %1$d and greater than %2$d.', 'forminator' );
 					$this->validation_message[ $id ] = sprintf(
 						apply_filters(
 							'forminator_field_currency_max_min_validation_message',
@@ -401,9 +366,9 @@ class Forminator_Currency extends Forminator_Field {
 						$max,
 						$min
 					);
-				} elseif ( $max_len !== 0 && $this->float_value( $data, $dec_point ) > $max ) {
+				} elseif ( $max_len !== 0 && $data > $max ) {
 					$max_validation_message          = self::get_property( 'limit_max_message', $field );
-					$max_validation_message          = $custom_message && $max_validation_message ? $max_validation_message : __( 'The number should be less than %1$d and greater than %2$d.', Forminator::DOMAIN );
+					$max_validation_message          = $custom_message && $max_validation_message ? $max_validation_message : __( 'The number should be less than %1$d and greater than %2$d.', 'forminator' );
 					$this->validation_message[ $id ] = sprintf(
 						apply_filters(
 							'forminator_field_currency_max_min_validation_message',
@@ -478,21 +443,5 @@ class Forminator_Currency extends Forminator_Field {
 		$calculable_value = apply_filters( 'forminator_field_currency_calculable_value', $calculable_value, $submitted_data, $field_settings );
 
 		return $calculable_value;
-	}
-
-
-	/**
-	 * Float value
-	 *
-	 * @param $value
-	 * @param $point
-	 *
-	 * @return float
-	 */
-	public function float_value( $value, $point = ',' ) {
-		$value = str_replace( $point, ".", $value );
-		$value = preg_replace( '/\.(?=.*\.)/', '', $value );
-
-		return floatval( $value );
 	}
 }

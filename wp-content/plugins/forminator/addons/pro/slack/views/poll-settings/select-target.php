@@ -14,7 +14,7 @@ foreach ( $template_vars as $key => $val ) {
 
 ?>
 <div class="integration-header">
-	<h3 class="sui-box-title" id="dialogTitle2"><?php echo esc_html( __( 'Select Target', Forminator::DOMAIN ) ); ?></h3>
+	<h3 class="sui-box-title" id="dialogTitle2"><?php echo esc_html( __( 'Select Target', 'forminator' ) ); ?></h3>
 	<p><?php echo esc_html( $vars['help_message'] ); ?></p>
 	<?php if ( ! empty( $vars['error_message'] ) ) : ?>
 		<span class="sui-notice sui-notice-error"><p><?php echo esc_html( $vars['error_message'] ); ?></p></span>
@@ -23,9 +23,9 @@ foreach ( $template_vars as $key => $val ) {
 <form>
 
 	<div class="sui-form-field <?php echo esc_attr( ! empty( $vars['target_id_error'] ) ? 'sui-form-field-error' : '' ); ?>">
-		<label class="sui-label"><?php esc_html_e( 'Type', Forminator::DOMAIN ); ?>
+		<label class="sui-label"><?php esc_html_e( 'Type', 'forminator' ); ?>
 			<select name="target_id" class="sui-select sui-form-control">
-				<option><?php esc_html_e( 'Please select target', Forminator::DOMAIN ); ?></option>
+				<option><?php esc_html_e( 'Please select target', 'forminator' ); ?></option>
 				<?php foreach ( $vars['targets'] as $target_id => $target_name ) : ?>
 					<option value="<?php echo esc_attr( $target_id ); ?>" <?php selected( $vars['target_id'], $target_id ); ?>><?php echo esc_html( $target_name ); ?></option>
 				<?php endforeach; ?>

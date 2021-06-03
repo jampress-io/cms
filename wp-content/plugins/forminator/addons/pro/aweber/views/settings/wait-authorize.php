@@ -15,7 +15,7 @@ foreach ( $template_vars as $key => $val ) {
 	<h3 class="sui-box-title" id="dialogTitle2">
 		<?php
 			/* translators: ... */
-			echo esc_html( sprintf( __( 'Connect %1$s', Forminator::DOMAIN ), 'AWeber' ) );
+			echo esc_html( sprintf( __( 'Connect %1$s', 'forminator' ), 'AWeber' ) );
 		?>
 	</h3>
 
@@ -28,7 +28,7 @@ foreach ( $template_vars as $key => $val ) {
 		<p>
 			<?php
 				/* translators: ... */
-				echo esc_html( sprintf( __( 'We are waiting %1$s authorization...', Forminator::DOMAIN ), 'AWeber' ) );
+				echo esc_html( sprintf( __( 'We are waiting %1$s authorization...', 'forminator' ), 'AWeber' ) );
 			?>
 		</p>
 
@@ -39,7 +39,7 @@ foreach ( $template_vars as $key => $val ) {
 		<a href="<?php echo esc_attr( $vars['auth_url'] ); ?>"
 			target="_blank"
 			class="sui-button sui-button-ghost disable-loader">
-			<?php esc_html_e( 'Retry', Forminator::DOMAIN ); ?>
+			<?php esc_html_e( 'Retry', 'forminator' ); ?>
 		</a>
 	</div>
 	<?php endif; ?>

@@ -58,7 +58,7 @@ class Forminator_Hidden extends Forminator_Field {
 	public function __construct() {
 		parent::__construct();
 
-		$this->name = __( 'Hidden Field', Forminator::DOMAIN );
+		$this->name = __( 'Hidden Field', 'forminator' );
 	}
 
 	/**

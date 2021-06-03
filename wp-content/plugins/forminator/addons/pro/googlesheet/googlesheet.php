@@ -3,10 +3,10 @@
 /**
  * Addon Name: Google Sheets
  * Version: 1.1
- * Plugin URI:  https://premium.wpmudev.org/
+ * Plugin URI:  https://wpmudev.com/
  * Description: Integrate Forminator Custom Forms and Polls with Google Sheets to get notified in real time.
  * Author: WPMU DEV
- * Author URI: http://premium.wpmudev.org
+ * Author URI: http://wpmudev.com
  */
 
 define( 'FORMINATOR_ADDON_GOOGLESHEET_VERSION', '1.1' );

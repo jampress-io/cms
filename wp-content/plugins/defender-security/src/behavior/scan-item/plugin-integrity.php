@@ -8,10 +8,11 @@ use WP_Defender\Model\Scan;
 use WP_Defender\Model\Scan_Item;
 use WP_Defender\Traits\Formats;
 use WP_Defender\Traits\IO;
+use WP_Defender\Traits\Plugin;
 use WP_Error;
 
 class Plugin_Integrity extends Behavior {
-	use Formats, IO;
+	use Formats, IO, Plugin;
 
 	const URL_PLUGIN_VCS = 'https://plugins.svn.wordpress.org/%s/tags/%s/%s';
 
@@ -45,24 +46,6 @@ class Plugin_Integrity extends Behavior {
 			'scenario'   => $data['type'],
 			'short_desc' => $this->get_short_description(),
 		);
-	}
-
-	/**
-	 * Get all installed plugins.
-	 *
-	 * @return array
-	 */
-	private function get_plugins() {
-		if ( ! function_exists( 'get_plugins' ) ) {
-			require_once ABSPATH . 'wp-admin/includes/plugin.php';
-		}
-
-		if ( ! function_exists( 'get_plugins' ) ) {
-			return array();
-		}
-
-		// WordPress caches this internally.
-		return get_plugins();
 	}
 
 	/**

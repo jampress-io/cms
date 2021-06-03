@@ -109,9 +109,9 @@ class Forminator_Page_Cache {
 	 */
 	public function get_forminator_post_types() {
 		$post_types = array(
-			Forminator_Custom_Form_Model::model()->get_post_type(),
-			Forminator_Poll_Form_Model::model()->get_post_type(),
-			Forminator_Quiz_Form_Model::model()->get_post_type(),
+			Forminator_Form_Model::model()->get_post_type(),
+			Forminator_Poll_Model::model()->get_post_type(),
+			Forminator_Quiz_Model::model()->get_post_type(),
 		);
 
 		/**

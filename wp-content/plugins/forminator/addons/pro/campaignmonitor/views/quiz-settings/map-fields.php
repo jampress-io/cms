@@ -17,9 +17,9 @@ foreach ( $template_vars as $key => $val ) {
 
 <div class="integration-header">
 
-    <h3 id="dialogTitle2" class="sui-box-title"><?php echo esc_html( __( 'Assign Fields', Forminator::DOMAIN ) ); ?></h3>
+    <h3 id="dialogTitle2" class="sui-box-title"><?php echo esc_html( __( 'Assign Fields', 'forminator' ) ); ?></h3>
 
-    <span class="sui-description" style="margin-top: 20px;"><?php esc_html_e( "Match up your quiz lead fields with your Campaign Monitor fields to make sure we're sending data to the right place.", Forminator::DOMAIN ); ?></span>
+    <span class="sui-description" style="margin-top: 20px;"><?php esc_html_e( "Match up your quiz lead fields with your Campaign Monitor fields to make sure we're sending data to the right place.", 'forminator' ); ?></span>
 
 	<?php if ( ! empty( $vars['error_message'] ) ) : ?>
         <div class="sui-notice sui-notice-error">
@@ -36,8 +36,8 @@ foreach ( $template_vars as $key => $val ) {
         <thead>
 
         <tr>
-            <th><?php esc_html_e( 'Campaign Monitor Field', Forminator::DOMAIN ); ?></th>
-            <th><?php esc_html_e( 'Forminator Field', Forminator::DOMAIN ); ?></th>
+            <th><?php esc_html_e( 'Campaign Monitor Field', 'forminator' ); ?></th>
+            <th><?php esc_html_e( 'Forminator Field', 'forminator' ); ?></th>
         </tr>
 
         </thead>
@@ -73,7 +73,7 @@ foreach ( $template_vars as $key => $val ) {
                     <div class="sui-form-field <?php echo esc_attr( ! empty( $current_error ) ? 'sui-form-field-error' : '' ); ?>">
                         <label>
                             <select class="sui-select" name="fields_map[<?php echo esc_attr( $key ); ?>]">
-                                <option value=""><?php esc_html_e( 'None', Forminator::DOMAIN ); ?></option>
+                                <option value=""><?php esc_html_e( 'None', 'forminator' ); ?></option>
 								<?php foreach ( $forminator_fields as $forminator_field ) : ?>
                                     <option value="<?php echo esc_attr( $forminator_field['element_id'] ); ?>"
 										<?php selected( $current_selected, $forminator_field['element_id'] ); ?>>

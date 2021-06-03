@@ -46,19 +46,19 @@ class Forminator_Modules {
 		 */
 		$modules = apply_filters( 'forminator_modules', array(
 			'custom_forms' => array(
-				'class'	  => 'Custom_Form',
+				'class'	  => 'Custom_Forms',
 				'slug'  => 'custom-forms',
-				'label'	  => __( 'Custom Forms', Forminator::DOMAIN )
+				'label'	  => __( 'Custom Forms', 'forminator' )
 			),
 			'polls' => array(
 				'class'	  => 'Polls',
 				'slug'  => 'polls',
-				'label'	  => __( 'Polls', Forminator::DOMAIN )
+				'label'	  => __( 'Polls', 'forminator' )
 			),
 			'quizzes' => array(
 				'class'	  => 'Quizzes',
 				'slug'  => 'quizzes',
-				'label'	  => __( 'Quizzes', Forminator::DOMAIN )
+				'label'	  => __( 'Quizzes', 'forminator' )
 			),
 		) );
 
@@ -76,7 +76,7 @@ class Forminator_Modules {
 		$module_class = 'Forminator_' . $data[ 'class' ];
 		$module_slug = $data[ 'slug' ];
 		$module_label = $data[ 'label' ];
-		
+
 		// Include module
 		$path = forminator_plugin_dir() . 'library/modules/' . $module_slug . '/loader.php';
 		if ( file_exists( $path ) ) {

@@ -368,7 +368,7 @@ class Forminator_Form_Entry_Model {
 	 * @since 1.0
 	 */
 	public function delete() {
-		self::delete_by_entry( $this->form_id, $this->entry_id );
+		self::delete_by_entry( $this->entry_id );
 	}
 
 	/**
@@ -385,12 +385,12 @@ class Forminator_Form_Entry_Model {
 				'hours',
 				'minutes',
 				'ampm',
-				'country',
+				'street_address',
+				'address_line',
 				'city',
 				'state',
 				'zip',
-				'street_address',
-				'address_line',
+				'country',
 				'year',
 				'day',
 				'month',
@@ -421,30 +421,30 @@ class Forminator_Form_Entry_Model {
 		$translated_suffix = $suffix;
 		$field_suffixes    = self::field_suffix();
 		$default_label_map = array(
-			'hours'            => esc_html__( 'Hour', Forminator::DOMAIN ),
-			'minutes'          => esc_html__( 'Minute', Forminator::DOMAIN ),
-			'ampm'             => esc_html__( 'AM/PM', Forminator::DOMAIN ),
-			'country'          => esc_html__( 'Country', Forminator::DOMAIN ),
-			'city'             => esc_html__( 'City', Forminator::DOMAIN ),
-			'state'            => esc_html__( 'State', Forminator::DOMAIN ),
-			'zip'              => esc_html__( 'Zip', Forminator::DOMAIN ),
-			'street_address'   => esc_html__( 'Street Address', Forminator::DOMAIN ),
-			'address_line'     => esc_html__( 'Address Line 2', Forminator::DOMAIN ),
-			'year'             => esc_html__( 'Year', Forminator::DOMAIN ),
-			'day'              => esc_html__( 'Day', Forminator::DOMAIN ),
-			'month'            => esc_html__( 'Month', Forminator::DOMAIN ),
-			'prefix'           => esc_html__( 'Prefix', Forminator::DOMAIN ),
-			'first-name'       => esc_html__( 'First Name', Forminator::DOMAIN ),
-			'middle-name'      => esc_html__( 'Middle Name', Forminator::DOMAIN ),
-			'last-name'        => esc_html__( 'Last Name', Forminator::DOMAIN ),
-			'post-title'       => esc_html__( 'Post Title', Forminator::DOMAIN ),
-			'post-content'     => esc_html__( 'Post Content', Forminator::DOMAIN ),
-			'post-excerpt'     => esc_html__( 'Post Excerpt', Forminator::DOMAIN ),
-			'post-image'       => esc_html__( 'Post Image', Forminator::DOMAIN ),
-			'post-category'    => esc_html__( 'Post Category', Forminator::DOMAIN ),
-			'post-tags'        => esc_html__( 'Post Tags', Forminator::DOMAIN ),
-			'product-id'       => esc_html__( 'Product ID', Forminator::DOMAIN ),
-			'product-quantity' => esc_html__( 'Product Quantity', Forminator::DOMAIN ),
+			'hours'            => esc_html__( 'Hour', 'forminator' ),
+			'minutes'          => esc_html__( 'Minute', 'forminator' ),
+			'ampm'             => esc_html__( 'AM/PM', 'forminator' ),
+			'country'          => esc_html__( 'Country', 'forminator' ),
+			'city'             => esc_html__( 'City', 'forminator' ),
+			'state'            => esc_html__( 'State', 'forminator' ),
+			'zip'              => esc_html__( 'Zip', 'forminator' ),
+			'street_address'   => esc_html__( 'Street Address', 'forminator' ),
+			'address_line'     => esc_html__( 'Address Line 2', 'forminator' ),
+			'year'             => esc_html__( 'Year', 'forminator' ),
+			'day'              => esc_html__( 'Day', 'forminator' ),
+			'month'            => esc_html__( 'Month', 'forminator' ),
+			'prefix'           => esc_html__( 'Prefix', 'forminator' ),
+			'first-name'       => esc_html__( 'First Name', 'forminator' ),
+			'middle-name'      => esc_html__( 'Middle Name', 'forminator' ),
+			'last-name'        => esc_html__( 'Last Name', 'forminator' ),
+			'post-title'       => esc_html__( 'Post Title', 'forminator' ),
+			'post-content'     => esc_html__( 'Post Content', 'forminator' ),
+			'post-excerpt'     => esc_html__( 'Post Excerpt', 'forminator' ),
+			'post-image'       => esc_html__( 'Post Image', 'forminator' ),
+			'post-category'    => esc_html__( 'Post Category', 'forminator' ),
+			'post-tags'        => esc_html__( 'Post Tags', 'forminator' ),
+			'product-id'       => esc_html__( 'Product ID', 'forminator' ),
+			'product-quantity' => esc_html__( 'Product Quantity', 'forminator' ),
 		);
 
 		// could be filtered out field_suffix
@@ -729,7 +729,7 @@ class Forminator_Form_Entry_Model {
 		$table_name       = Forminator_Database_Tables::get_table_name( Forminator_Database_Tables::FORM_ENTRY_META );
 		$entry_table_name = Forminator_Database_Tables::get_table_name( Forminator_Database_Tables::FORM_ENTRY );
 		$sql              =
-			"SELECT count(DISTINCT e.`entry_id`) FROM {$table_name} m LEFT JOIN {$entry_table_name} e ON(e.`entry_id` = m.`entry_id`) WHERE e.`form_id` = %d AND m.meta_key = 'skip_form' AND m.meta_value = '' AND e.`is_spam` = 0";
+			"SELECT count(DISTINCT e.`entry_id`) FROM {$table_name} m LEFT JOIN {$entry_table_name} e ON(e.`entry_id` = m.`entry_id`) WHERE e.`form_id` = %d AND m.meta_key = 'skip_form' AND m.meta_value = '0' AND e.`is_spam` = 0";
 
 		$entries          = $wpdb->get_var( $wpdb->prepare( $sql, $form_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
@@ -1146,25 +1146,18 @@ class Forminator_Form_Entry_Model {
 	 * @since 1.0
 	 * @since 1.1 Add init addons and Add hooks `forminator_before_delete_entry`
 	 *
-	 * @param int $form_id  - the form id
 	 * @param int $entry_id - the entry id
 	 * @param bool|object - the WP_Object optional param
 	 */
-	public static function delete_by_entry( $form_id, $entry_id, $db = false ) {
-
-		// get connected addons since
-		self::get_connected_addons( $form_id );
-
-		if ( ! $db ) {
-			global $wpdb;
-			$db = $wpdb;
-		}
+	public static function delete_by_entry( $entry_id ) {
+		global $wpdb;
 
 		$table_name      = Forminator_Database_Tables::get_table_name( Forminator_Database_Tables::FORM_ENTRY );
 		$table_meta_name = Forminator_Database_Tables::get_table_name( Forminator_Database_Tables::FORM_ENTRY_META );
 		$cache_key       = 'Forminator_Form_Entry_Model';
+		$entry_model     = new Forminator_Form_Entry_Model( $entry_id );
 
-		$form_id  = (int) $form_id;
+		$form_id  = (int) $entry_model->form_id;
 		$entry_id = (int) $entry_id;
 		forminator_maybe_log( 'forminator_before_delete_entry', $form_id, $entry_id );
 		/**
@@ -1176,15 +1169,14 @@ class Forminator_Form_Entry_Model {
 		 * @param int $entry_id Current Entry ID to be deleted
 		 */
 		do_action_ref_array( 'forminator_before_delete_entry', array( $form_id, $entry_id ) );
-		$entry_model = new Forminator_Form_Entry_Model( $entry_id );
 		self::attach_addons_on_before_delete_entry( $form_id, $entry_model );
 		self::entry_delete_upload_files( $form_id, $entry_model );
 
 		$sql = "DELETE FROM {$table_meta_name} WHERE `entry_id` = %d";
-		$db->query( $db->prepare( $sql, $entry_id ) );
+		$wpdb->query( $wpdb->prepare( $sql, $entry_id ) );
 
 		$sql = "DELETE FROM {$table_name} WHERE `entry_id` = %d";
-		$db->query( $db->prepare( $sql, $entry_id ) );
+		$wpdb->query( $wpdb->prepare( $sql, $entry_id ) );
 
 		wp_cache_delete( $entry_id, $cache_key );
 		wp_cache_delete( $form_id, 'forminator_total_entries' );
@@ -1201,7 +1193,7 @@ class Forminator_Form_Entry_Model {
 	 * @param Forminator_Form_Entry_Model $entry_model
 	 */
 	public static function entry_delete_upload_files( $form_id, $entry_model ) {
-		$custom_form     = Forminator_Custom_Form_Model::model()->load( $form_id );
+		$custom_form     = Forminator_Form_Model::model()->load( $form_id );
 		$submission_file = 'delete';
 		if ( is_object( $custom_form ) ) {
 			$settings        = $custom_form->settings;
@@ -1239,7 +1231,7 @@ class Forminator_Form_Entry_Model {
 	public static function meta_value_to_string( $field_type, $meta_value, $allow_html = false, $truncate = PHP_INT_MAX ) {
 		switch ( $field_type ) {
 			case 'postdata':
-                
+
 				if ( is_string( $meta_value ) ) {
 					$string_value = $meta_value;
 				} else if ( ! isset( $meta_value['postdata'] ) || empty( $meta_value['postdata'] ) ) {
@@ -1254,19 +1246,19 @@ class Forminator_Form_Entry_Model {
 						// is not logged in
 						$url = get_home_url();
 					}
-                    
+
                     if ( $allow_html ) {
-                        
+
                         // Title make link
                         $title = get_the_title( $post_id );
-                        $title = ! empty( $title ) ? $title : __( '(no title)', Forminator::DOMAIN );
+                        $title = ! empty( $title ) ? $title : __( '(no title)', 'forminator' );
                         //truncate
                         if ( strlen( $title ) > $truncate ) {
                             $title = substr( $title, 0, $truncate ) . '...';
                         }
-                        $string_value  = '<b>' . esc_html__( 'Title', Forminator::DOMAIN ) . ':</b> ';
-                        $string_value .= '<a href="' . $url . '" target="_blank" rel="noopener noreferrer" title="' . esc_attr__( 'Edit Post', Forminator::DOMAIN ) . '">' . $title . '</a>';
-                    
+                        $string_value  = '<b>' . esc_html__( 'Title', 'forminator' ) . ':</b> ';
+                        $string_value .= '<a href="' . $url . '" target="_blank" rel="noopener noreferrer" title="' . esc_attr__( 'Edit Post', 'forminator' ) . '">' . $title . '</a>';
+
                         // Content
                         if ( ! empty( $meta_value['value']['post-content'] ) ) {
                             $post_content  = $meta_value['value']['post-content'];
@@ -1275,10 +1267,10 @@ class Forminator_Form_Entry_Model {
                                 $post_content = substr( $post_content, 0, $truncate ) . '...';
                             }
                             $string_value .= '<hr>';
-                            $string_value .= '<b>' . esc_html__( 'Content', Forminator::DOMAIN ) . ':</b><br>';
+                            $string_value .= '<b>' . esc_html__( 'Content', 'forminator' ) . ':</b><br>';
                             $string_value .= wp_kses( $post_content, 'post' );
                         }
-                    
+
                         // Excerpt
                         if ( ! empty( $meta_value['value']['post-excerpt'] ) ) {
                             $post_excerpt  = $meta_value['value']['post-excerpt'];
@@ -1287,10 +1279,10 @@ class Forminator_Form_Entry_Model {
                                 $post_excerpt = substr( $post_excerpt, 0, $truncate ) . '...';
                             }
                             $string_value .= '<hr>';
-                            $string_value .= '<b>' . esc_html__( 'Excerpt', Forminator::DOMAIN ) . ':</b><br>';
+                            $string_value .= '<b>' . esc_html__( 'Excerpt', 'forminator' ) . ':</b><br>';
                             $string_value .= wp_strip_all_tags( $post_excerpt );
                         }
-                    
+
                         // Category
                         if ( ! empty( $meta_value['value']['category'] ) ) {
                             $post_category = $meta_value['value']['category'];
@@ -1298,11 +1290,11 @@ class Forminator_Form_Entry_Model {
                             // In case of deleted categories.
                             if ( ! empty( $post_category ) ) {
                                 $string_value .= '<hr>';
-                                $string_value .= '<b>' . esc_html__( 'Category', Forminator::DOMAIN ) . ':</b> ';
+                                $string_value .= '<b>' . esc_html__( 'Category', 'forminator' ) . ':</b> ';
                                 $string_value .= $post_category;
                             }
                         }
-                    
+
                         // Tags
                         if ( ! empty( $meta_value['value']['post_tag'] ) ) {
                             $post_tag_id = $meta_value['value']['post_tag'];
@@ -1313,28 +1305,28 @@ class Forminator_Form_Entry_Model {
                                 'fields'            => 'names',
                             );
                             $term_query = new WP_Term_Query( $term_args );
-                            
+
                             // In case of deleted tags.
                             if ( ! empty( $tag = $term_query->terms ) ) {
                                 $string_value .= '<hr>';
-                                $string_value .= '<b>' . esc_html__( 'Tag', Forminator::DOMAIN ) . ':</b> ';
+                                $string_value .= '<b>' . esc_html__( 'Tag', 'forminator' ) . ':</b> ';
                                 $string_value .= $tag[0];
                             }
                         }
-                        
+
                         // Featured Image
                         if ( ! empty( $meta_value['value']['post-image'] ) && ! empty( $meta_value['value']['post-image']['attachment_id'] ) ) {
                             $post_image_id = $meta_value['value']['post-image']['attachment_id'];
                             $string_value .= '<hr>';
-                            $string_value .= '<b>' . esc_html__( 'Featured image', Forminator::DOMAIN ) . ':</b><br>';
+                            $string_value .= '<b>' . esc_html__( 'Featured image', 'forminator' ) . ':</b><br>';
                             $string_value .= wp_get_attachment_image( $post_image_id, array( 100, 100 ) );
                         }
-                        
+
                         // Custom fields
                         if ( ! empty( $meta_value['value']['post-custom'] ) ) {
                             $post_custom   = $meta_value['value']['post-custom'];
                             $string_value .= '<hr>';
-                            $string_value .= '<b>' . esc_html__( 'Custom fields', Forminator::DOMAIN ) . ':</b><br>';
+                            $string_value .= '<b>' . esc_html__( 'Custom fields', 'forminator' ) . ':</b><br>';
 
                             $string_value .= '<ul class="' . esc_attr( 'bulleted' ) . '">';
                                 foreach ( $post_custom as $field ) {
@@ -1347,40 +1339,40 @@ class Forminator_Form_Entry_Model {
                                 }
                             $string_value .= '</ul>';
                         }
-                        
+
                     } else {
-                        
+
                         // Title
                         $title = get_the_title( $post_id );
-                        $title = ! empty( $title ) ? $title : __( '(no title)', Forminator::DOMAIN );
-                        $string_value  = esc_html__( 'Title', Forminator::DOMAIN ) . ': ';
+                        $title = ! empty( $title ) ? $title : __( '(no title)', 'forminator' );
+                        $string_value  = esc_html__( 'Title', 'forminator' ) . ': ';
                         $string_value .= $title . ' | ';
-                    
+
                         // Content
                         if ( ! empty( $meta_value['value']['post-content'] ) ) {
                             $post_content  = strip_tags( $meta_value['value']['post-content'] );
-                            $string_value .= esc_html__( 'Content', Forminator::DOMAIN ) . ': ';
+                            $string_value .= esc_html__( 'Content', 'forminator' ) . ': ';
                             $string_value .= $post_content . ' | ';
                         }
-                    
+
                         // Excerpt
                         if ( ! empty( $meta_value['value']['post-excerpt'] ) ) {
                             $post_excerpt  = strip_tags( $meta_value['value']['post-excerpt'] );
-                            $string_value .= esc_html__( 'Excerpt', Forminator::DOMAIN ) . ': ';
+                            $string_value .= esc_html__( 'Excerpt', 'forminator' ) . ': ';
                             $string_value .= $post_excerpt . ' | ';
                         }
-                    
+
                         // Category
                         if ( ! empty( $meta_value['value']['category'] ) ) {
                             $post_category = $meta_value['value']['category'];
                             $post_category = get_the_category_by_ID( $post_category );
                             // In case of deleted categories.
                             if ( ! empty( $post_category ) ) {
-                                $string_value .= esc_html__( 'Category', Forminator::DOMAIN ) . ': ';
+                                $string_value .= esc_html__( 'Category', 'forminator' ) . ': ';
                                 $string_value .= $post_category . ' | ';
                             }
                         }
-                    
+
                         // Tags
                         if ( ! empty( $meta_value['value']['post_tag'] ) ) {
                             $post_tag_id = $meta_value['value']['post_tag'];
@@ -1391,26 +1383,26 @@ class Forminator_Form_Entry_Model {
                                 'fields'            => 'names',
                             );
                             $term_query = new WP_Term_Query( $term_args );
-                            
+
                             // In case of deleted tags.
                             if ( ! empty( $tag = $term_query->terms ) ) {
-                                $string_value .= esc_html__( 'Tag', Forminator::DOMAIN ) . ': ';
+                                $string_value .= esc_html__( 'Tag', 'forminator' ) . ': ';
                                 $string_value .= $tag[0] . ' | ';
                             }
                         }
-                    
+
                         // Featured Image
                         if ( ! empty( $meta_value['value']['post-image'] ) && ! empty( $meta_value['value']['post-image']['uploaded_file'] ) ) {
                             $post_image_url = $meta_value['value']['post-image']['uploaded_file'][0];
-                            $string_value .= esc_html__( 'Featured image', Forminator::DOMAIN ) . ': ';
+                            $string_value .= esc_html__( 'Featured image', 'forminator' ) . ': ';
                             $string_value .= $post_image_url;
                         }
-                        
+
                         // Custom fields
                         if ( ! empty( $meta_value['value']['post-custom'] ) ) {
                             $post_custom = $meta_value['value']['post-custom'];
-                            $string_value .= esc_html__( 'Custom fields', Forminator::DOMAIN ) . ': ';
-                            foreach ( $post_custom as $index => $field ) {                                
+                            $string_value .= esc_html__( 'Custom fields', 'forminator' ) . ': ';
+                            foreach ( $post_custom as $index => $field ) {
                                 if ( ! empty( $field['value'] ) ) {
                                     0 === $index ?: $string_value .= ', ';
                                     $string_value .= esc_html( $field['key'] ) . ' = ';
@@ -1418,7 +1410,7 @@ class Forminator_Form_Entry_Model {
                                 }
                             }
                         }
-                        
+
                         //truncate
                         if ( strlen( $string_value ) > $truncate ) {
                             $string_value = substr( $string_value, 0, $truncate ) . '...';
@@ -1473,7 +1465,7 @@ class Forminator_Form_Entry_Model {
 						if ( strlen( $email ) > $truncate ) {
 							$email = substr( $email, 0, $truncate ) . '...';
 						}
-						$string_value = '<a href="mailto:' . $email . '" target="_blank" rel="noopener noreferrer" title="' . __( 'Send Email', Forminator::DOMAIN ) . '">' . $email . '</a>';
+						$string_value = '<a href="mailto:' . $email . '" target="_blank" rel="noopener noreferrer" title="' . __( 'Send Email', 'forminator' ) . '">' . $email . '</a>';
 					} else {
 						//truncate url
 						if ( strlen( $string_value ) > $truncate ) {
@@ -1496,7 +1488,7 @@ class Forminator_Form_Entry_Model {
 						if ( strlen( $website ) > $truncate ) {
 							$website = substr( $website, 0, $truncate ) . '...';
 						}
-						$string_value = '<a href="' . $website . '" target="_blank" rel="noopener noreferrer" title="' . __( 'View Website', Forminator::DOMAIN ) . '">' . $website . '</a>';
+						$string_value = '<a href="' . $website . '" target="_blank" rel="noopener noreferrer" title="' . __( 'View Website', 'forminator' ) . '">' . $website . '</a>';
 					} else {
 						//truncate url
 						if ( strlen( $string_value ) > $truncate ) {
@@ -1522,7 +1514,7 @@ class Forminator_Form_Entry_Model {
 						foreach ( $file_values as $file_value ) {
 							$url       = $file_value;
 							$file_name = basename( $url );
-							$file_name = ! empty( $file_name ) ? $file_name : __( '(no filename)', Forminator::DOMAIN );
+							$file_name = ! empty( $file_name ) ? $file_name : __( '(no filename)', 'forminator' );
 							//truncate
 							if ( strlen( $file_name ) > $truncate ) {
 								$file_name = substr( $file_name, 0, $truncate ) . '...';
@@ -1533,7 +1525,7 @@ class Forminator_Form_Entry_Model {
 							  $string_value .= ', ';
 							}
 
-							$string_value .= '<a href="' . $url . '" rel="noopener noreferrer" target="_blank" title="' . __( 'View File', Forminator::DOMAIN ) . '">' . $file_name . '</a>';
+							$string_value .= '<a href="' . $url . '" rel="noopener noreferrer" target="_blank" title="' . __( 'View File', 'forminator' ) . '">' . $file_name . '</a>';
 						}
 					} else {
 						//truncate url
@@ -1547,10 +1539,12 @@ class Forminator_Form_Entry_Model {
 				}
 				break;
 			case 'checkbox':
-				if ( ! is_array( $meta_value ) ) {
-					$string_value = '';
-				} else {
+				if ( is_array( $meta_value ) ) {
 					$string_value = implode( ', ', $meta_value );
+				} elseif ( is_string( $meta_value ) ) {
+					$string_value = $meta_value;
+				} else {
+					$string_value = '';
 				}
 				//truncate
 				if ( strlen( $string_value ) > $truncate ) {
@@ -1719,6 +1713,11 @@ class Forminator_Form_Entry_Model {
 	 * @return Forminator_Form_Entry_Model|null
 	 */
 	public static function get_latest_entry( $entry_type = 'custom-forms' ) {
+		if ( 'form' === $entry_type ) {
+			$entry_type = 'custom-forms';
+		} elseif ( 'quiz' === $entry_type ) {
+			$entry_type = 'quizzes';
+		}
 		$available_entry_types = array(
 			'custom-forms',
 			'quizzes',
@@ -1857,22 +1856,28 @@ class Forminator_Form_Entry_Model {
 	 *
 	 * @since 1.0.6
 	 *
-	 * @param $entry_type
 	 * @param $date_created
+	 * @param $entry_type
+	 * @param $id
 	 *
 	 * @return array
 	 */
-	public static function get_older_entry_ids( $entry_type, $date_created ) {
+	public static function get_older_entry_ids( $date_created, $entry_type = '', $id = 0 ) {
 		global $wpdb;
+		$where = '';
+		if ( $entry_type ) {
+			$where .= $wpdb->prepare( ' AND e.entry_type = %s', $entry_type );
+		}
+		if ( $id ) {
+			$where .= $wpdb->prepare( ' AND e.form_id = %d', $id );
+		}
 		$entry_table_name = Forminator_Database_Tables::get_table_name( Forminator_Database_Tables::FORM_ENTRY );
 		$sql              = "SELECT e.entry_id AS entry_id
 							FROM {$entry_table_name} e
-							WHERE e.entry_type = %s
-							AND e.date_created < %s";
+							WHERE e.date_created < %s {$where}";
 
 		$sql = $wpdb->prepare(
 			$sql, // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-			$entry_type,
 			$date_created
 		);
 
@@ -1933,35 +1938,6 @@ class Forminator_Form_Entry_Model {
 		$most_entry = $wpdb->get_row( $sql );
 
 		return $most_entry;
-	}
-
-	/**
-	 * Get entries older than $date_created of form_id
-	 *
-	 * @since 1.0.6
-	 *
-	 * @param $form_id
-	 * @param $date_created
-	 *
-	 * @return array
-	 */
-	public static function get_older_entry_ids_of_form_id( $form_id, $date_created ) {
-		global $wpdb;
-		$entry_table_name = Forminator_Database_Tables::get_table_name( Forminator_Database_Tables::FORM_ENTRY );
-		$sql              = "SELECT e.entry_id AS entry_id
-							FROM {$entry_table_name} e
-							WHERE e.form_id = %d
-							AND e.date_created < %s";
-
-		$sql = $wpdb->prepare(
-			$sql, // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-			$form_id,
-			$date_created
-		);
-
-		$entry_ids = $wpdb->get_col( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-
-		return $entry_ids;
 	}
 
 	/**

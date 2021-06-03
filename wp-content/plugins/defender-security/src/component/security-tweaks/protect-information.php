@@ -72,6 +72,7 @@ class Protect_Information extends Component {
 			'successReason'   => __( 'You\'ve automatically enabled information disclosure protection.', 'wpdef' ),
 			'misc'            => [
 				'active_server' => Server::get_current_server(),
+				'apache_rules'  => Server::create( 'apache' )->from( $this->slug )->get_rules_for_instruction(),
 				'nginx_rules'   => Server::create( 'nginx' )->from( $this->slug )->get_rules(),
 			],
 			'blk_description' => __( 'Often servers are incorrectly configured, and can allow an attacker to get access to sensitive files like your config, .htaccess and backup files. We will automatically add an .htaccess file to your root folder to action this fix.', 'wpdef' ),

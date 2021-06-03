@@ -47,7 +47,7 @@ foreach ( $this->entries_iterator() as $entries ) {
 						echo '<span aria-hidden="true"></span>';
 
 						echo '<span class="sui-screen-reader-text">' . sprintf(/* translators: ... */
-								esc_html__( 'Select entry number %s', Forminator::DOMAIN ),
+								esc_html__( 'Select entry number %s', 'forminator' ),
 								esc_html( $db_entry_id )
 							) . '</span>';
 
@@ -79,7 +79,7 @@ foreach ( $this->entries_iterator() as $entries ) {
 
 			echo '<td>';
 				echo '' . sprintf(/* translators: ... */
-						esc_html__( '+ %s other fields', Forminator::DOMAIN ),
+						esc_html__( '+ %s other fields', 'forminator' ),
 						esc_html( $summary['num_fields_left'] )
 					) . '';
 				echo '<span class="sui-accordion-open-indicator">';
@@ -112,7 +112,7 @@ foreach ( $this->entries_iterator() as $entries ) {
 					<?php // ROW: Lead Details. ?>
 					<div class="fui-entries-block">
 
-						<h3 class="fui-entries-subtitle"><?php esc_html_e( 'Lead Details', Forminator::DOMAIN ); ?></h3>
+						<h3 class="fui-entries-subtitle"><?php esc_html_e( 'Lead Details', 'forminator' ); ?></h3>
 
 						<?php if ( ! empty( $detail_items ) ) { ?>
 
@@ -244,7 +244,7 @@ foreach ( $this->entries_iterator() as $entries ) {
 						<?php } else { ?>
 
 							<div class="sui-notice">
-								<p><?php esc_html_e( 'Lead details are not available for this submission. Looks like the participant opted to skip the lead generation form while submitting the quiz.', Forminator::DOMAIN ); ?></p>
+								<p><?php esc_html_e( 'Lead details are not available for this submission. Looks like the participant opted to skip the lead generation form while submitting the quiz.', 'forminator' ); ?></p>
 							</div>
 
 						<?php } ?>
@@ -254,7 +254,7 @@ foreach ( $this->entries_iterator() as $entries ) {
 					<?php // ROW: Quiz Results. ?>
 					<div class="fui-entries-block">
 
-						<h3 class="fui-entries-subtitle"><?php esc_html_e( 'Quiz Results', Forminator::DOMAIN ); ?></h3>
+						<h3 class="fui-entries-subtitle"><?php esc_html_e( 'Quiz Results', 'forminator' ); ?></h3>
 
 						<?php if ( ! empty( $quiz_entry ) ) {
 
@@ -272,15 +272,15 @@ foreach ( $this->entries_iterator() as $entries ) {
 								}
 								?>
 
-								<p class="sui-description"><?php echo sprintf( __( 'You got %s/%s correct answers.', Forminator::DOMAIN ), $right, $total ); // phpcs:ignore ?></p>
+								<p class="sui-description"><?php echo sprintf( __( 'You got %s/%s correct answers.', 'forminator' ), $right, $total ); // phpcs:ignore ?></p>
 
 								<table class="fui-entries-table">
 
 									<thead>
 
 										<tr>
-											<th><?php esc_html_e( 'Question', Forminator::DOMAIN ); ?></th>
-											<th><?php esc_html_e( 'Answer', Forminator::DOMAIN ); ?></th>
+											<th><?php esc_html_e( 'Question', 'forminator' ); ?></th>
+											<th><?php esc_html_e( 'Answer', 'forminator' ); ?></th>
 										</tr>
 
 									</thead>
@@ -314,9 +314,9 @@ foreach ( $this->entries_iterator() as $entries ) {
 
 												<div class="fui-entries-table-legend">
 
-													<p class="correct"><?php esc_html_e( 'Correct', Forminator::DOMAIN ); ?></p>
+													<p class="correct"><?php esc_html_e( 'Correct', 'forminator' ); ?></p>
 
-													<p class="incorrect"><?php esc_html_e( 'Incorrect', Forminator::DOMAIN ); ?></p>
+													<p class="incorrect"><?php esc_html_e( 'Incorrect', 'forminator' ); ?></p>
 
 												</div>
 
@@ -339,8 +339,8 @@ foreach ( $this->entries_iterator() as $entries ) {
 										<thead>
 
 											<tr>
-												<th><?php esc_html_e( 'Question', Forminator::DOMAIN ); ?></th>
-												<th><?php esc_html_e( 'Answer', Forminator::DOMAIN ); ?></th>
+												<th><?php esc_html_e( 'Question', 'forminator' ); ?></th>
+												<th><?php esc_html_e( 'Answer', 'forminator' ); ?></th>
 											</tr>
 
 										</thead>
@@ -362,7 +362,7 @@ foreach ( $this->entries_iterator() as $entries ) {
 
 											<tr>
 
-												<td colspan="2"><?php printf( __( '<strong>Quiz Result:</strong> %s', Forminator::DOMAIN ), $meta['result']['title'] ); // phpcs:ignore ?></td>
+												<td colspan="2"><?php printf( __( '<strong>Quiz Result:</strong> %s', 'forminator' ), $meta['result']['title'] ); // phpcs:ignore ?></td>
 
 											</tr>
 
@@ -376,7 +376,7 @@ foreach ( $this->entries_iterator() as $entries ) {
 
 						<?php } else { ?>
                             <div class="sui-notice">
-                                <p><?php esc_html_e( 'Quiz results are not available for this submission. The participant either couldn\'t finish the quiz or had some errors while submitting the quiz.', Forminator::DOMAIN ); ?></p>
+                                <p><?php esc_html_e( 'Quiz results are not available for this submission. The participant either couldn\'t finish the quiz or had some errors while submitting the quiz.', 'forminator' ); ?></p>
                             </div>
 						<?php } ?>
 
@@ -387,15 +387,15 @@ foreach ( $this->entries_iterator() as $entries ) {
 
 						<div class="fui-entries-block">
 
-							<h3 class="fui-entries-subtitle"><?php esc_html_e( 'Active Integrations', Forminator::DOMAIN ); ?></h3>
+							<h3 class="fui-entries-subtitle"><?php esc_html_e( 'Active Integrations', 'forminator' ); ?></h3>
 
-							<p class="sui-description"><?php esc_html_e( 'Check the status and response of your active 3rd-party applications for this submissions.', Forminator::DOMAIN ); ?></p>
+							<p class="sui-description"><?php esc_html_e( 'Check the status and response of your active 3rd-party applications for this submissions.', 'forminator' ); ?></p>
 
 							<div class="sui-accordion">
 
 								<div class="sui-accordion-header">
-									<div><?php esc_html_e( 'Integration Name', Forminator::DOMAIN ); ?></div>
-									<div><?php esc_html_e( 'Data send to integration', Forminator::DOMAIN ); ?></div>
+									<div><?php esc_html_e( 'Integration Name', 'forminator' ); ?></div>
+									<div><?php esc_html_e( 'Data send to integration', 'forminator' ); ?></div>
 									<div></div>
 								</div>
 
@@ -487,7 +487,7 @@ foreach ( $this->entries_iterator() as $entries ) {
                             type="button"
                             class="sui-button sui-button-ghost sui-button-red wpmudev-open-modal"
 						<?php if ( isset( $entries['activation_key'] ) ) {
-							$button_title = esc_html__( 'Delete Submission & User', Forminator::DOMAIN );
+							$button_title = esc_html__( 'Delete Submission & User', 'forminator' );
 							$is_activation_key = true;
 							?>
                             data-activation-key="<?php echo $entries['activation_key']; ?>"
@@ -495,14 +495,14 @@ foreach ( $this->entries_iterator() as $entries ) {
                             data-entry-id="<?php echo esc_attr( $db_entry_id ); ?>"
                             data-form-id="<?php echo esc_attr( $this->model->id ); ?>"
 						<?php } else {
-							$button_title = esc_html__( 'Delete', Forminator::DOMAIN );
+							$button_title = esc_html__( 'Delete', 'forminator' );
 							$is_activation_key = false;
 							?>
                             data-modal="delete-module"
                             data-form-id="<?php echo esc_attr( $db_entry_id ); ?>"
 						<?php } ?>
-                            data-modal-title="<?php esc_attr_e( 'Delete Submission', Forminator::DOMAIN ); ?>"
-                            data-modal-content="<?php esc_attr_e( 'Are you sure you wish to permanently delete this submission?', Forminator::DOMAIN ); ?>"
+                            data-modal-title="<?php esc_attr_e( 'Delete Submission', 'forminator' ); ?>"
+                            data-modal-content="<?php esc_attr_e( 'Are you sure you wish to permanently delete this submission?', 'forminator' ); ?>"
                             data-nonce="<?php echo esc_attr( wp_create_nonce( 'forminatorQuizEntries' ) ); ?>"
                     >
                         <i class="sui-icon-trash" aria-hidden="true"></i> <?php echo $button_title; ?>
@@ -515,13 +515,13 @@ foreach ( $this->entries_iterator() as $entries ) {
                                     type="button"
                                     class="sui-button wpmudev-open-modal"
                                     data-modal="approve-user-module"
-                                    data-modal-title="<?php esc_attr_e( 'Approve User', Forminator::DOMAIN ); ?>"
-                                    data-modal-content="<?php esc_attr_e( 'Are you sure you want to approve and activate this user?', Forminator::DOMAIN ); ?>"
+                                    data-modal-title="<?php esc_attr_e( 'Approve User', 'forminator' ); ?>"
+                                    data-modal-content="<?php esc_attr_e( 'Are you sure you want to approve and activate this user?', 'forminator' ); ?>"
                                     data-form-id="<?php echo esc_attr( $db_entry_id ); ?>"
                                     data-activation-key="<?php echo esc_attr( $entries['activation_key'] ); ?>"
-                                    data-nonce="<?php echo wp_create_nonce( 'forminatorCustomFormEntries' ); // WPCS: XSS ok. ?>"
+                                    data-nonce="<?php echo wp_create_nonce( 'forminatorFormEntries' ); // WPCS: XSS ok. ?>"
                             >
-								<?php esc_html_e( 'Approve User', Forminator::DOMAIN ); ?>
+								<?php esc_html_e( 'Approve User', 'forminator' ); ?>
                             </button>
                         </div>
 

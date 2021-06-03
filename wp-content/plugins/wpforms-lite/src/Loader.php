@@ -12,9 +12,11 @@ class Loader {
 	/**
 	 * Classes to register.
 	 *
+	 * @since 1.5.8
+	 *
 	 * @var array
 	 */
-	private $classes = array();
+	private $classes = [];
 
 	/**
 	 * Loader init.
@@ -40,7 +42,9 @@ class Loader {
 		$this->populate_capabilities();
 		$this->populate_tasks();
 		$this->populate_forms();
+		$this->populate_smart_tags();
 		$this->populate_logger();
+		$this->populate_education();
 	}
 
 	/**
@@ -70,6 +74,10 @@ class Loader {
 
 		array_push(
 			$this->classes,
+			[
+				'name' => 'Admin\Addons\Addons',
+				'id'   => 'addons',
+			],
 			[
 				'name' => 'Admin\AdminBarMenu',
 				'hook' => 'init',
@@ -104,6 +112,14 @@ class Loader {
 			[
 				'name' => 'Admin\Settings\Captcha',
 				'hook' => 'admin_init',
+			],
+			[
+				'name' => 'Admin\Tools\Tools',
+				'hook' => 'admin_init',
+			],
+			[
+				'name' => 'Admin\Pages\Addons',
+				'id'   => 'addons_page',
 			]
 		);
 	}
@@ -169,6 +185,23 @@ class Loader {
 	}
 
 	/**
+	 * Populate smart tags loaded classes.
+	 *
+	 * @since 1.6.7
+	 */
+	private function populate_smart_tags() {
+
+		array_push(
+			$this->classes,
+			[
+				'name' => 'SmartTags\SmartTags',
+				'id'   => 'smart_tags',
+				'run'  => 'hooks',
+			]
+		);
+	}
+
+	/**
 	 * Populate logger loaded classes.
 	 *
 	 * @since 1.6.3
@@ -184,5 +217,57 @@ class Loader {
 				'run'  => 'hooks',
 			]
 		);
+	}
+
+	/**
+	 * Populate education related classes.
+	 *
+	 * @since 1.6.6
+	 */
+	private function populate_education() {
+
+		// Kill switch.
+		if ( ! (bool) apply_filters( 'wpforms_admin_education', true ) ) {
+			return;
+		}
+
+		// Education core classes.
+		array_push(
+			$this->classes,
+			[
+				'name' => 'Admin\Education\Core',
+				'id'   => 'education',
+			],
+			[
+				'name' => 'Admin\Education\Fields',
+				'id'   => 'education_fields',
+			]
+		);
+
+		// Education features classes.
+		$features = [
+			'Builder\Captcha',
+			'Builder\Fields',
+			'Builder\Settings',
+			'Builder\Providers',
+			'Builder\Payments',
+			'Builder\FormTemplates',
+			'Builder\DidYouKnow',
+			'Builder\Geolocation',
+			'Admin\DidYouKnow',
+			'Admin\Settings\Integrations',
+			'Admin\Settings\Geolocation',
+			'Admin\NoticeBar',
+			'Admin\Entries\Geolocation',
+		];
+
+		foreach ( $features as $feature ) {
+			array_push(
+				$this->classes,
+				[
+					'name' => 'Admin\Education\\' . $feature,
+				]
+			);
+		}
 	}
 }

@@ -277,16 +277,29 @@ class Scan extends Controller2 {
 	 */
 	public function save_settings( Request $request ) {
 		$data = $request->get_data_by_model( $this->model );
-		//enable all child options, if parent and all child options are disabled, so that there is no notice when saving
+		//Case#1: enable all child options, if parent and all child options are disabled, so that there is no notice when saving
 		if (
 			! $data['integrity_check']
 			&& ! $data['check_core']
-			&& ! $data['check_themes']
 			&& ! $data['check_plugins']
 		) {
-			$data['check_core'] = true;
-			$data['check_themes'] = true;
+			$data['check_core']    = true;
 			$data['check_plugins'] = true;
+		}
+
+		//Case#2: Suspicious code is activated BUT File change detection is deactivated then show the notice
+		if ( $data['scan_malware'] && ! $data['integrity_check'] ){
+			$response = array(
+				'type_notice' => 'info',
+				'message'     => __( "To reduce false-positive results, we recommend enabling" .
+					" <strong>File change detection</strong> options for all scan types while the" .
+					" <strong>Suspicious code</strong> option is enabled.", 'wpdef' ),
+			);
+		} else {
+			//Prepare response message for usual successful case
+			$response = array(
+				'message' => __( 'Your settings have been updated.', 'wpdef' ),
+			);
 		}
 
 		$this->model->import( $data );
@@ -295,9 +308,7 @@ class Scan extends Controller2 {
 
 			return new Response(
 				true,
-				array(
-					'message' => __( 'Your settings have been updated.', 'wpdef' ),
-				)
+				$response
 			);
 		} else {
 			return new Response(
@@ -381,7 +392,7 @@ class Scan extends Controller2 {
 			'timeout'  => 3,
 			'headers'  => array(
 				'user-agent' => sprintf(
-					'Mozilla/5.0 (compatible; WPMU DEV Defender/%1$s; +https://premium.wpmudev.org)',
+					'Mozilla/5.0 (compatible; WPMU DEV Defender/%1$s; +https://wpmudev.com)',
 					DEFENDER_VERSION
 				),
 			),

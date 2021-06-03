@@ -27,9 +27,9 @@ foreach ( $template_vars as $key => $val ) {
 
 <div class="integration-header">
 
-	<h3 class="sui-box-title" id="dialogTitle2"><?php echo esc_html( __( 'Customize Fields', Forminator::DOMAIN ) ); ?></h3>
+	<h3 class="sui-box-title" id="dialogTitle2"><?php echo esc_html( __( 'Customize Fields', 'forminator' ) ); ?></h3>
 
-	<p><?php esc_html_e( 'Set up how you want your cards to be created in Trello.', Forminator::DOMAIN ); ?></p>
+	<p><?php esc_html_e( 'Set up how you want your cards to be created in Trello.', 'forminator' ); ?></p>
 
 	<?php if ( ! empty( $vars['error_message'] ) ) : ?>
 		<span class="sui-notice sui-notice-error"><p><?php echo esc_html( $vars['error_message'] ); ?></p></span>
@@ -45,14 +45,14 @@ foreach ( $template_vars as $key => $val ) {
 
 			<div class="sui-form-field <?php echo esc_attr( ! empty( $vars['card_name_error'] ) ? 'sui-form-field-error' : '' ); ?>">
 
-				<label class="sui-label"><?php esc_html_e( 'Card Name', Forminator::DOMAIN ); ?></label>
+				<label class="sui-label"><?php esc_html_e( 'Card Name', 'forminator' ); ?></label>
 
 				<div class="sui-insert-variables">
 
 					<input id="card_name"
 						class="sui-form-control"
 						name="card_name"
-						placeholder="<?php echo esc_attr( __( 'Card Name', Forminator::DOMAIN ) ); ?>"
+						placeholder="<?php echo esc_attr( __( 'Card Name', 'forminator' ) ); ?>"
 						value="<?php echo esc_attr( $vars['card_name'] ); ?>">
 
 					<select data-textarea-id="card_name"><?php foreach ( $vars['name_fields'] as $key => $field ) : ?>
@@ -77,7 +77,7 @@ foreach ( $template_vars as $key => $val ) {
 
 			<div class="sui-form-field <?php echo esc_attr( ! empty( $vars['card_description_error'] ) ? 'sui-form-field-error' : '' ); ?>">
 
-				<label class="sui-label" for="card_description"><?php esc_html_e( 'Card Description', Forminator::DOMAIN ); ?></label>
+				<label class="sui-label" for="card_description"><?php esc_html_e( 'Card Description', 'forminator' ); ?></label>
 
 				<div class="sui-insert-variables">
 
@@ -94,8 +94,8 @@ foreach ( $template_vars as $key => $val ) {
 				<?php endif; ?>
 
 				<span class="sui-description">
-					<?php esc_html_e( 'Markdown supported for card description. Find complete guide', Forminator::DOMAIN ); ?>
-					<a href="https://help.trello.com/article/821-using-markdown-in-trello" target="_blank"><?php esc_html_e( 'here', Forminator::DOMAIN ); ?></a>.
+					<?php esc_html_e( 'Markdown supported for card description. Find complete guide', 'forminator' ); ?>
+					<a href="https://help.trello.com/article/821-using-markdown-in-trello" target="_blank"><?php esc_html_e( 'here', 'forminator' ); ?></a>.
 				</span>
 
 			</div>
@@ -107,11 +107,11 @@ foreach ( $template_vars as $key => $val ) {
 	<div class="sui-row">
 		<div class="sui-col-md-6">
             <div class="sui-form-field <?php echo esc_attr( ! empty( $vars['due_date_error'] ) ? 'sui-form-field-error' : '' ); ?>">
-                <label class="sui-label" for="due_date"><?php esc_html_e( 'Due Date', Forminator::DOMAIN ); ?></label>
+                <label class="sui-label" for="due_date"><?php esc_html_e( 'Due Date', 'forminator' ); ?></label>
                 <input id="due_date"
                        class="sui-form-control"
                        name="due_date"
-                       placeholder="<?php echo esc_attr( __( 'Select a due date', Forminator::DOMAIN ) ); ?>"
+                       placeholder="<?php echo esc_attr( __( 'Select a due date', 'forminator' ) ); ?>"
                        value="<?php echo esc_attr( $vars['due_date'] ); ?>">
 
 				<?php if ( ! empty( $vars['due_date_error'] ) ) : ?>
@@ -122,7 +122,7 @@ foreach ( $template_vars as $key => $val ) {
 		</div>
         <div class="sui-col-md-6">
             <div class="sui-form-field <?php echo esc_attr( ! empty( $vars['position_error'] ) ? 'sui-form-field-error' : '' ); ?>">
-                <label class="sui-label" for="position"><?php esc_html_e( 'Position', Forminator::DOMAIN ); ?></label>
+                <label class="sui-label" for="position"><?php esc_html_e( 'Position', 'forminator' ); ?></label>
                 <select name="position" id="position">
 					<?php foreach ( $vars['positions'] as $pos_id => $pos_name ) : ?>
                         <option value="<?php echo esc_attr( $pos_id ); ?>" <?php selected( $vars['position'], $pos_id ); ?>><?php echo esc_html( $pos_name ); ?></option>
@@ -139,13 +139,13 @@ foreach ( $template_vars as $key => $val ) {
     <div class="sui-row">
         <div class="sui-col-md-12">
             <div class="sui-form-field <?php echo esc_attr( ! empty( $vars['label_ids_error'] ) ? 'sui-form-field-error' : '' ); ?>">
-                <label class="sui-label" for="label_ids"><?php esc_html_e( 'Labels', Forminator::DOMAIN ); ?></label>
+                <label class="sui-label" for="label_ids"><?php esc_html_e( 'Labels', 'forminator' ); ?></label>
                 <select class="sui-select fui-multi-select" name="label_ids[]" id="label_ids"
                         multiple="multiple"
                         data-reorder="1"
                         data-tags="false"
                         data-token-separators="[',']"
-                        data-placeholder="<?php esc_html_e( 'Enter label name', Forminator::DOMAIN ); ?>"
+                        data-placeholder="<?php esc_html_e( 'Enter label name', 'forminator' ); ?>"
                         data-allow-clear="false">
 				    <?php foreach ( $vars['label_ids'] as $label_id ) : ?>
 					    <?php if ( isset( $vars['labels'][ $label_id ] ) ) : ?>
@@ -178,13 +178,13 @@ foreach ( $template_vars as $key => $val ) {
 	<div class="sui-row">
 		<div class="sui-col-md-12">
 			<div class="sui-form-field <?php echo esc_attr( ! empty( $vars['member_ids_error'] ) ? 'sui-form-field-error' : '' ); ?>">
-				<label class="sui-label" for="member_ids"><?php esc_html_e( 'Members', Forminator::DOMAIN ); ?></label>
+				<label class="sui-label" for="member_ids"><?php esc_html_e( 'Members', 'forminator' ); ?></label>
 				<select class="sui-select fui-multi-select" name="member_ids[]" id="member_ids"
 						multiple="multiple"
 						data-reorder="1"
 						data-tags="false"
 						data-token-separators="[',']"
-						data-placeholder="<?php esc_html_e( 'Enter member name', Forminator::DOMAIN ); ?>"
+						data-placeholder="<?php esc_html_e( 'Enter member name', 'forminator' ); ?>"
 						data-allow-clear="false">
 					<?php foreach ( $vars['member_ids'] as $member_id ) : ?>
 						<?php if ( isset( $vars['members'][ $member_id ] ) ) : ?>

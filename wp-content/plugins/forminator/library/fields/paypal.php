@@ -55,7 +55,7 @@ class Forminator_PayPal extends Forminator_Field {
 	public function __construct() {
 		parent::__construct();
 
-		$this->name = __( 'PayPal', Forminator::DOMAIN );
+		$this->name = __( 'PayPal', 'forminator' );
 	}
 
 	/**
@@ -260,7 +260,7 @@ class Forminator_PayPal extends Forminator_Field {
 
 	/**
 	 * @param array                        $field
-	 * @param Forminator_Custom_Form_Model $custom_form
+	 * @param Forminator_Form_Model $custom_form
 	 * @param array                        $submitted_data
 	 * @param array                        $pseudo_submitted_data
 	 * @param array                        $field_data_array
@@ -284,6 +284,7 @@ class Forminator_PayPal extends Forminator_Field {
 		$entry_data['mode']     = $mode;
 		$entry_data['currency'] = $currency;
 		$charge_amount          = $this->get_payment_amount( $field, $custom_form, $submitted_data, $pseudo_submitted_data );
+		$charge_amount          = number_format( $charge_amount, 2 );
 
 
 		$paypal = new Forminator_PayPal_Express();
@@ -292,32 +293,32 @@ class Forminator_PayPal extends Forminator_Field {
 		// Validate intent
 		if ( ! isset( $order->intent ) || $order->intent !== "CAPTURE" ) {
 			return array(
-				'error' => __( 'Error! Something went wrong during checkout and payment couldn\'t be approved.', Forminator::DOMAIN )
+				'error' => __( 'Error! Something went wrong during checkout and payment couldn\'t be approved.', 'forminator' )
 			);
 		}
 
 		// Validate status
 		if ( ! isset( $order->status ) || $order->status !== "APPROVED" ) {
 			return array(
-				'error' => __( 'Error! Something went wrong during checkout and payment couldn\'t be approved.', Forminator::DOMAIN )
+				'error' => __( 'Error! Something went wrong during checkout and payment couldn\'t be approved.', 'forminator' )
 			);
 		}
 
 		// Validate amount
 		if ( ! isset( $order->purchase_units[0]->amount->value ) || floatval( $order->purchase_units[0]->amount->value ) !== floatval( $charge_amount ) ) {
 			return array(
-				'error' => __( 'Error! Invalid payment amount!', Forminator::DOMAIN )
+				'error' => __( 'Error! Invalid payment amount!', 'forminator' )
 			);
 		}
 
 		// Validate currency
 		if ( ! isset( $order->purchase_units[0]->amount->currency_code ) || $order->purchase_units[0]->amount->currency_code !== $currency ) {
 			return array(
-				'error' => __( 'Error! Invalid currency code!', Forminator::DOMAIN )
+				'error' => __( 'Error! Invalid currency code!', 'forminator' )
 			);
 		}
 
-		$entry_data['amount']         = number_format( $charge_amount, 2 );
+		$entry_data['amount']         = $charge_amount;
 		$entry_data['status']         = $order->status;
 		$entry_data['transaction_id'] = $submitted_data[ $element_id ];
 
@@ -333,7 +334,7 @@ class Forminator_PayPal extends Forminator_Field {
 		 *
 		 * @param array                        $entry_data
 		 * @param array                        $field            field properties
-		 * @param Forminator_Custom_Form_Model $custom_form
+		 * @param Forminator_Form_Model $custom_form
 		 * @param array                        $submitted_data
 		 * @param array                        $field_data_array current entry meta
 		 *
@@ -381,7 +382,7 @@ class Forminator_PayPal extends Forminator_Field {
 	 * @since 1.7
 	 *
 	 * @param array                        $field
-	 * @param Forminator_Custom_Form_Model $custom_form
+	 * @param Forminator_Form_Model $custom_form
 	 * @param array                        $submitted_data
 	 * @param array                        $pseudo_submitted_data
 	 *
@@ -439,7 +440,7 @@ class Forminator_PayPal extends Forminator_Field {
 		 *
 		 * @param double                       $payment_amount
 		 * @param array                        $field field settings
-		 * @param Forminator_Custom_Form_Model $custom_form
+		 * @param Forminator_Form_Model $custom_form
 		 * @param array                        $submitted_data
 		 * @param array                        $pseudo_submitted_data
 		 */
