@@ -10,3 +10,6 @@ Advanced Custom Fields Flexible Content layout and some starter components, all 
 
 ### Recommended Plugins
 JamPress is quite opinionated, for now. To help get you started we have included some plugins that will get you up and running quickly.
+
+### Tailwind support
+Tailwind support allowing you to input tailwind classes in WordPress that will be automatically applied to your components on the generated static pages.
