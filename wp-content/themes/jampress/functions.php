@@ -100,20 +100,20 @@ function get_seo_meta_field($object, $field_name, $request)
  * Reset CORS for external access
  *
  */
-function customize_rest_cors()
-{
-    remove_filter('rest_pre_serve_request', 'rest_send_cors_headers');
-    add_filter('rest_pre_serve_request', function ($value) {
-        header('Access-Control-Allow-Origin: *');
-        header('Access-Control-Allow-Headers: X-Requested-With');
-        header('Access-Control-Allow-Methods: GET');
-        header('Access-Control-Allow-Credentials: true');
-        header('Access-Control-Expose-Headers: Link', false);
+// function customize_rest_cors()
+// {
+//     remove_filter('rest_pre_serve_request', 'rest_send_cors_headers');
+//     add_filter('rest_pre_serve_request', function ($value) {
+//         header('Access-Control-Allow-Origin: *');
+//         header('Access-Control-Allow-Headers: X-Requested-With');
+//         header('Access-Control-Allow-Methods: GET');
+//         header('Access-Control-Allow-Credentials: true');
+//         header('Access-Control-Expose-Headers: Link', false);
 
-        return $value;
-    });
-}
-add_action('rest_api_init', 'customize_rest_cors', 15);
+//         return $value;
+//     });
+// }
+// add_action('rest_api_init', 'customize_rest_cors', 15);
 
 
 /**
