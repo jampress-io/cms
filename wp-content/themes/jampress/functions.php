@@ -113,19 +113,17 @@ function customize_rest_cors()
         return $value;
     });
 }
-
 add_action('rest_api_init', 'customize_rest_cors', 15);
 
 
 /**
- * Hide editor on specific pages.
+ * Hide editor on specific pages
  *
  */
-// add_action('admin_init', 'hide_editor');
-
-// function hide_editor()
-// {
-//     // Hide the editor on pages
-//     remove_post_type_support('page', 'editor');
-//     remove_post_type_support('post', 'editor');
-// }
+function hide_editor()
+{
+    // Hide the editor on pages
+    remove_post_type_support('page', 'editor');
+    remove_post_type_support('post', 'editor');
+}
+add_action('admin_init', 'hide_editor');
